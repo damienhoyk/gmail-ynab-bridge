@@ -1,0 +1,24 @@
+plugins {
+    alias(libs.plugins.kotlin.serialization)
+    id("kotlin-jvm")
+    id("kotlin-function")
+}
+
+group = "noodle.telegram.bot"
+version = "0.0.1-SNAPSHOT"
+
+dependencies {
+    implementation(platform(libs.aws.sdk.dependencies))
+    implementation(platform(libs.ktor.dependencies))
+    implementation(project(":google-auth"))
+    implementation(project(":google-gmail"))
+    implementation(project(":lambda"))
+    implementation(project(":security"))
+    implementation(libs.bundles.ktor.client)
+    implementation(libs.aws.lambda.core)
+    implementation(libs.jackson.kotlin)
+    implementation(libs.kotlinx.coroutines)
+    implementation("software.amazon.awssdk:dynamodb")
+    implementation("software.amazon.awssdk:secretsmanager")
+    runtimeOnly(libs.logback)
+}

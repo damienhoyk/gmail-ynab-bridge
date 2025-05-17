@@ -1,0 +1,41 @@
+matchers:
+  - name: scCreditCard
+    pattern: 'Alerts (\w+ \d{2} \d{4}).*\+SGD (\d+.\d{2}).*card (?:\*{4})?(\d{4}).*at (.*?)\.'
+    outgoing: true
+    order: [ DATE, AMOUNT, ACCOUNT, PAYEE ]
+    datePattern: "MMMM dd yyyy"
+
+  - name: uobGiro
+    pattern: 'of SGD ?(\d+\.\d{2}).*from.*(\d{4}).*[PA]M (\d{1,2}-\w+-\d{4}),.*Ref: (.+?)\.'
+    outgoing: true
+    order: [ AMOUNT, ACCOUNT, DATE, PAYEE ]
+    datePattern: d-MMMM-yyyy
+
+  - name: uobCreditCard
+    pattern: 'of SGD (\d+\.\d{2}) .* with .* (\d{4}) on (\d{2}/\d{2}/\d{2}) at (.+?)\.'
+    outgoing: true
+    order: [ AMOUNT, ACCOUNT, DATE, PAYEE ]
+    datePattern: dd/MM/yy
+
+  - name: uobTransfer
+    pattern: 'of SGD (\d+\.\d{2}) to (.+?) (?:from|on) .* (\d{4}) at .* (\d{1,2} \w{3} \d{2})'
+    outgoing: true
+    order: [ AMOUNT, PAYEE, ACCOUNT, DATE ]
+    datePattern: d MMM yy
+
+  - name: uobNetsQr
+    pattern: 'of SGD (\d+\.\d{2}) to (.+?) on .* (\d{4}) at .* (\d{2} \w{3} \d{2})'
+    outgoing: true
+    order: [ AMOUNT, PAYEE, ACCOUNT, DATE ]
+    datePattern: dd MMM yy
+
+  - name: dbsPayNow
+    pattern: '.* (\d{2} \w{3}) .* SGD(\d+\.\d{2}) .* ending (\d{4}) .*: (.+?) If unauthorised'
+    outgoing: true
+    order: [ DATE, AMOUNT, ACCOUNT, PAYEE ]
+    datePattern: dd MMM
+
+accounts:
+    1060: f09dffd6-f219-4f34-b1ee-8c4583c8917b
+    1995: fb62cfb3-d041-46bb-aa44-210d3ceb7720
+    5233: 08e12562-9a53-4ebc-a4d2-085372038de7

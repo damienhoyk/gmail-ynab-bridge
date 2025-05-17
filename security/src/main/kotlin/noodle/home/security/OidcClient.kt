@@ -1,0 +1,45 @@
+package noodle.home.security
+
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.client.request.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
+
+open class OidcClient(val discoveryUrl: String) : OAuth2TokenProvider() {
+
+    override val httpClient = HttpClient(CIO) {
+
+        install(Logging) {
+            logger = Logger.DEFAULT
+            level = LogLevel.INFO
+        }
+
+        install(ContentNegotiation) {
+            json(Json {
+                ignoreUnknownKeys = true
+            })
+        }
+
+    }
+
+    val discoveryDocument = runBlocking {
+        getDiscoveryDocument().body<JsonObject>()
+    }
+
+    override val tokenEndpoint = discoveryDocument["token_endpoint"]?.jsonPrimitive?.content ?: throw IllegalStateException()
+    val revocationEndpoint = discoveryDocument["revocation_endpoint"]?.jsonPrimitive?.content ?: throw IllegalStateException()
+    val authorizationEndpoint = discoveryDocument["authorization_endpoint"]?.jsonPrimitive?.content ?: throw IllegalStateException()
+
+    suspend fun getDiscoveryDocument() = httpClient.get(discoveryUrl)
+
+    suspend fun revokeToken(block: HttpRequestBuilder.() -> Unit = {}) = httpClient
+        .post(revocationEndpoint, block)
+
+}
