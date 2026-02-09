@@ -103,6 +103,7 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
         bridges.forEach { bridge ->
             launch(Dispatchers.IO) {
+                val label = bridge["label"]?.s() ?: "money"
                 val ynabId = bridge["destination"]?.s()
                 val key = mapOf("source" to fromS(gmail), "destination" to fromS(ynabId))
 
@@ -137,7 +138,8 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                     ynabClient = ynabClient,
                     googleGmailClient = googleGmailClient,
                     accounts = accounts,
-                    matchers = matchers
+                    label = label,
+                    matchers = matchers,
                 )
 
                 if (lastHistoryId > event.historyId) {
