@@ -1,8 +1,12 @@
 package noodle.google.gmail
 
 import io.ktor.client.call.*
+import io.ktor.client.request.parameter
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
 import noodle.google.auth.GoogleAuthClient
 import noodle.home.security.BitwardenCredentialsProvider
 import noodle.home.security.CachedAccessTokenProvider
@@ -38,6 +42,17 @@ class ClientTests {
                 request = MessageRequest(MessageRequest.Format.FULL)
             )
             println(response.body<Message>().toString())
+        }
+    }
+
+    @Test
+    fun getMessages() {
+        runBlocking {
+            val labelId = googleGmailClient.getLabels().body<Label.List>().labels?.find { it.id == "money" }?.id
+            val response = googleGmailClient.getMessages {
+                labelId?.let { parameter("labelIds", it) }
+            }.body<Message.List>()
+            println(response.messages.joinToString { it.id.toString() })
         }
     }
 

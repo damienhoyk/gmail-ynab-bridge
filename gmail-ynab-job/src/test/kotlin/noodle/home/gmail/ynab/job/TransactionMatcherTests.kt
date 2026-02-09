@@ -32,7 +32,7 @@ class TransactionMatcherTests {
     fun configuredPatterns(input: String, amount: Int, account: String, date: String, payee: String) {
         val matchers = configuration?.matchers?.map(::TransactionMatcher) ?: emptyList()
 
-        val transaction = matchers.firstNotNullOfOrNull { it.parse(input) }
+        val transaction = matchers.parse(input)
 
         assertEquals(amount, transaction?.amount)
         assertEquals(account, transaction?.accountId)

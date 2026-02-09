@@ -55,18 +55,7 @@ class GmailYnabJob(
             }
         }
 
-        val parsed = mutableListOf<Transaction>()
-        val unparsed = mutableListOf<String>()
-
-        messages.forEach {
-            val transaction = matchers.firstNotNullOfOrNull { matcher -> matcher.parse(it) }
-
-            if (transaction != null) {
-                parsed.add(transaction)
-            } else {
-                unparsed.add(it)
-            }
-        }
+        val (parsed, unparsed) = matchers.parse(messages)
 
         val (transactions, unmapped) = parsed
             .map { it.copy(accountId = accounts[it.accountId]) }
