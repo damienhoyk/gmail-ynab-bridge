@@ -13,7 +13,7 @@ class GmailYnabJob(
     private val ynabClient: YnabClient,
     private val googleGmailClient: GoogleGmailClient,
     private val accounts: Map<String, String>,
-    private val label: String = "money",
+    private val label: String,
     private val matchers: List<TransactionMatcher>
 ) {
 
