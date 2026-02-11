@@ -48,10 +48,11 @@ class ClientTests {
     @Test
     fun getMessages() {
         runBlocking {
-            val labelId = googleGmailClient.getLabels().body<Label.List>().labels?.find { it.id == "money" }?.id
+            val labelId = googleGmailClient.getLabels().body<Label.List>().labels?.find { it.name == "money" }?.id
             val response = googleGmailClient.getMessages {
                 labelId?.let { parameter("labelIds", it) }
             }.body<Message.List>()
+
             println(response.messages.joinToString { it.id.toString() })
         }
     }

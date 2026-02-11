@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent
 import io.ktor.client.call.body
 import io.ktor.client.request.parameter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -41,6 +42,8 @@ class Handler : RequestHandler<DynamodbEvent, String> {
     val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider)
     val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, DynamoDbTokenStore(dynamoDbClient), googleAuthclient)
 
+    val mainTable = "bridge"
+
     val matcherTable = "gmail-ynab-bridge-matcher"
     val matchers = dynamoDbClient.scan {
         it.tableName(matcherTable)
@@ -69,29 +72,39 @@ class Handler : RequestHandler<DynamodbEvent, String> {
             val gmail = record.dynamodb.newImage["id"]?.s!!
             val googleGmailClient = GoogleGmailClient(gmail, googleTokenProvider)
 
-            val bridge = dynamoDbClient.getItem {
-                val key = mapOf("source" to fromS(gmail))
-                it.tableName("bridge").key(key)
-            }.item()
+            val bridges = dynamoDbClient.query {
+                it.tableName(mainTable).keyConditionExpression("#s = :s")
+                    .expressionAttributeNames(mapOf("#s" to "source"))
+                    .expressionAttributeValues(mapOf(":s" to fromS(gmail)))
+            }.items()
 
-            val labelName = bridge["label"] ?: "money"
+            val labelNames = bridges.mapNotNull { it["label"]?.s() }.toSet() + "money"
             val labelListResponse = googleGmailClient.getLabels().body<Label.List>()
-            val labelId = labelListResponse.labels?.find { it.id == labelName }?.id
+            val labelIds = labelNames.map { labelName ->
+                labelListResponse.labels?.find { it.name == labelName }?.id
+            }
 
             val messagesResponse = googleGmailClient.getMessages {
-                labelId?.let { parameter("labelIds", it) }
+                labelIds.forEach { parameter("labelIds", it) }
             }.body<Message.List>()
 
-            val transactions = messagesResponse.messages.map {
-                async {
+            val accounts = mutableSetOf<String>()
+            messagesResponse.messages.map {
+                async(Dispatchers.IO) {
                     val messageResponse = googleGmailClient.getMessage(id = it.id!!)
                     val message = messageResponse.body<Message>().text
-                    matchers.parse(message)
+
+                    if (accounts.any { account -> message.contains(account) }) {
+                        return@async null
+                    }
+
+                    val transaction = matchers.parse(message)
+                    transaction?.let { accounts.add(it.accountId!!) }
+
+//                    transaction?.also { log.info("Found account [{}]", it.accountId) }
+                    log.info("completed on [{}]", Thread.currentThread().name)
                 }
             }.awaitAll()
-
-            val accounts = transactions.mapNotNull { it?.accountId }
-            log.info("Found accounts: [{}]", accounts.joinToString())
         }.let {
             "ok"
         }
