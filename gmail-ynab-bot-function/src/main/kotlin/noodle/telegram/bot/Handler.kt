@@ -48,21 +48,23 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val tokenStore = DynamoDbTokenStore(dynamoDbClient)
 
+    private val googleRedirectUri = System.getenv("GOOGLE_REDIRECT_URI")?.trim() ?: throw IllegalStateException()
     private val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider, bitwardenClient)
     private val googleAuthClient = GoogleAuthClient()
     private val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
     private val googleAuthorizationUrl = "http://accounts.google.com/o/oauth2/v2/auth" +
             "?client_id=${googleCredentialsProvider.clientId}" +
-            "&redirect_uri=https://atqbfgeqvzph6jtw7jpsoocdou0mwueu.lambda-url.ap-southeast-1.on.aws" +
+            "&redirect_uri=$googleRedirectUri" +
             "&response_type=code" +
             "&scope=openid%20email%20profile%20https://www.googleapis.com/auth/gmail.readonly" +
             "&access_type=offline" +
             "&prompt=consent"
 
+    private val ynabRedirectUri = System.getenv("YNAB_REDIRECT_URI")?.trim() ?: throw IllegalStateException()
     private val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider, bitwardenClient)
     private val ynabAuthorizationUrl = "https://app.ynab.com/oauth/authorize" +
             "?client_id=${ynabCredentialsProvider.clientId}" +
-            "&redirect_uri=https://4oqog5n6uembj6goyhto2gbfeu0lhvep.lambda-url.ap-southeast-1.on.aws" +
+            "&redirect_uri=$ynabRedirectUri" +
             "&response_type=code"
 
     override fun handleRequest(event: APIGatewayV2HTTPEvent, context: Context) = runBlocking {
