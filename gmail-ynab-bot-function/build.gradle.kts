@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.aws.lambda.events)
     implementation(libs.jackson.kotlin)
     implementation(libs.kotlinx.coroutines)
+    implementation("com.bitwarden:sdk-secrets:1.0.1")
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:secretsmanager")
     runtimeOnly(libs.logback)

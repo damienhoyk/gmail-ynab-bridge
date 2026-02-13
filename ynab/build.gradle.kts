@@ -12,6 +12,7 @@ dependencies {
     testImplementation(libs.slf4j.simple)
     testImplementation(libs.slf4j.api)
     testImplementation(project(":google-auth"))
+    testImplementation("com.bitwarden:sdk-secrets:1.0.1")
     testImplementation("software.amazon.awssdk:dynamodb")
     testImplementation("software.amazon.awssdk:secretsmanager")
 }

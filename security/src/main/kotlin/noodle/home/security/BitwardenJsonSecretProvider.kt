@@ -8,16 +8,18 @@ import java.util.*
 
 open class BitwardenJsonSecretProvider(
     val secretName: String,
-    credentialsProvider: CredentialsProvider
+    credentialsProvider: CredentialsProvider,
+    bitwardenClient: BitwardenClient? = null
 ) {
 
-    private val clientSettings = BitwardenSettings()
     private val organizationId = credentialsProvider.clientId
     private val apiKey = credentialsProvider.clientSecret
 
-    private val client = BitwardenClient(clientSettings).apply {
+    private val client = bitwardenClient ?: BitwardenClient(BitwardenSettings()).apply {
         auth().loginAccessToken(apiKey, "build/bitwarden-state")
-    }.secrets()
+    }
+
+    private val secretsClient = client.secrets()
 
     var secretJson: JsonObject? = null
 
@@ -27,14 +29,14 @@ open class BitwardenJsonSecretProvider(
 
 
     fun load() {
-        val secrets = client.list(UUID.fromString(organizationId))
+        val secrets = secretsClient.list(UUID.fromString(organizationId))
 
         val secretResponse = secrets.data?.find {
             it.key == secretName
         }
 
         val secret = secretResponse?.let {
-            client.get(it.id)
+            secretsClient.get(it.id)
         }
 
         val secretValue  = secret?.value

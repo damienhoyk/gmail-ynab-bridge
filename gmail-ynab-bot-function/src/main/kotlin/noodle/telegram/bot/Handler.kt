@@ -3,6 +3,8 @@ package noodle.telegram.bot
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
+import com.bitwarden.sdk.BitwardenClient
+import com.bitwarden.sdk.BitwardenSettings
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.Dispatchers
@@ -37,13 +39,16 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val secretsManagerClient = SecretsManagerClient.builder().credentialsProvider(credentialsProvider).build()
 
     private val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden", secretsManagerClient)
+    private val bitwardenClient = BitwardenClient(BitwardenSettings()).apply {
+        auth().loginAccessToken(bitwardenCredentialsProvider.clientSecret, "build/bitwarden-state")
+    }
 
-    private val botTokenProvider = BitwardenApiKeyProvider("telegram", bitwardenCredentialsProvider)
+    private val botTokenProvider = BitwardenApiKeyProvider("telegram", bitwardenCredentialsProvider, bitwardenClient)
     private val botClient = TelegramBotClient(botTokenProvider)
 
     private val tokenStore = DynamoDbTokenStore(dynamoDbClient)
 
-    private val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider)
+    private val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider, bitwardenClient)
     private val googleAuthClient = GoogleAuthClient()
     private val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
     private val googleAuthorizationUrl = "http://accounts.google.com/o/oauth2/v2/auth" +
@@ -54,7 +59,7 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             "&access_type=offline" +
             "&prompt=consent"
 
-    private val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider)
+    private val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider, bitwardenClient)
     private val ynabAuthorizationUrl = "https://app.ynab.com/oauth/authorize" +
             "?client_id=${ynabCredentialsProvider.clientId}" +
             "&redirect_uri=https://4oqog5n6uembj6goyhto2gbfeu0lhvep.lambda-url.ap-southeast-1.on.aws" +

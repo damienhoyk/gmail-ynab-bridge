@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.aws.lambda.events)
     implementation(libs.jackson.kotlin)
 	implementation(libs.kotlinx.coroutines)
+    implementation("com.bitwarden:sdk-secrets:1.0.1")
     implementation("io.ktor:ktor-client-auth")
     implementation("io.ktor:ktor-client-core")
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
