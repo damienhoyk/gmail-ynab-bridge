@@ -2,12 +2,12 @@ package noodle.security.authorization.callback
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.call.*
 import kotlinx.coroutines.runBlocking
 import noodle.home.security.*
-import noodle.lambda.event.ApiGatewayEvent
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
@@ -16,7 +16,7 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 
 abstract class AuthorizationHandler(
     val client: OAuth2TokenProvider
-) : RequestHandler<ApiGatewayEvent, String> {
+) : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     val log = LoggerFactory.getLogger(javaClass)
     val mapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -33,11 +33,11 @@ abstract class AuthorizationHandler(
     val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden", secretsManagerClient)
     val authorityCredentialsProvider = BitwardenCredentialsProvider(secretId, bitwardenCredentialsProvider)
 
-    override fun handleRequest(request: ApiGatewayEvent, context: Context?): String? = runBlocking {
+    override fun handleRequest(request: APIGatewayV2HTTPEvent, context: Context?): String? = runBlocking {
         log.debug("▶️ Start handling request [{}]", request)
 
-        val code = request.queryStringParameters["code"]
-        val state = request.queryStringParameters["state"]
+        val code = request.queryStringParameters?.get("code")
+        val state = request.queryStringParameters?.get("state")
 
         if (code == null) {
             log.info("💩 code is null")

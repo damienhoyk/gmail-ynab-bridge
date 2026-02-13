@@ -13,7 +13,6 @@ dependencies {
     implementation(project(":gmail-ynab-job"))
     implementation(project(":google-auth"))
     implementation(project(":google-gmail"))
-    implementation(project(":lambda"))
     implementation(project(":security"))
     implementation(project(":ynab"))
     implementation(libs.aws.lambda.core)

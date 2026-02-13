@@ -2,6 +2,7 @@ package noodle.finance.budget.bridge
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -20,7 +21,6 @@ import noodle.home.security.BitwardenCredentialsProvider
 import noodle.home.security.CachedAccessTokenProvider
 import noodle.home.security.DynamoDbTokenStore
 import noodle.home.security.SecretsManagerCredentialsProvider
-import noodle.lambda.event.ApiGatewayEvent
 import noodle.ynab.YnabAuthClient
 import noodle.ynab.YnabClient
 import org.slf4j.LoggerFactory
@@ -33,7 +33,7 @@ import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedExce
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import java.util.Base64.getUrlDecoder
 
-class Handler : RequestHandler<ApiGatewayEvent, String> {
+class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     val log = LoggerFactory.getLogger(javaClass)
     val mapper = jacksonObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -74,7 +74,7 @@ class Handler : RequestHandler<ApiGatewayEvent, String> {
         }
     }
 
-    override fun handleRequest(request: ApiGatewayEvent, context: Context?): String? = runBlocking {
+    override fun handleRequest(request: APIGatewayV2HTTPEvent, context: Context?): String? = runBlocking {
         val headers = request.headers
         val bearerToken = headers?.get("authorization")?.substringAfter("Bearer ")
 

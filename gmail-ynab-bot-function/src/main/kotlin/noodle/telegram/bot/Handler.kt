@@ -2,6 +2,7 @@ package noodle.telegram.bot
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,6 @@ import noodle.google.gmail.GoogleGmailClient
 import noodle.google.gmail.Label
 import noodle.google.gmail.WatchRequest
 import noodle.home.security.*
-import noodle.lambda.event.ApiGatewayEvent
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
@@ -28,7 +28,7 @@ import java.time.Instant.now
 import java.time.temporal.ChronoUnit.MINUTES
 import java.util.*
 
-class Handler : RequestHandler<ApiGatewayEvent, String> {
+class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -60,7 +60,7 @@ class Handler : RequestHandler<ApiGatewayEvent, String> {
             "&redirect_uri=https://4oqog5n6uembj6goyhto2gbfeu0lhvep.lambda-url.ap-southeast-1.on.aws" +
             "&response_type=code"
 
-    override fun handleRequest(event: ApiGatewayEvent, context: Context) = runBlocking {
+    override fun handleRequest(event: APIGatewayV2HTTPEvent, context: Context) = runBlocking {
         val body = Json.decodeFromString<JsonObject>(event.body!!)
         val message = body["message"]?.jsonObject ?: return@runBlocking "OK"
 
