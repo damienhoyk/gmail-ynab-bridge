@@ -1,7 +1,7 @@
 plugins {
 	alias(libs.plugins.kotlin.serialization)
 	id("kotlin-jvm")
-    id("kotlin-function")
+    id("kotlin-function-native")
 }
 
 group = "noodle.finance.budget.bridge"
@@ -15,8 +15,7 @@ dependencies {
     implementation(project(":google-gmail"))
     implementation(project(":security"))
     implementation(project(":ynab"))
-    implementation(libs.aws.lambda.core)
-    implementation(libs.aws.lambda.events)
+    implementation(libs.bundles.aws.lambda)
 	implementation(libs.kotlinx.coroutines)
     implementation("com.bitwarden:sdk-secrets:1.0.1")
     implementation("io.ktor:ktor-client-auth")

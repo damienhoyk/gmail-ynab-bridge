@@ -1,0 +1,10 @@
+{
+  "resources": {
+    "includes": [
+      {
+        "pattern": "\\Qlinux-x86-64/libbitwarden_c.so\\E"
+      }
+    ]
+  },
+  "bundles": []
+}

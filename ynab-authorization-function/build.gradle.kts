@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-jvm")
-    id("kotlin-function")
+    id("kotlin-function-native")
 }
 
 group = "noodle.security"
@@ -12,8 +12,8 @@ dependencies {
     implementation(project(":authorization-function"))
     implementation(project(":security"))
     implementation(project(":ynab"))
+    implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
-    implementation(libs.aws.lambda.core)
     implementation(libs.kotlinx.coroutines)
     runtimeOnly(libs.logback)
 }
