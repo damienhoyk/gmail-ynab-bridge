@@ -3,10 +3,11 @@ package noodle.security.authorization.callback
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.call.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonObject
 import noodle.home.security.*
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider
@@ -19,7 +20,6 @@ abstract class AuthorizationHandler(
 ) : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     val log = LoggerFactory.getLogger(javaClass)
-    val mapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     val credentialsProvider = EnvironmentVariableCredentialsProvider.create()
     val dynamoDbClient = DynamoDbClient.builder().credentialsProvider(credentialsProvider).build()
@@ -98,11 +98,11 @@ abstract class AuthorizationHandler(
 
     abstract fun getAuthority(response: TokenResponse): String?
 
-    private fun lambdaResponse(statusCode: Int, message: String? = null) = mapOf(
-        "statusCode" to statusCode,
-        "body" to message?.let { mapOf("message" to it) }
-    )
-        .filterValues { it != null }
-        .let(mapper::writeValueAsString)
+    private fun lambdaResponse(statusCode: Int, message: String? = null) = buildJsonObject {
+        put("statusCode", statusCode)
+        putJsonObject("body") {
+            put("message", message)
+        }
+    }.toString()
 
 }

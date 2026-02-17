@@ -5,14 +5,15 @@ import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.bitwarden.sdk.BitwardenClient
 import com.bitwarden.sdk.BitwardenSettings
-import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonObject
 import noodle.google.auth.GoogleAuthClient
 import noodle.google.event.GmailEvent
 import noodle.google.gmail.GoogleGmailClient
@@ -38,7 +39,7 @@ import java.util.Base64.getUrlDecoder
 class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
-    private val mapper = jacksonObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+    private val mapper = Json { ignoreUnknownKeys = true }
 
     private val credentialsProvider = EnvironmentVariableCredentialsProvider.create()
     private val dynamoDbClient = DynamoDbClient.builder().credentialsProvider(credentialsProvider).build()
@@ -91,13 +92,14 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             return@runBlocking lambdaResponse(response.status.value, response.status.description)
         }
 
-        val notification = request.body?.let { mapper.readValue<PubsubNotification>(it) }
+        val notification = request.body?.let { mapper.decodeFromString<PubsubNotification>(it) }
 
         if (notification == null) {
             return@runBlocking lambdaResponse(400, "body is null or empty")
         }
 
-        val event = notification.message.data.let(getUrlDecoder()::decode).let { mapper.readValue<GmailEvent>(it) }
+        val notificationData = notification.message.data.let(getUrlDecoder()::decode).let(::String)
+        val event = notificationData.let { mapper.decodeFromString<GmailEvent>(it) }
         val gmail = event.emailAddress
 
         val bridges = dynamoDbClient.query {
@@ -179,12 +181,12 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         return@runBlocking lambdaResponse(200, "success")
     }
 
-    private fun lambdaResponse(statusCode: Int, message: String? = null) = mapOf(
-        "statusCode" to statusCode,
-        "body" to message?.let { mapOf("message" to it) }
-    )
-        .filterValues { it != null }
-        .let(mapper::writeValueAsString)
+    private fun lambdaResponse(statusCode: Int, message: String? = null) = buildJsonObject {
+        put("statusCode", statusCode)
+        putJsonObject("body") {
+            put("message", message)
+        }
+    }.toString()
 
     private fun updateStatus(key: Map<String, AttributeValue>, status: String) {
         dynamoDbClient.updateItem {
