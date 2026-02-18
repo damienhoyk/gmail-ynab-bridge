@@ -3,6 +3,8 @@ package noodle.finance.budget.bridge
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
+import com.bitwarden.sdk.BitwardenClient
+import com.bitwarden.sdk.BitwardenSettings
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -48,12 +50,15 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val tokenStore = DynamoDbTokenStore(dynamoDbClient)
 
     private val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden", secretsManagerClient)
+    private val bitwardenClient = BitwardenClient(BitwardenSettings()).apply {
+        auth().loginAccessToken(bitwardenCredentialsProvider.clientSecret, "build/bitwarden-state")
+    }
 
-    private val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider)
+    private val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider, bitwardenClient)
     private val googleAuthClient = GoogleAuthClient()
     private val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
 
-    private val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider)
+    private val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider, bitwardenClient)
     private val ynabAuthClient = YnabAuthClient()
     private val ynabTokenProvider = CachedAccessTokenProvider(ynabCredentialsProvider, tokenStore, ynabAuthClient)
 
