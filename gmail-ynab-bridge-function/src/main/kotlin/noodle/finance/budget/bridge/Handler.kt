@@ -35,33 +35,33 @@ import java.util.Base64.getUrlDecoder
 
 class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
-    val log = LoggerFactory.getLogger(javaClass)
-    val mapper = jacksonObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+    private val log = LoggerFactory.getLogger(javaClass)
+    private val mapper = jacksonObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-    val credentialsProvider = EnvironmentVariableCredentialsProvider.create()
-    val dynamoDbClient = DynamoDbClient.builder().credentialsProvider(credentialsProvider).build()
-    val secretsManagerClient = SecretsManagerClient.builder().credentialsProvider(credentialsProvider).build()
+    private val credentialsProvider = EnvironmentVariableCredentialsProvider.create()
+    private val dynamoDbClient = DynamoDbClient.builder().credentialsProvider(credentialsProvider).build()
+    private val secretsManagerClient = SecretsManagerClient.builder().credentialsProvider(credentialsProvider).build()
 
-    val mainTable = "bridge"
-    val matcherTable = "gmail-ynab-bridge-matcher"
+    private val mainTable = "bridge"
+    private val matcherTable = "gmail-ynab-bridge-matcher"
 
-    val tokenStore = DynamoDbTokenStore(dynamoDbClient)
+    private val tokenStore = DynamoDbTokenStore(dynamoDbClient)
 
-    val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden", secretsManagerClient)
+    private val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden", secretsManagerClient)
 
-    val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider)
-    val googleAuthClient = GoogleAuthClient()
-    val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
+    private val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider)
+    private val googleAuthClient = GoogleAuthClient()
+    private val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
 
-    val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider)
-    val ynabAuthClient = YnabAuthClient()
-    val ynabTokenProvider = CachedAccessTokenProvider(ynabCredentialsProvider, tokenStore, ynabAuthClient)
+    private val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider)
+    private val ynabAuthClient = YnabAuthClient()
+    private val ynabTokenProvider = CachedAccessTokenProvider(ynabCredentialsProvider, tokenStore, ynabAuthClient)
 
-    val gmailYnabBridgeMatchers = dynamoDbClient.scan {
+    private val gmailYnabBridgeMatchers = dynamoDbClient.scan {
         it.tableName(matcherTable)
     }.items()
 
-    val matchers = gmailYnabBridgeMatchers.mapNotNull {
+    private val matchers = gmailYnabBridgeMatchers.mapNotNull {
         val datePattern = it["datePattern"]?.s()
         val pattern = it["pattern"]?.s()?.toRegex()
         val order = it["order"]?.l()?.map(AttributeValue::s)?.map(RegexGroup::valueOf)?.toSet()
