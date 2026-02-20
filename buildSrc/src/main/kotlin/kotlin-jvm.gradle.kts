@@ -15,8 +15,8 @@ repositories {
     maven {
         url = uri("https://maven.pkg.github.com/bitwarden/sdk-sm")
         credentials {
-            username = findProperty("github.user") as String
-            password = findProperty("github.key") as String
+            username = findProperty("github.user") as? String ?: ""
+            password = findProperty("github.key") as? String ?: ""
         }
     }
 }

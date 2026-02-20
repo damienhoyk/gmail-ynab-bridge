@@ -4,6 +4,8 @@ import kotlinx.serialization.Serializable
 import java.util.Base64
 import kotlin.collections.ArrayDeque
 
+private val urlDecoder = Base64.getUrlDecoder()
+
 @Serializable
 data class Message(
     val id: String? = null,
@@ -22,7 +24,7 @@ data class Message(
     val text
         get() = parts
             .mapNotNull { it.data }
-            .map { Base64.getUrlDecoder().decode(it) }
+            .map { urlDecoder.decode(it) }
             .joinToString(" ") { String(it).stripLineBreaks().stripHtml().trim() }
 
     @Serializable
