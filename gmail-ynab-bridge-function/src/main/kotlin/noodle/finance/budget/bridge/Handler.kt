@@ -129,6 +129,11 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                     return@launch
                 }
 
+                val bridge = dynamoDbClient.getItem {
+                    val key = mapOf("source" to fromS(gmail), "destination" to fromS(ynabId))
+                    it.tableName(mainTable).key(key)
+                }.item()
+
                 val lastHistoryId = bridge["historyId"]?.n()?.toLong() ?: 0L
                 val accounts = bridge["accounts"]?.m()?.mapValues { it.value.s() } ?: emptyMap()
 
