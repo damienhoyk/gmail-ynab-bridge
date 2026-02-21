@@ -102,15 +102,15 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         val event = notificationData.let { mapper.decodeFromString<GmailEvent>(it) }
         val gmail = event.emailAddress
 
-        val bridges = dynamoDbClient.query {
+        val ynabIds = dynamoDbClient.query {
             it.tableName(mainTable).keyConditionExpression("#s = :s")
-                .expressionAttributeNames(mapOf("#s" to "source"))
+                .expressionAttributeNames(mapOf("#s" to "source", "#d" to "destination"))
                 .expressionAttributeValues(mapOf(":s" to fromS(gmail)))
-        }.items()
+                .projectionExpression("#d")
+        }.items().mapNotNull { it["destination"]?.s() }
 
-        bridges.forEach { bridge ->
+        ynabIds.forEach { ynabId ->
             launch(Dispatchers.IO) {
-                val ynabId = bridge["destination"]?.s()
                 val key = mapOf("source" to fromS(gmail), "destination" to fromS(ynabId))
 
                 try {
@@ -137,8 +137,10 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                 val lastHistoryId = bridge["historyId"]?.n()?.toLong() ?: 0L
                 val accounts = bridge["accounts"]?.m()?.mapValues { it.value.s() } ?: emptyMap()
 
-                if (ynabId == null) {
-                    updateStatus(key, "failed")
+                if (lastHistoryId > event.historyId) {
+                    log.info("⏭️ Skipping job [{}|{}|{} > {}]", gmail, ynabId, lastHistoryId, event.historyId)
+
+                    updateStatus(key, "completed")
                     return@launch
                 }
 
@@ -151,13 +153,6 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                     accounts = accounts,
                     matchers = matchers
                 )
-
-                if (lastHistoryId > event.historyId) {
-                    log.info("⏭️ Skipping job [{}|{}|{} > {}]", gmail, ynabId, lastHistoryId, event.historyId)
-
-                    updateStatus(key, "completed")
-                    return@launch
-                }
 
                 val currentHistoryId = try {
                     log.info("▶️ Running job [{}|{}|{}] ...", gmail, ynabId, lastHistoryId)
