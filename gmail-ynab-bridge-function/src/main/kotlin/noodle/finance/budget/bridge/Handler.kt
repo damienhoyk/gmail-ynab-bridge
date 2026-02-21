@@ -124,8 +124,8 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                             .conditionExpression("attribute_not_exists(#s) or not #s = :s")
                             .updateExpression("set #s = :s")
                     }
-                } catch (e: ConditionalCheckFailedException) {
-                    log.info("⏸️ Function already running for [$gmail][$ynabId]")
+                } catch (_: ConditionalCheckFailedException) {
+                    log.info("⏸️ Function already running for [$gmail|$ynabId]")
                     return@launch
                 }
 
@@ -148,23 +148,23 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                 )
 
                 if (lastHistoryId > event.historyId) {
-                    log.info("⏭️ Skipping job run")
+                    log.info("⏭️ Skipping job [{}|{}|{} > {}]", gmail, ynabId, lastHistoryId, event.historyId)
 
                     updateStatus(key, "completed")
                     return@launch
                 }
 
                 val currentHistoryId = try {
-                    log.info("▶️ Running job with start history id [{}] ...", lastHistoryId)
+                    log.info("▶️ Running job [{}|{}|{}] ...", gmail, ynabId, lastHistoryId)
                     job.run(lastHistoryId)
                 } catch (e: Exception) {
-                    log.warn("🛑 Job run failed")
+                    log.warn("🛑 Job run failed [{}]", e.message)
 
                     updateStatus(key, "failed")
                     return@launch
                 }
 
-                log.info("✨️ Job completed at [{}]", currentHistoryId)
+                log.info("✨️ Job completed [{}]", currentHistoryId)
 
                 dynamoDbClient.updateItem {
                     val names = mapOf("#s" to "status", "#h" to "historyId")
