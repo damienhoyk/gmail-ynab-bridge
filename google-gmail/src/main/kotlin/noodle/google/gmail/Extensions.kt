@@ -1,7 +1,12 @@
 package noodle.google.gmail
 
-fun String.stripHtml() = replace("<[^>]*>".toRegex(), "")
-    .replace("\\u00A0|&nbsp;".toRegex(), " ")
-    .replace("\\s+".toRegex(), " ")
+private val HTML_TAG_REGEX = "<[^>]*>".toRegex()
+private val NON_BREAKING_SPACE_REGEX = "\\u00A0|&nbsp;".toRegex()
+private val WHITESPACE_REGEX = "\\s+".toRegex()
+private val LINE_BREAK_REGEX = "[\\r\\n]+".toRegex()
 
-fun String.stripLineBreaks() = replace("[\\r\\n]+".toRegex(), " ")
+fun String.stripHtml() = replace(HTML_TAG_REGEX, "")
+    .replace(NON_BREAKING_SPACE_REGEX, " ")
+    .replace(WHITESPACE_REGEX, " ")
+
+fun String.stripLineBreaks() = replace(LINE_BREAK_REGEX, " ")
