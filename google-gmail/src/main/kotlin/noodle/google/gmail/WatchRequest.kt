@@ -1,20 +1,26 @@
 package noodle.google.gmail
 
 import io.ktor.client.request.*
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 
 data class WatchRequest(
     private val topicName: String? = null,
-    private val labelId: String? = null,
+    private val labelIds: List<String> = emptyList(),
     private val labelFilterBehaviour: LabelFilterBehaviour = LabelFilterBehaviour.INCLUDE
 ) {
 
     val block: HttpRequestBuilder.() -> Unit = {
         setBody(
-            mapOf(
-                "topicName" to topicName,
-                "labelIds" to labelId,
-                "labelFilterBehavior" to labelFilterBehaviour.value
-            ).filterValues { it != null }
+            buildJsonObject {
+                put("topicName", topicName)
+                put("labelFilterBehaviour", labelFilterBehaviour.value)
+                putJsonArray("labelIds") {
+                    labelIds.forEach { add(it) }
+                }
+            }
         )
     }
 

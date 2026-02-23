@@ -157,8 +157,8 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                     val googleGmailClient = GoogleGmailClient(gmail, googleTokenProvider)
 
                     val labelId = googleGmailClient.getLabels().body<Label.List>().labels
-                        ?.find { it.name == labelName }
-                        ?.id
+                        ?.filter { it.name.equals(labelName, true) }
+                        ?.map { it.id } ?: emptyList()
 
                     googleGmailClient.postWatch(request = WatchRequest(topicName, labelId))
                 }

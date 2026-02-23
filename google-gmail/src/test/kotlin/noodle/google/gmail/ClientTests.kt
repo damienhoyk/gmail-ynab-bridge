@@ -57,8 +57,8 @@ class ClientTests {
         val labelName = "money"
         val labelId = runBlocking {
             googleGmailClient.getLabels().body<Label.List>().labels
-                ?.find { it.name == labelName }
-                ?.id ?: throw IllegalStateException()
+                ?.filter { it.name.equals(labelName, true) }
+                ?.map { it.id } ?: throw IllegalStateException()
         }
 
         val topicName = "projects/lexical-cider-458409-d5/topics/gmail"
