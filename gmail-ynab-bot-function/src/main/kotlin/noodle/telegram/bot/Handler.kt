@@ -6,7 +6,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -18,6 +17,9 @@ import noodle.google.gmail.GoogleGmailClient
 import noodle.google.gmail.Label
 import noodle.google.gmail.WatchRequest
 import noodle.home.security.*
+import noodle.repository.LoginRepository
+import noodle.repository.TokenRepository
+import noodle.repository.UserRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
@@ -66,6 +68,10 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             "&redirect_uri=$ynabRedirectUri" +
             "&response_type=code"
 
+    private val userRepository = UserRepository(client = dynamoDbClient)
+    private val tokenRepository = TokenRepository(client = dynamoDbClient)
+    private val loginRepository = LoginRepository(client = dynamoDbClient)
+
     override fun handleRequest(event: APIGatewayV2HTTPEvent, context: Context) = runBlocking {
         val body = Json.decodeFromString<JsonObject>(event.body!!)
         val message = body["message"]?.jsonObject ?: return@runBlocking "OK"
@@ -80,31 +86,28 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         if (text.equals("/start", true)) {
             botClient.sendChatAction(chatId, "typing")
 
-            val login = getItem("login", authority).item()
+            val login = loginRepository.get(authority).item()
             val userId = login["userId"]?.s() ?: UUID.randomUUID().toString()
 
-            dynamoDbClient.putItem {
-                val item = mapOf("id" to fromS(authority), "userId" to fromS(userId))
-                it.tableName("login").item(item)
-            }
-
-            dynamoDbClient.putItem {
-                val item = mapOf("id" to fromS(userId), "loginId" to fromS(authority))
-                it.tableName("user").item(item)
-            }
+            loginRepository.put(mapOf("id" to fromS(authority), "userId" to fromS(userId)))
+            userRepository.put(mapOf("id" to fromS(userId), "loginId" to fromS(authority)))
         }
 
         if (text.equals("/authorizegmail", true)) {
             botClient.sendChatAction(chatId, "typing")
-            val login = getItem("login", authority).item()
+            val login = loginRepository.get(authority).item()
             val userId = login["userId"]?.s()
             val token = UUID.randomUUID().toString()
 
             val ttlInstant = now().plus(30, MINUTES)
             val ttl = ttlInstant.epochSecond
 
-            updateItem("token", token, "userId", userId)
-            updateItem("token", token, "ttl", ttl)
+
+            tokenRepository.put(mapOf(
+                "token" to fromS(token),
+                "userId" to fromS(userId),
+                "ttl" to fromN(ttl.toString())
+            ))
 
             val message = "[🔑 Authorize Gmail]($googleAuthorizationUrl&state=$token)"
             botClient.sendMessage(chatId, message) {
@@ -114,15 +117,18 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
         if (text.equals("/authorizeynab", true)) {
             botClient.sendChatAction(chatId, "typing")
-            val login = getItem("login", authority).item()
+            val login = loginRepository.get(authority).item()
             val userId = login["userId"]?.s()
             val token = UUID.randomUUID().toString()
 
             val ttlInstant = now().plus(30, MINUTES)
             val ttl = ttlInstant.epochSecond
 
-            updateItem("token", token, "userId", userId)
-            updateItem("token", token, "ttl", ttl)
+            tokenRepository.put(mapOf(
+                "token" to fromS(token),
+                "userId" to fromS(userId),
+                "ttl" to fromN(ttl.toString())
+            ))
 
             val message = "[🔑 Authorize YNAB]($ynabAuthorizationUrl&state=$token)"
             botClient.sendMessage(chatId, message) {
@@ -132,14 +138,9 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
         if (text.equals("/watchgmail", true)) {
             botClient.sendChatAction(chatId, "typing")
-            val login = getItem("login", authority).item()
-            val userId = login["userId"]?.s()
-            val user = dynamoDbClient.query {
-                it.tableName("user")
-                    .keyConditionExpression("#i = :i")
-                    .expressionAttributeNames(mapOf("#i" to "id"))
-                    .expressionAttributeValues(mapOf(":i" to fromS(userId)))
-            }.items()
+            val login = loginRepository.get(authority).item()
+            val userId = login["userId"]?.s()!!
+            val user = userRepository.query(userId).items()
 
             val emails = user.mapNotNull {
                 it["loginId"]?.s()
@@ -170,34 +171,6 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
 
         return@runBlocking "OK"
-    }
-
-    fun getItem(table: String, id: String?) = dynamoDbClient.getItem {
-        val key = mapOf("id" to fromS(id))
-        it.tableName(table).key(key)
-    }
-
-    suspend fun updateItem(table: String, id: String?, attributeName: String, attributeValue: String?) =
-        coroutineScope {
-            val updateExpression = "set #a = :a"
-            dynamoDbClient.updateItem {
-                val key = mapOf("id" to fromS(id))
-                it.tableName(table).key(key)
-                    .updateExpression(updateExpression)
-                    .expressionAttributeNames(mapOf("#a" to attributeName))
-                    .expressionAttributeValues(mapOf(":a" to fromS(attributeValue)))
-            }
-        }
-
-    suspend fun updateItem(table: String, id: String?, attributeName: String, attributeValue: Long?) = coroutineScope {
-        val updateExpression = "set #a = :a"
-        dynamoDbClient.updateItem {
-            val key = mapOf("id" to fromS(id))
-            it.tableName(table).key(key)
-                .updateExpression(updateExpression)
-                .expressionAttributeNames(mapOf("#a" to attributeName))
-                .expressionAttributeValues(mapOf(":a" to fromN("$attributeValue")))
-        }
     }
 
 }

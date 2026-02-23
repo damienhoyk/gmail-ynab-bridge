@@ -22,6 +22,7 @@ import noodle.home.gmail.ynab.job.GmailYnabJob
 import noodle.home.gmail.ynab.job.TransactionMatcher
 import noodle.home.gmail.ynab.job.TransactionMatcher.RegexGroup
 import noodle.home.security.*
+import noodle.repository.BridgeRepository
 import noodle.ynab.YnabAuthClient
 import noodle.ynab.YnabClient
 import org.slf4j.LoggerFactory
@@ -56,6 +57,8 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val gmailYnabBridgeMatchers = dynamoDbClient.scan {
         it.tableName(matcherTable)
     }.items()
+
+    private val bridgeRepository = BridgeRepository(client = dynamoDbClient)
 
     private val matchers = gmailYnabBridgeMatchers.mapNotNull {
         val datePattern = it["datePattern"]?.s()
@@ -93,12 +96,7 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         val gmail = event.emailAddress
 
         val deferredYnabIds = async(Dispatchers.IO) {
-            dynamoDbClient.query {
-                it.tableName(mainTable).keyConditionExpression("#s = :s")
-                    .expressionAttributeNames(mapOf("#s" to "source", "#d" to "destination"))
-                    .expressionAttributeValues(mapOf(":s" to fromS(gmail)))
-                    .projectionExpression("#d")
-            }.items().mapNotNull { it["destination"]?.s() }
+            bridgeRepository.queryAttribute(gmail, "destination")
         }
 
         val bitwardenSecret = deferredBitwardenSecret.await()
@@ -125,28 +123,13 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
         ynabIds.forEach { ynabId ->
             launch(Dispatchers.IO) {
-                val key = mapOf("source" to fromS(gmail), "destination" to fromS(ynabId))
-
-                try {
-                    dynamoDbClient.updateItem {
-                        val names = mapOf("#s" to "status")
-                        val values = mapOf(":s" to fromS("running"))
-
-                        it.tableName(mainTable).key(key)
-                            .expressionAttributeNames(names)
-                            .expressionAttributeValues(values)
-                            .conditionExpression("attribute_not_exists(#s) or not #s = :s")
-                            .updateExpression("set #s = :s")
-                    }
+                val bridge = try {
+                    val response = bridgeRepository.updateStatusMutex(gmail, ynabId, "running")
+                    response.attributes()
                 } catch (_: ConditionalCheckFailedException) {
                     log.info("⏸️ Function already running for [$gmail|$ynabId]")
                     return@launch
                 }
-
-                val bridge = dynamoDbClient.getItem {
-                    val key = mapOf("source" to fromS(gmail), "destination" to fromS(ynabId))
-                    it.tableName(mainTable).key(key)
-                }.item()
 
                 val lastHistoryId = bridge["historyId"]?.n()?.toLong() ?: 0L
                 val accounts = bridge["accounts"]?.m()?.mapValues { it.value.s() } ?: emptyMap()
@@ -154,7 +137,7 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                 if (lastHistoryId > event.historyId) {
                     log.info("⏭️ Skipping job [{}|{}|{} > {}]", gmail, ynabId, lastHistoryId, event.historyId)
 
-                    updateStatus(key, "completed")
+                    bridgeRepository.updateStatus(gmail, ynabId, "completed")
                     return@launch
                 }
 
@@ -174,21 +157,14 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                 } catch (e: Exception) {
                     log.warn("🛑 Job run failed [{}]", e.message)
 
-                    updateStatus(key, "failed")
+                    bridgeRepository.updateStatus(gmail, ynabId, "failed")
                     return@launch
                 }
 
                 log.info("✨️ Job completed [{}]", currentHistoryId)
 
-                dynamoDbClient.updateItem {
-                    val names = mapOf("#s" to "status", "#h" to "historyId")
-                    val values = mapOf(":s" to fromS("completed"), ":h" to fromN("$currentHistoryId"))
-
-                    it.tableName(mainTable).key(key)
-                        .expressionAttributeNames(names)
-                        .expressionAttributeValues(values)
-                        .updateExpression("set #s = :s, #h = :h")
-                }
+                bridgeRepository.updateStatus(gmail, ynabId, "completed")
+                bridgeRepository.updateHistoryId(gmail, ynabId, "$currentHistoryId")
             }
         }
 
@@ -202,16 +178,4 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
     }.toString()
 
-    private fun updateStatus(key: Map<String, AttributeValue>, status: String) {
-        dynamoDbClient.updateItem {
-            val names = mapOf("#s" to "status")
-            val values = mapOf(":s" to fromS(status))
-
-            it.tableName(mainTable).key(key)
-                .expressionAttributeNames(names)
-                .expressionAttributeValues(values)
-                .updateExpression("set #s = :s")
-        }
-
-    }
 }

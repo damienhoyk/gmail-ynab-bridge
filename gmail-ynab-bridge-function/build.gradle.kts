@@ -10,10 +10,12 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
 	implementation(platform(libs.ktor.dependencies))
+    implementation(project(":bridge-repository"))
     implementation(project(":gmail-ynab-job"))
     implementation(project(":google-auth"))
     implementation(project(":google-gmail"))
     implementation(project(":security"))
+    implementation(project(":security-repository"))
     implementation(project(":ynab"))
     implementation(libs.bundles.aws.lambda)
 	implementation(libs.kotlinx.coroutines)

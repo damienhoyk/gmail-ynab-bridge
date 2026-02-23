@@ -13,6 +13,7 @@ dependencies {
     implementation(project(":google-auth"))
     implementation(project(":google-gmail"))
     implementation(project(":security"))
+    implementation(project(":security-repository"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
     implementation(libs.kotlinx.coroutines)
