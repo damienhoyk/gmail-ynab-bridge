@@ -1,0 +1,14 @@
+[
+  {
+    "name": "com.amazonaws.services.dynamodbv2.model.StreamRecord",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.amazonaws.services.dynamodbv2.model.AttributeValue",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  }
+]
