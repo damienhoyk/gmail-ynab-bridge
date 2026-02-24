@@ -3,8 +3,6 @@ package noodle.telegram.bot
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
-import com.bitwarden.sdk.BitwardenClient
-import com.bitwarden.sdk.BitwardenSettings
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +13,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import noodle.google.auth.GoogleAuthClient
 import noodle.google.gmail.GoogleGmailClient
 import noodle.google.gmail.Label
@@ -39,22 +36,23 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val dynamoDbClient = DynamoDbClient.builder().credentialsProvider(credentialsProvider).build()
     private val secretsManagerClient = SecretsManagerClient.builder().credentialsProvider(credentialsProvider).build()
 
-    private val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden", secretsManagerClient)
-    private val bitwardenClient = BitwardenClient(BitwardenSettings()).apply {
-        auth().loginAccessToken(bitwardenCredentialsProvider.clientSecret, "build/bitwarden-state")
-    }
+    private val bitwardenSecret = runBlocking { secretsManagerClient.getSecret("bitwarden") }.jsonObject()
+    private val bitwardenOrganizationId = bitwardenSecret.clientId!!
+    private val bitwardenApiKey = bitwardenSecret.clientSecret!!
+    private val bitwardenClient = runBlocking { bitwardenClient().apply { auth().authorize(bitwardenApiKey) } }
 
-    private val botTokenProvider = BitwardenApiKeyProvider("telegram", bitwardenCredentialsProvider, bitwardenClient)
+    private val botTokenProvider = BitwardenApiKeyProvider("telegram", bitwardenClient, bitwardenOrganizationId)
     private val botClient = TelegramBotClient(botTokenProvider)
 
     private val tokenStore = DynamoDbTokenStore(dynamoDbClient)
 
     private val googleRedirectUri = System.getenv("GOOGLE_REDIRECT_URI")?.trim() ?: throw IllegalStateException()
-    private val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider, bitwardenClient)
+    private val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenClient, bitwardenOrganizationId)
     private val googleAuthClient = GoogleAuthClient()
     private val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
+    private val googleClientId = runBlocking { bitwardenClient.secrets().getClientId(bitwardenOrganizationId, "google") }
     private val googleAuthorizationUrl = "http://accounts.google.com/o/oauth2/v2/auth" +
-            "?client_id=${googleCredentialsProvider.clientId}" +
+            "?client_id=$googleClientId" +
             "&redirect_uri=$googleRedirectUri" +
             "&response_type=code" +
             "&scope=openid%20email%20profile%20https://www.googleapis.com/auth/gmail.readonly" +
@@ -62,9 +60,9 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             "&prompt=consent"
 
     private val ynabRedirectUri = System.getenv("YNAB_REDIRECT_URI")?.trim() ?: throw IllegalStateException()
-    private val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider, bitwardenClient)
+    private val ynabClientId = runBlocking { bitwardenClient.secrets().getClientId(bitwardenOrganizationId, "ynab") }?.jsonObject()
     private val ynabAuthorizationUrl = "https://app.ynab.com/oauth/authorize" +
-            "?client_id=${ynabCredentialsProvider.clientId}" +
+            "?client_id=$ynabClientId" +
             "&redirect_uri=$ynabRedirectUri" +
             "&response_type=code"
 
@@ -73,11 +71,11 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         val message = body["message"]?.jsonObject ?: return@runBlocking "OK"
 
         val chat = message["chat"]?.jsonObject ?: return@runBlocking "OK"
-        val chatId = chat["id"]?.jsonPrimitive?.content ?: return@runBlocking "OK"
+        val chatId = chat["id"]?.content ?: return@runBlocking "OK"
 
         val user = message["from"]?.jsonObject ?: return@runBlocking "OK"
-        val text = message["text"]?.jsonPrimitive?.content
-        val authority = user["id"]?.jsonPrimitive?.content
+        val text = message["text"]?.content
+        val authority = user["id"]?.content
 
         if (text.equals("/start", true)) {
             botClient.sendChatAction(chatId, "typing")

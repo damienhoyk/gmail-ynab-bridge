@@ -1,20 +1,27 @@
-import kotlinx.serialization.json.jsonPrimitive
-import noodle.home.security.BitwardenCredentialsProvider
-import noodle.home.security.SecretsManagerCredentialsProvider
+import kotlinx.coroutines.runBlocking
+import noodle.home.security.*
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class BitwardenCredentialsProviderTests {
 
-    val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden")
-    val testCredentialsProvider = BitwardenCredentialsProvider("test", bitwardenCredentialsProvider)
+    val secretsManagerClient = SecretsManagerClient.create()
 
     @Test
-    fun test() {
+    fun test() = runBlocking {
+        val bitwardenSecret = secretsManagerClient.getSecret("bitwarden").jsonObject()
+        val organizationId = bitwardenSecret.clientId ?: throw IllegalStateException("organization id is null")
+        val apiKey = bitwardenSecret.clientSecret ?: throw IllegalStateException("api key is null")
+
+        val client = bitwardenClient()
+        client.auth().authorize(apiKey)
+
+        val testCredentialsProvider = BitwardenCredentialsProvider("test", client, organizationId)
         testCredentialsProvider.load()
 
-        println(testCredentialsProvider.secretJson?.get("someKey")?.jsonPrimitive?.content)
-        println(testCredentialsProvider.clientId)
-        println(testCredentialsProvider.clientSecret)
-
+        assertEquals("testClientId", testCredentialsProvider.getClientId())
+        assertEquals("test-client-secret", testCredentialsProvider.getClientSecret())
     }
+
 }

@@ -1,21 +1,15 @@
 package noodle.home.security
 
 import com.bitwarden.sdk.BitwardenClient
-import kotlinx.serialization.json.jsonPrimitive
+import com.bitwarden.sdk.BitwardenSettings
 
 class BitwardenApiKeyProvider(
-    secretName: String,
-    credentialsProvider: CredentialsProvider,
-    bitwardenClient: BitwardenClient? = null
-) : BitwardenJsonSecretProvider(secretName, credentialsProvider, bitwardenClient), AccessTokenProvider {
+    val secretName: String,
+    val client: BitwardenClient = BitwardenClient(BitwardenSettings()),
+    val organizationId: String
+) : AccessTokenProvider {
 
-    override fun getToken(id: String?): String {
-        return secretJson?.get("apiKey")?.jsonPrimitive?.content!!
-    }
-
-    override fun getNewToken(id: String?): String {
-        load()
-        return secretJson?.get("apiKey")?.jsonPrimitive?.content!!
-    }
+    override suspend fun getToken(id: String?) = getNewToken()
+    override suspend fun getNewToken(id: String?) = client.secrets().getApiKey(organizationId, secretName)!!
 
 }

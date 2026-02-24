@@ -4,11 +4,9 @@ import io.ktor.client.call.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import noodle.google.auth.GoogleAuthClient
-import noodle.home.security.BitwardenCredentialsProvider
-import noodle.home.security.CachedAccessTokenProvider
-import noodle.home.security.DynamoDbTokenStore
-import noodle.home.security.SecretsManagerCredentialsProvider
+import noodle.home.security.*
 import org.junit.jupiter.api.Order
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import kotlin.test.Test
 
 class ClientTests {
@@ -16,8 +14,12 @@ class ClientTests {
     val gmail = "damien.hoyk@gmail.com"
     val authClient = GoogleAuthClient()
     val tokenStore = DynamoDbTokenStore()
-    val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden")
-    val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider)
+    val secretsManagerClient = SecretsManagerClient.create()
+    val bitwardenSecret = runBlocking { secretsManagerClient.getSecret("bitwarden") }.jsonObject()
+    val bitwardenOrganizationId = bitwardenSecret.clientId!!
+    val bitwardenApiKey = bitwardenSecret.clientSecret!!
+    val bitwardenClient = runBlocking { bitwardenClient().apply { auth().authorize(bitwardenApiKey) } }
+    val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenClient, bitwardenOrganizationId)
     val googleAccessTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, authClient)
     val googleGmailClient = GoogleGmailClient(gmail, googleAccessTokenProvider)
 

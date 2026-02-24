@@ -8,6 +8,7 @@ import com.bitwarden.sdk.BitwardenSettings
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -20,10 +21,7 @@ import noodle.google.gmail.GoogleGmailClient
 import noodle.home.gmail.ynab.job.GmailYnabJob
 import noodle.home.gmail.ynab.job.TransactionMatcher
 import noodle.home.gmail.ynab.job.TransactionMatcher.RegexGroup
-import noodle.home.security.BitwardenCredentialsProvider
-import noodle.home.security.CachedAccessTokenProvider
-import noodle.home.security.DynamoDbTokenStore
-import noodle.home.security.SecretsManagerCredentialsProvider
+import noodle.home.security.*
 import noodle.ynab.YnabAuthClient
 import noodle.ynab.YnabClient
 import org.slf4j.LoggerFactory
@@ -50,18 +48,10 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val tokenStore = DynamoDbTokenStore(dynamoDbClient)
 
-    private val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden", secretsManagerClient)
-    private val bitwardenClient = BitwardenClient(BitwardenSettings()).apply {
-        auth().loginAccessToken(bitwardenCredentialsProvider.clientSecret, "build/bitwarden-state")
-    }
+    private val bitwardenClient = BitwardenClient(BitwardenSettings())
 
-    private val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider, bitwardenClient)
-    private val googleAuthClient = GoogleAuthClient()
-    private val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
-
-    private val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider, bitwardenClient)
-    private val ynabAuthClient = YnabAuthClient()
-    private val ynabTokenProvider = CachedAccessTokenProvider(ynabCredentialsProvider, tokenStore, ynabAuthClient)
+    val googleAuthClient = GoogleAuthClient()
+    val ynabAuthClient = YnabAuthClient()
 
     private val gmailYnabBridgeMatchers = dynamoDbClient.scan {
         it.tableName(matcherTable)
@@ -80,16 +70,9 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
     }
 
-    override fun handleRequest(request: APIGatewayV2HTTPEvent, context: Context?): String? = runBlocking {
-        val headers = request.headers
-        val bearerToken = headers?.get("authorization")?.substringAfter("Bearer ")
-
-        val response = googleAuthClient.getTokenInfo {
-            parameter("id_token", bearerToken)
-        }
-
-        if (!response.status.isSuccess()) {
-            return@runBlocking lambdaResponse(response.status.value, response.status.description)
+    override fun handleRequest(request: APIGatewayV2HTTPEvent, context: Context?): String = runBlocking {
+        val deferredBitwardenSecret = async(Dispatchers.IO) {
+            secretsManagerClient.getClientSecret("bitwarden")?.jsonObject()!!
         }
 
         val notification = request.body?.let { mapper.decodeFromString<PubsubNotification>(it) }
@@ -98,16 +81,47 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             return@runBlocking lambdaResponse(400, "body is null or empty")
         }
 
+        val headers = request.headers
+        val bearerToken = headers?.get("authorization")?.substringAfter("Bearer ")
+
+        val deferredTokenInfo = async(Dispatchers.IO) {
+            googleAuthClient.getTokenInfo { parameter("id_token", bearerToken) }
+        }
+
         val notificationData = notification.message.data.let(getUrlDecoder()::decode).let(::String)
         val event = notificationData.let { mapper.decodeFromString<GmailEvent>(it) }
         val gmail = event.emailAddress
 
-        val ynabIds = dynamoDbClient.query {
-            it.tableName(mainTable).keyConditionExpression("#s = :s")
-                .expressionAttributeNames(mapOf("#s" to "source", "#d" to "destination"))
-                .expressionAttributeValues(mapOf(":s" to fromS(gmail)))
-                .projectionExpression("#d")
-        }.items().mapNotNull { it["destination"]?.s() }
+        val deferredYnabIds = async(Dispatchers.IO) {
+            dynamoDbClient.query {
+                it.tableName(mainTable).keyConditionExpression("#s = :s")
+                    .expressionAttributeNames(mapOf("#s" to "source", "#d" to "destination"))
+                    .expressionAttributeValues(mapOf(":s" to fromS(gmail)))
+                    .projectionExpression("#d")
+            }.items().mapNotNull { it["destination"]?.s() }
+        }
+
+        val bitwardenSecret = deferredBitwardenSecret.await()
+        val bitwardenOrganizationId = bitwardenSecret.clientId ?: throw IllegalStateException()
+        val bitwardenApiKey = bitwardenSecret.clientSecret ?: throw IllegalStateException()
+
+        val authorizeBitwarden = launch(Dispatchers.IO) {
+            bitwardenClient.auth().authorize(bitwardenApiKey)
+        }
+
+        val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenClient, bitwardenOrganizationId)
+        val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
+
+        val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenClient, bitwardenOrganizationId)
+        val ynabTokenProvider = CachedAccessTokenProvider(ynabCredentialsProvider, tokenStore, ynabAuthClient)
+
+        val response = deferredTokenInfo.await()
+        if (!response.status.isSuccess()) {
+            return@runBlocking lambdaResponse(response.status.value, response.status.description)
+        }
+
+        authorizeBitwarden.join()
+        val ynabIds = deferredYnabIds.await()
 
         ynabIds.forEach { ynabId ->
             launch(Dispatchers.IO) {

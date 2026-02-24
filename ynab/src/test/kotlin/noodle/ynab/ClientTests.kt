@@ -2,13 +2,11 @@ package noodle.ynab
 
 import io.ktor.client.call.*
 import kotlinx.coroutines.runBlocking
-import noodle.home.security.BitwardenCredentialsProvider
-import noodle.home.security.CachedAccessTokenProvider
-import noodle.home.security.DynamoDbTokenStore
-import noodle.home.security.SecretsManagerCredentialsProvider
+import noodle.home.security.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 
 class ClientTests {
 
@@ -17,8 +15,12 @@ class ClientTests {
     val ynabId = "1b93e434-c14d-4ed3-8108-f1aece36e595"
     val authClient = YnabAuthClient()
     val tokenStore = DynamoDbTokenStore()
-    val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden")
-    val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider)
+    val secretsManagerClient = SecretsManagerClient.create()
+    val bitwardenSecret = runBlocking { secretsManagerClient.getSecret("bitwarden") }.jsonObject()
+    val bitwardenOrganizationId = bitwardenSecret.clientId!!
+    val bitwardenApiKey = bitwardenSecret.clientSecret!!
+    val bitwardenClient = runBlocking { bitwardenClient().apply { auth().authorize(bitwardenApiKey) } }
+    val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenClient, bitwardenOrganizationId)
     val ynabAccessTokenProvider = CachedAccessTokenProvider(ynabCredentialsProvider, tokenStore, authClient)
     val ynabClient = YnabClient(ynabId, ynabAccessTokenProvider)
 
