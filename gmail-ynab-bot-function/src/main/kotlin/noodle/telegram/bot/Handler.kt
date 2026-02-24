@@ -9,7 +9,6 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -137,7 +136,7 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             val login = getItem("login", authority).item()
             val userId = login["userId"]?.s()
             val user = dynamoDbClient.query {
-                it.tableName("user")
+                it.tableName("login")
                     .keyConditionExpression("#i = :i")
                     .expressionAttributeNames(mapOf("#i" to "id"))
                     .expressionAttributeValues(mapOf(":i" to fromS(userId)))
@@ -152,19 +151,17 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             val topicName = "projects/lexical-cider-458409-d5/topics/gmail"
             val labelName = "money"
 
-            val jobs = emails.map { gmail ->
+            emails.map { gmail ->
                 launch(Dispatchers.IO) {
                     val googleGmailClient = GoogleGmailClient(gmail, googleTokenProvider)
 
                     val labelId = googleGmailClient.getLabels().body<Label.List>().labels
                         ?.find { it.name == labelName }
-                        ?.id
+                        ?.id ?: throw IllegalStateException()
 
                     googleGmailClient.postWatch(request = WatchRequest(topicName, labelId))
                 }
             }
-
-            jobs.joinAll()
 
             botClient.sendMessage(chatId, "🔭 I am now watching your gmails labelled *$labelName*") {
                 parameter("parse_mode", "MarkdownV2")
