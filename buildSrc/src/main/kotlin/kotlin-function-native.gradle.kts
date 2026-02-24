@@ -20,7 +20,9 @@ graalvmNative {
                 file("../META-INF/native-image/com.aws/aws-lambda-java-serialization"),
                 file("../META-INF/native-image/com.bitwarden/sdk-secrets"),
                 file("../META-INF/native-image/io.ktor/ktor-client-content-negotiation"),
-                file("../META-INF/native-image/io.ktor/ktor-client-core")
+                file("../META-INF/native-image/io.ktor/ktor-client-core"),
+                file("../META-INF/native-image/noodle.home/security"),
+                file("../META-INF/native-image/noodle.home/bridge")
             )
 
             buildArgs.addAll(listOf(

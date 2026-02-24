@@ -1,0 +1,19 @@
+[
+  {
+    "name": "noodle.home.security.TokenResponse",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.home.security.TokenResponse$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  }
+]

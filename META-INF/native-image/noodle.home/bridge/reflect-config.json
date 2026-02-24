@@ -1,0 +1,280 @@
+[
+  {
+    "name": "noodle.google.gmail.History",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.History$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.History$Change",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.History$Change$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.History$Message",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.History$Message$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Label",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Label$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Label$List",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Label$List$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Message",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Message$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Message$Data",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Message$Data$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Message$List",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Message$List$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Message$Part",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Message$Part$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Profile",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.google.gmail.Profile$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Budget",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Budget$Body",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Budget$Body$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Budget$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Budget$Data",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Budget$Data$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Transaction",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Transaction$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Transaction$Body",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Transaction$Body$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Transaction$Data",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.ynab.Transaction$Data$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "java.util.LinkedHashSet",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allPublicMethods": true
+  }
+]
