@@ -12,5 +12,35 @@
   },
   {
     "name":"com.amazonaws.lambda.thirdparty.com.fasterxml.jackson.databind.ser.Serializers[]"
+  },
+  {
+    "name": "com.amazonaws.services.lambda.runtime.serialization.events.mixins.DynamodbEventMixin",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.amazonaws.services.lambda.runtime.serialization.events.mixins.DynamodbEventMixin$DynamodbStreamRecordMixin",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.amazonaws.services.lambda.runtime.serialization.events.mixins.DynamodbEventMixin$RecordMixin",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.amazonaws.services.lambda.runtime.serialization.events.mixins.DynamodbEventMixin$StreamRecordMixin",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.amazonaws.services.lambda.runtime.serialization.events.mixins.DynamodbEventMixin$AttributeValueMixin",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
   }
 ]
