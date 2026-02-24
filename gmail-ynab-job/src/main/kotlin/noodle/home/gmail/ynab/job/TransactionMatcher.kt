@@ -26,11 +26,11 @@ class TransactionMatcher(
     private val inputDateFormatter = DateTimeFormatter.ofPattern(inputDatePattern)
     private val outputDateFormatter = DateTimeFormatter.ofPattern(outputDatePattern)
 
+    private val indexes = (setOf("ENTIRE_MATCH") + order).let { resolvedOrder ->
+        RegexGroup.entries.map { resolvedOrder.indexOf(it) }
+    }
+
     fun parse(input: String) = regex.find(input)?.groupValues?.let { match ->
-        val order = setOf("ENTIRE_MATCH") + order
-
-        val indexes = RegexGroup.entries.map { order.indexOf(it) }
-
         val (
             accountMatch,
             amountMatch,
