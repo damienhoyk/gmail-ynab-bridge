@@ -16,7 +16,7 @@ repositories {
         url = uri("https://maven.pkg.github.com/bitwarden/sdk-sm")
         val githubUser = findProperty("github.user") as? String
         val githubKey = findProperty("github.key") as? String
-        if (githubUser != null && githubKey != null) {
+        if (!githubUser.isNullOrBlank() && !githubKey.isNullOrBlank()) {
             credentials {
                 username = githubUser
                 password = githubKey
