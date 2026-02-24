@@ -36,7 +36,7 @@ class GmailYnabJob(
             return@coroutineScope currentHistoryId
         }
 
-        val historyRequest = HistoryRequest(startHistoryId, listOf(historyType), labelId)
+        val historyRequest = HistoryRequest(startHistoryId, listOf(historyType), listOf(labelId))
         val history = googleGmailClient.getHistory(request = historyRequest).body<History>()
 
         val messages = history.messagesAdded

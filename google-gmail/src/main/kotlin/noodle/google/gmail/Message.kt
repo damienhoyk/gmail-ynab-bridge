@@ -38,6 +38,7 @@ data class Message(
         val partId: String,
         val mimeType: String,
         val parts: kotlin.collections.List<Part> = emptyList(),
+        val headers: kotlin.collections.List<Map<String, String>> = emptyList(),
         val body: Data? = null
     ) {
 
