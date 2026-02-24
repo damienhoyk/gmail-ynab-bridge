@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-jvm")
-    id("kotlin-function-native")
+    id("kotlin-function")
 }
 
 group = "noodle.security"
@@ -13,8 +13,8 @@ dependencies {
     implementation(project(":authorization-function"))
     implementation(project(":google-auth"))
     implementation(project(":security"))
-    implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
+    implementation(libs.aws.lambda.core)
     implementation("software.amazon.awssdk:dynamodb")
     runtimeOnly(libs.logback)
 }
