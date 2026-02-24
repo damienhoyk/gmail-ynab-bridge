@@ -3,14 +3,17 @@ package noodle.finance.budget.bridge
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
-import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.bitwarden.sdk.BitwardenClient
+import com.bitwarden.sdk.BitwardenSettings
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonObject
 import noodle.google.auth.GoogleAuthClient
 import noodle.google.event.GmailEvent
 import noodle.google.gmail.GoogleGmailClient
@@ -35,33 +38,36 @@ import java.util.Base64.getUrlDecoder
 
 class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
-    val log = LoggerFactory.getLogger(javaClass)
-    val mapper = jacksonObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+    private val log = LoggerFactory.getLogger(javaClass)
+    private val mapper = Json { ignoreUnknownKeys = true }
 
-    val credentialsProvider = EnvironmentVariableCredentialsProvider.create()
-    val dynamoDbClient = DynamoDbClient.builder().credentialsProvider(credentialsProvider).build()
-    val secretsManagerClient = SecretsManagerClient.builder().credentialsProvider(credentialsProvider).build()
+    private val credentialsProvider = EnvironmentVariableCredentialsProvider.create()
+    private val dynamoDbClient = DynamoDbClient.builder().credentialsProvider(credentialsProvider).build()
+    private val secretsManagerClient = SecretsManagerClient.builder().credentialsProvider(credentialsProvider).build()
 
-    val mainTable = "bridge"
-    val matcherTable = "gmail-ynab-bridge-matcher"
+    private val mainTable = "bridge"
+    private val matcherTable = "gmail-ynab-bridge-matcher"
 
-    val tokenStore = DynamoDbTokenStore(dynamoDbClient)
+    private val tokenStore = DynamoDbTokenStore(dynamoDbClient)
 
-    val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden", secretsManagerClient)
+    private val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden", secretsManagerClient)
+    private val bitwardenClient = BitwardenClient(BitwardenSettings()).apply {
+        auth().loginAccessToken(bitwardenCredentialsProvider.clientSecret, "build/bitwarden-state")
+    }
 
-    val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider)
-    val googleAuthClient = GoogleAuthClient()
-    val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
+    private val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenCredentialsProvider, bitwardenClient)
+    private val googleAuthClient = GoogleAuthClient()
+    private val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
 
-    val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider)
-    val ynabAuthClient = YnabAuthClient()
-    val ynabTokenProvider = CachedAccessTokenProvider(ynabCredentialsProvider, tokenStore, ynabAuthClient)
+    private val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenCredentialsProvider, bitwardenClient)
+    private val ynabAuthClient = YnabAuthClient()
+    private val ynabTokenProvider = CachedAccessTokenProvider(ynabCredentialsProvider, tokenStore, ynabAuthClient)
 
-    val gmailYnabBridgeMatchers = dynamoDbClient.scan {
+    private val gmailYnabBridgeMatchers = dynamoDbClient.scan {
         it.tableName(matcherTable)
     }.items()
 
-    val matchers = gmailYnabBridgeMatchers.mapNotNull {
+    private val matchers = gmailYnabBridgeMatchers.mapNotNull {
         val datePattern = it["datePattern"]?.s()
         val pattern = it["pattern"]?.s()?.toRegex()
         val order = it["order"]?.l()?.map(AttributeValue::s)?.map(RegexGroup::valueOf)?.toSet()
@@ -86,24 +92,25 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             return@runBlocking lambdaResponse(response.status.value, response.status.description)
         }
 
-        val notification = request.body?.let { mapper.readValue<PubsubNotification>(it) }
+        val notification = request.body?.let { mapper.decodeFromString<PubsubNotification>(it) }
 
         if (notification == null) {
             return@runBlocking lambdaResponse(400, "body is null or empty")
         }
 
-        val event = notification.message.data.let(getUrlDecoder()::decode).let { mapper.readValue<GmailEvent>(it) }
+        val notificationData = notification.message.data.let(getUrlDecoder()::decode).let(::String)
+        val event = notificationData.let { mapper.decodeFromString<GmailEvent>(it) }
         val gmail = event.emailAddress
 
-        val bridges = dynamoDbClient.query {
+        val ynabIds = dynamoDbClient.query {
             it.tableName(mainTable).keyConditionExpression("#s = :s")
-                .expressionAttributeNames(mapOf("#s" to "source"))
+                .expressionAttributeNames(mapOf("#s" to "source", "#d" to "destination"))
                 .expressionAttributeValues(mapOf(":s" to fromS(gmail)))
-        }.items()
+                .projectionExpression("#d")
+        }.items().mapNotNull { it["destination"]?.s() }
 
-        bridges.forEach { bridge ->
+        ynabIds.forEach { ynabId ->
             launch(Dispatchers.IO) {
-                val ynabId = bridge["destination"]?.s()
                 val key = mapOf("source" to fromS(gmail), "destination" to fromS(ynabId))
 
                 try {
@@ -117,16 +124,23 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                             .conditionExpression("attribute_not_exists(#s) or not #s = :s")
                             .updateExpression("set #s = :s")
                     }
-                } catch (e: ConditionalCheckFailedException) {
-                    log.info("⏸️ Function already running for [$gmail][$ynabId]")
+                } catch (_: ConditionalCheckFailedException) {
+                    log.info("⏸️ Function already running for [$gmail|$ynabId]")
                     return@launch
                 }
+
+                val bridge = dynamoDbClient.getItem {
+                    val key = mapOf("source" to fromS(gmail), "destination" to fromS(ynabId))
+                    it.tableName(mainTable).key(key)
+                }.item()
 
                 val lastHistoryId = bridge["historyId"]?.n()?.toLong() ?: 0L
                 val accounts = bridge["accounts"]?.m()?.mapValues { it.value.s() } ?: emptyMap()
 
-                if (ynabId == null) {
-                    updateStatus(key, "failed")
+                if (lastHistoryId > event.historyId) {
+                    log.info("⏭️ Skipping job [{}|{}|{} > {}]", gmail, ynabId, lastHistoryId, event.historyId)
+
+                    updateStatus(key, "completed")
                     return@launch
                 }
 
@@ -140,24 +154,17 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                     matchers = matchers
                 )
 
-                if (lastHistoryId > event.historyId) {
-                    log.info("⏭️ Skipping job run")
-
-                    updateStatus(key, "completed")
-                    return@launch
-                }
-
                 val currentHistoryId = try {
-                    log.info("▶️ Running job with start history id [{}] ...", lastHistoryId)
+                    log.info("▶️ Running job [{}|{}|{}] ...", gmail, ynabId, lastHistoryId)
                     job.run(lastHistoryId)
                 } catch (e: Exception) {
-                    log.warn("🛑 Job run failed")
+                    log.warn("🛑 Job run failed [{}]", e.message)
 
                     updateStatus(key, "failed")
                     return@launch
                 }
 
-                log.info("✨️ Job completed at [{}]", currentHistoryId)
+                log.info("✨️ Job completed [{}]", currentHistoryId)
 
                 dynamoDbClient.updateItem {
                     val names = mapOf("#s" to "status", "#h" to "historyId")
@@ -174,12 +181,12 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         return@runBlocking lambdaResponse(200, "success")
     }
 
-    private fun lambdaResponse(statusCode: Int, message: String? = null) = mapOf(
-        "statusCode" to statusCode,
-        "body" to message?.let { mapOf("message" to it) }
-    )
-        .filterValues { it != null }
-        .let(mapper::writeValueAsString)
+    private fun lambdaResponse(statusCode: Int, message: String? = null) = buildJsonObject {
+        put("statusCode", statusCode)
+        putJsonObject("body") {
+            put("message", message)
+        }
+    }.toString()
 
     private fun updateStatus(key: Map<String, AttributeValue>, status: String) {
         dynamoDbClient.updateItem {

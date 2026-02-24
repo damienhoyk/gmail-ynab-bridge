@@ -1,0 +1,19 @@
+[
+  {
+    "name": "kotlinx.serialization.json.JsonObject",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "kotlinx.serialization.json.JsonObject$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  }
+]

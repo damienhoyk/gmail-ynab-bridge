@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-jvm")
-    id("kotlin-function")
+    id("kotlin-function-native")
 }
 
 group = "noodle.telegram.bot"
@@ -13,10 +13,8 @@ dependencies {
     implementation(project(":google-auth"))
     implementation(project(":google-gmail"))
     implementation(project(":security"))
+    implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
-    implementation(libs.aws.lambda.core)
-    implementation(libs.aws.lambda.events)
-    implementation(libs.jackson.kotlin)
     implementation(libs.kotlinx.coroutines)
     implementation("com.bitwarden:sdk-secrets:1.0.1")
     implementation("software.amazon.awssdk:dynamodb")
