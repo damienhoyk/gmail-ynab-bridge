@@ -3,8 +3,8 @@ package noodle.repository
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
+import kotlin.test.Test
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class BridgeRepositoryTests {
@@ -13,6 +13,12 @@ class BridgeRepositoryTests {
 
     val source = "damien.hoyk+test@gmail.com"
     val destination = "test-ynab-id"
+
+    @Test
+    fun query(): Unit = runBlocking {
+        val results = repository.query(source)
+        println(results.items())
+    }
 
     @Order(1)
     @Test

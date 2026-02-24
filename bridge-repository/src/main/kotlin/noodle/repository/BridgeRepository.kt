@@ -5,11 +5,12 @@ import kotlinx.coroutines.withContext
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 
-class BridgeRepository(val table: String = "bridge", val client: DynamoDbClient = DynamoDbClient.create()) {
+class BridgeRepository(val client: DynamoDbClient = DynamoDbClient.create()) {
 
+    val table = "bridge"
     val partitionKey = "source"
 
-    suspend fun get(address: String) = withContext(IO) {
+    suspend fun query(address: String) = withContext(IO) {
         client.query {
             it.tableName(table)
                 .expressionAttributeNames(mapOf("#s" to "source"))

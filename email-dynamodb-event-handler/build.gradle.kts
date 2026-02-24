@@ -22,6 +22,8 @@ dependencies {
     implementation(libs.jakarta.mail)
     implementation(libs.kotlinx.coroutines)
     implementation("com.bitwarden:sdk-secrets:1.0.1")
+    implementation("joda-time:joda-time:2.14.0")
+    implementation("com.amazonaws:aws-java-sdk-dynamodb:1.12.797")
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:secretsmanager")
     runtimeOnly(libs.logback)

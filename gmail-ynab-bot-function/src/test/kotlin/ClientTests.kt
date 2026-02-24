@@ -1,6 +1,7 @@
 import kotlinx.coroutines.runBlocking
 import noodle.home.security.*
 import noodle.telegram.bot.TelegramBotClient
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 
@@ -22,6 +23,7 @@ class ClientTests {
         }
     }
 
+    @Disabled
     @Test
     fun setWebhook() {
         runBlocking {

@@ -27,7 +27,7 @@ class ClientTests {
     fun getHistory() {
         runBlocking {
             val response =
-                googleGmailClient.getHistory(request = HistoryRequest(1760000, listOf("messageAdded"), "INBOX"))
+                googleGmailClient.getHistory(request = HistoryRequest(1760000, listOf("messageAdded"), listOf("INBOX")))
             println(response.toString())
         }
     }
