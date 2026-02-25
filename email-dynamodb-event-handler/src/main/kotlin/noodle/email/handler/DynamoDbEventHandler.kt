@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.DynamodbEvent
 import io.ktor.client.call.*
 import jakarta.mail.internet.InternetAddress
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -25,6 +26,7 @@ import noodle.ynab.YnabAuthClient
 import noodle.ynab.YnabClient
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
@@ -33,20 +35,33 @@ class DynamoDbEventHandler : RequestHandler<DynamodbEvent, String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    private val credentialsProvider = EnvironmentVariableCredentialsProvider.create()
-    private val dynamoDbClient = DynamoDbClient.builder().credentialsProvider(credentialsProvider).build()
-    private val secretsManagerClient = SecretsManagerClient.builder().credentialsProvider(credentialsProvider).build()
+    private val initScope = CoroutineScope(Default)
 
-    private val tokenStore = DynamoDbTokenStore(dynamoDbClient)
+    private val credentialsProviderDeferred = initScope.async { EnvironmentVariableCredentialsProvider.create() }
+    private val dynamoDbClientDeferred = initScope.async {
+        DynamoDbClient.builder()
+            .credentialsProvider(credentialsProviderDeferred.await())
+            .httpClientBuilder(UrlConnectionHttpClient.builder())
+            .build()
+    }
+    private val secretsManagerClientDeferred = initScope.async {
+        SecretsManagerClient.builder()
+            .credentialsProvider(credentialsProviderDeferred.await())
+            .httpClientBuilder(UrlConnectionHttpClient.builder())
+            .build()
+    }
 
-    private val bridgeRepository = BridgeRepository(dynamoDbClient)
-    private val matcherRepository = MatcherRepository(dynamoDbClient)
-    private val bitwardenClient = runBlocking { bitwardenClient() }
+    private val tokenStoreDeferred = initScope.async { DynamoDbTokenStore(dynamoDbClientDeferred.await()) }
+
+    private val bridgeRepositoryDeferred = initScope.async { BridgeRepository(dynamoDbClientDeferred.await()) }
+    private val matcherRepositoryDeferred = initScope.async { MatcherRepository(dynamoDbClientDeferred.await()) }
+    private val bitwardenClientDeferred = initScope.async { bitwardenClient() }
 
     private val googleAuthClient = GoogleAuthClient()
     private val ynabAuthClient = YnabAuthClient()
 
     override fun handleRequest(request: DynamodbEvent, context: Context?) = runBlocking {
+        val secretsManagerClient = secretsManagerClientDeferred.await()
         val deferredBitwardenSecret = async(IO) { secretsManagerClient.getSecret("bitwarden") }
 
         val bitwardenSecret = deferredBitwardenSecret.await().jsonObject()
@@ -63,7 +78,12 @@ class DynamoDbEventHandler : RequestHandler<DynamodbEvent, String> {
             return@runBlocking buildJsonObject { put("statusCode", 500) }.toString()
         }
 
+        val bitwardenClient = bitwardenClientDeferred.await()
         bitwardenClient.auth().authorize(bitwardenApiKey)
+
+        val tokenStore = tokenStoreDeferred.await()
+        val bridgeRepository = bridgeRepositoryDeferred.await()
+        val matcherRepository = matcherRepositoryDeferred.await()
 
         request.records.filter { "insert".equals(it.eventName, ignoreCase = true) }.map { record ->
             launch {
