@@ -5,7 +5,10 @@ import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.async
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -22,6 +25,7 @@ import noodle.repository.TokenRepository
 import noodle.repository.UserRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
@@ -34,43 +38,83 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    private val credentialsProvider = EnvironmentVariableCredentialsProvider.create()
-    private val dynamoDbClient = DynamoDbClient.builder().credentialsProvider(credentialsProvider).build()
-    private val secretsManagerClient = SecretsManagerClient.builder().credentialsProvider(credentialsProvider).build()
+    private val initScope = CoroutineScope(Default)
 
-    private val bitwardenSecret = runBlocking { secretsManagerClient.getSecret("bitwarden") }.jsonObject()
-    private val bitwardenOrganizationId = bitwardenSecret.clientId!!
-    private val bitwardenApiKey = bitwardenSecret.clientSecret!!
-    private val bitwardenClient = runBlocking { bitwardenClient().apply { auth().authorize(bitwardenApiKey) } }
+    private val credentialsProviderAsync = initScope.async { EnvironmentVariableCredentialsProvider.create() }
+    private val dynamoDbClientAsync = initScope.async {
+        DynamoDbClient.builder()
+            .credentialsProvider(credentialsProviderAsync.await())
+            .httpClientBuilder(UrlConnectionHttpClient.builder())
+            .build()
+    }
+    private val secretsManagerClientAsync = initScope.async {
+        SecretsManagerClient.builder()
+            .credentialsProvider(credentialsProviderAsync.await())
+            .httpClientBuilder(UrlConnectionHttpClient.builder())
+            .build()
+    }
 
-    private val botTokenProvider = BitwardenApiKeyProvider("telegram", bitwardenClient, bitwardenOrganizationId)
-    private val botClient = TelegramBotClient(botTokenProvider)
+    private val bitwardenSecretAsync = initScope.async {
+        val secretsManagerClient = secretsManagerClientAsync.await()
+        secretsManagerClient.getSecret("bitwarden").jsonObject()
+    }
 
-    private val tokenStore = DynamoDbTokenStore(dynamoDbClient)
+    private val bitwardenClientAsync = initScope.async {
+        val bitwardenSecret = bitwardenSecretAsync.await()
+        val bitwardenApiKey = bitwardenSecret.clientSecret!!
+        bitwardenClient().apply { auth().authorize(bitwardenApiKey) }
+    }
 
-    private val googleRedirectUri = System.getenv("GOOGLE_REDIRECT_URI")?.trim() ?: throw IllegalStateException()
-    private val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenClient, bitwardenOrganizationId)
+    private val botClientAsync = initScope.async {
+        val bitwardenSecret = bitwardenSecretAsync.await()
+        val bitwardenOrganizationId = bitwardenSecret.clientId!!
+        val bitwardenClient = bitwardenClientAsync.await()
+        val botTokenProvider = BitwardenApiKeyProvider("telegram", bitwardenClient, bitwardenOrganizationId)
+        TelegramBotClient(botTokenProvider)
+    }
+
+    private val tokenStoreAsync = initScope.async { DynamoDbTokenStore(dynamoDbClientAsync.await()) }
+
     private val googleAuthClient = GoogleAuthClient()
-    private val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
-    private val googleClientId = runBlocking { bitwardenClient.secrets().getClientId(bitwardenOrganizationId, "google") }
-    private val googleAuthorizationUrl = "http://accounts.google.com/o/oauth2/v2/auth" +
-            "?client_id=$googleClientId" +
-            "&redirect_uri=$googleRedirectUri" +
-            "&response_type=code" +
-            "&scope=openid%20email%20profile%20https://www.googleapis.com/auth/gmail.readonly" +
-            "&access_type=offline" +
-            "&prompt=consent"
+    private val googleTokenProviderAsync = initScope.async {
+        val bitwardenSecret = bitwardenSecretAsync.await()
+        val bitwardenOrganizationId = bitwardenSecret.clientId!!
+        val bitwardenClient = bitwardenClientAsync.await()
+        val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenClient, bitwardenOrganizationId)
+        val tokenStore = tokenStoreAsync.await()
+        CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
+    }
 
-    private val ynabRedirectUri = System.getenv("YNAB_REDIRECT_URI")?.trim() ?: throw IllegalStateException()
-    private val ynabClientId = runBlocking { bitwardenClient.secrets().getClientId(bitwardenOrganizationId, "ynab") }?.jsonObject()
-    private val ynabAuthorizationUrl = "https://app.ynab.com/oauth/authorize" +
-            "?client_id=$ynabClientId" +
-            "&redirect_uri=$ynabRedirectUri" +
-            "&response_type=code"
+    private val googleAuthorizationUrlAsync = initScope.async {
+        val bitwardenSecret = bitwardenSecretAsync.await()
+        val bitwardenOrganizationId = bitwardenSecret.clientId!!
+        val bitwardenClient = bitwardenClientAsync.await()
+        val googleClientId = bitwardenClient.secrets().getClientId(bitwardenOrganizationId, "google")
+        val googleRedirectUri = System.getenv("GOOGLE_REDIRECT_URI")?.trim() ?: throw IllegalStateException()
+        "http://accounts.google.com/o/oauth2/v2/auth" +
+                "?client_id=$googleClientId" +
+                "&redirect_uri=$googleRedirectUri" +
+                "&response_type=code" +
+                "&scope=openid%20email%20profile%20https://www.googleapis.com/auth/gmail.readonly" +
+                "&access_type=offline" +
+                "&prompt=consent"
+    }
 
-    private val userRepository = UserRepository(client = dynamoDbClient)
-    private val tokenRepository = TokenRepository(client = dynamoDbClient)
-    private val loginRepository = LoginRepository(client = dynamoDbClient)
+    private val ynabAuthorizationUrlAsync = initScope.async {
+        val bitwardenSecret = bitwardenSecretAsync.await()
+        val bitwardenOrganizationId = bitwardenSecret.clientId!!
+        val bitwardenClient = bitwardenClientAsync.await()
+        val ynabClientId = bitwardenClient.secrets().getClientId(bitwardenOrganizationId, "ynab")?.jsonObject()
+        val ynabRedirectUri = System.getenv("YNAB_REDIRECT_URI")?.trim() ?: throw IllegalStateException()
+        "https://app.ynab.com/oauth/authorize" +
+                "?client_id=$ynabClientId" +
+                "&redirect_uri=$ynabRedirectUri" +
+                "&response_type=code"
+    }
+
+    private val userRepositoryAsync = initScope.async { UserRepository(client = dynamoDbClientAsync.await()) }
+    private val tokenRepositoryAsync = initScope.async { TokenRepository(client = dynamoDbClientAsync.await()) }
+    private val loginRepositoryAsync = initScope.async { LoginRepository(client = dynamoDbClientAsync.await()) }
 
     override fun handleRequest(event: APIGatewayV2HTTPEvent, context: Context) = runBlocking {
         val body = Json.decodeFromString<JsonObject>(event.body!!)
@@ -84,6 +128,10 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         val authority = user["id"]?.content
 
         if (text.equals("/start", true)) {
+            val botClient = botClientAsync.await()
+            val loginRepository = loginRepositoryAsync.await()
+            val userRepository = userRepositoryAsync.await()
+
             botClient.sendChatAction(chatId, "typing")
 
             val login = loginRepository.get(authority).item()
@@ -94,6 +142,11 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
 
         if (text.equals("/authorizegmail", true)) {
+            val botClient = botClientAsync.await()
+            val loginRepository = loginRepositoryAsync.await()
+            val tokenRepository = tokenRepositoryAsync.await()
+            val googleAuthorizationUrl = googleAuthorizationUrlAsync.await()
+
             botClient.sendChatAction(chatId, "typing")
             val login = loginRepository.get(authority).item()
             val userId = login["userId"]?.s()
@@ -116,6 +169,11 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
 
         if (text.equals("/authorizeynab", true)) {
+            val botClient = botClientAsync.await()
+            val loginRepository = loginRepositoryAsync.await()
+            val tokenRepository = tokenRepositoryAsync.await()
+            val ynabAuthorizationUrl = ynabAuthorizationUrlAsync.await()
+
             botClient.sendChatAction(chatId, "typing")
             val login = loginRepository.get(authority).item()
             val userId = login["userId"]?.s()
@@ -137,6 +195,11 @@ class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
 
         if (text.equals("/watchgmail", true)) {
+            val botClient = botClientAsync.await()
+            val loginRepository = loginRepositoryAsync.await()
+            val userRepository = userRepositoryAsync.await()
+            val googleTokenProvider = googleTokenProviderAsync.await()
+
             botClient.sendChatAction(chatId, "typing")
             val login = loginRepository.get(authority).item()
             val userId = login["userId"]?.s()!!
