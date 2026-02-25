@@ -26,5 +26,6 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-dynamodb:1.12.797")
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:secretsmanager")
+    implementation("software.amazon.awssdk:url-connection-client")
     runtimeOnly(libs.logback)
 }
