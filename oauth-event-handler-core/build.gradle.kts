@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-jvm")
-    id("kotlin-function-native")
 }
 
 group = "noodle.event.handler"
@@ -10,16 +9,13 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":email-repository"))
-    implementation(project(":google-gmail"))
-    implementation(project(":google-auth"))
     implementation(project(":security"))
-    implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
+    implementation(libs.aws.lambda.core)
+    implementation(libs.aws.lambda.events)
     implementation(libs.kotlinx.coroutines)
     implementation("com.bitwarden:sdk-secrets:1.0.1")
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:secretsmanager")
-    implementation("software.amazon.awssdk:url-connection-client")
     runtimeOnly(libs.logback)
 }

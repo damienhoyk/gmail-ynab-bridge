@@ -4,7 +4,7 @@ plugins {
     id("kotlin-function-native")
 }
 
-group = "noodle.email.handler"
+group = "noodle.event.handler"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
