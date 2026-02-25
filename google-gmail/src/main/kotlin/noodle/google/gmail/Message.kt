@@ -23,7 +23,8 @@ data class Message(
         get() = parts
             .mapNotNull { it.data }
             .map { Base64.getUrlDecoder().decode(it) }
-            .joinToString(" ") { String(it).stripLineBreaks().stripHtml().trim() }
+            // stripHtml() already collapses line breaks via \s+, so stripLineBreaks() is redundant here.
+            .joinToString(" ") { String(it).stripHtml().trim() }
 
     @Serializable
     data class Data(val data: String? = null)
@@ -53,7 +54,8 @@ data class Message(
 
             do {
                 val current = queue.removeLast()
-                queue.addAll(current.parts.reversed())
+                // Use asReversed() to avoid creating a copy of the list during traversal.
+                queue.addAll(current.parts.asReversed())
                 result.add(current)
             } while (queue.isNotEmpty())
 
