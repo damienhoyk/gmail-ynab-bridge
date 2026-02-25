@@ -25,7 +25,6 @@ import noodle.ynab.TransactionsRequest
 import noodle.ynab.YnabAuthClient
 import noodle.ynab.YnabClient
 import org.slf4j.LoggerFactory
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
@@ -37,16 +36,14 @@ class EmailDynamoDbHandler : RequestHandler<DynamodbEvent, String> {
 
     private val initScope = CoroutineScope(Default)
 
-    private val credentialsProviderAsync = initScope.async { EnvironmentVariableCredentialsProvider.create() }
     private val dynamoDbClientAsync = initScope.async {
         DynamoDbClient.builder()
-            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }
+
     private val secretsManagerClientAsync = initScope.async {
         SecretsManagerClient.builder()
-            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }

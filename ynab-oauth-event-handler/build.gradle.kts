@@ -17,3 +17,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines)
     runtimeOnly(libs.logback)
 }
+
+tasks.withType<Test>().configureEach {
+    environment("REDIRECT_URI", "http://localhost")
+    environment("SECRET_ID", "dummy-secret")
+}

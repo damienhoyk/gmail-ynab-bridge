@@ -25,7 +25,6 @@ import noodle.home.security.*
 import noodle.repository.MailRepository
 import noodle.repository.MailboxRepository
 import org.slf4j.LoggerFactory
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
@@ -33,7 +32,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import java.util.Base64.getUrlDecoder
 
-class GmailPubsubHandler: RequestHandler<APIGatewayV2HTTPEvent, String> {
+class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -41,16 +40,13 @@ class GmailPubsubHandler: RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val initScope = CoroutineScope(Default)
 
-    private val credentialsProviderAsync = initScope.async { EnvironmentVariableCredentialsProvider.create() }
     private val dynamoDbClientAsync = initScope.async {
         DynamoDbClient.builder()
-            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }
     private val secretsManagerClientAsync = initScope.async {
         SecretsManagerClient.builder()
-            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }

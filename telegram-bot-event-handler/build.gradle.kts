@@ -24,3 +24,8 @@ dependencies {
     implementation("software.amazon.awssdk:url-connection-client")
     runtimeOnly(libs.logback)
 }
+
+tasks.withType<Test>().configureEach {
+    environment("GOOGLE_REDIRECT_URI", "http://localhost")
+    environment("YNAB_REDIRECT_URI", "http://localhost")
+}

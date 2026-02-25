@@ -18,3 +18,8 @@ dependencies {
     implementation("software.amazon.awssdk:dynamodb")
     runtimeOnly(libs.logback)
 }
+
+tasks.withType<Test>().configureEach {
+    environment("REDIRECT_URI", "http://localhost")
+    environment("SECRET_ID", "dummy-secret")
+}

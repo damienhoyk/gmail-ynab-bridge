@@ -10,7 +10,6 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
 import noodle.home.security.*
 import org.slf4j.LoggerFactory
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
@@ -21,9 +20,8 @@ abstract class OAuthHandler(
 
     val log = LoggerFactory.getLogger(javaClass)
 
-    val credentialsProvider = EnvironmentVariableCredentialsProvider.create()
-    val dynamoDbClient = DynamoDbClient.builder().credentialsProvider(credentialsProvider).build()
-    val secretsManagerClient = SecretsManagerClient.builder().credentialsProvider(credentialsProvider).build()
+    val dynamoDbClient = DynamoDbClient.builder().build()
+    val secretsManagerClient = SecretsManagerClient.builder().build()
 
     val tokenStore = DynamoDbTokenStore(dynamoDbClient)
 
