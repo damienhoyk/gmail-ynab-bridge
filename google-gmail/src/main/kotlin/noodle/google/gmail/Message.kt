@@ -25,7 +25,9 @@ data class Message(
         get() = parts
             .mapNotNull { it.data }
             .map { urlDecoder.decode(it) }
-            .joinToString(" ") { String(it).stripLineBreaks().stripHtml().trim() }
+            // Optimization: stripHtml() already collapses all whitespace (including line breaks via \s+),
+            // making a separate stripLineBreaks() call redundant.
+            .joinToString(" ") { String(it).stripHtml().trim() }
 
     @Serializable
     data class Data(val data: String? = null)
@@ -54,7 +56,9 @@ data class Message(
 
             do {
                 val current = queue.removeLast()
-                queue.addAll(current.parts.reversed())
+                // Optimization: Use asReversed() to avoid unnecessary list allocation and copy
+                // while maintaining the correct order for DFS.
+                queue.addAll(current.parts.asReversed())
                 result.add(current)
             } while (queue.isNotEmpty())
 
