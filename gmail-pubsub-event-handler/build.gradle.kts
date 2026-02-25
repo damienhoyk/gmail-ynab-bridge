@@ -20,5 +20,6 @@ dependencies {
     implementation("com.bitwarden:sdk-secrets:1.0.1")
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:secretsmanager")
+    implementation("software.amazon.awssdk:url-connection-client")
     runtimeOnly(libs.logback)
 }
