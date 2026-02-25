@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":google-gmail"))
     implementation(project(":security"))
     implementation(project(":security-repository"))
+    implementation(project(":telegram-bot"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
     implementation(libs.kotlinx.coroutines)
