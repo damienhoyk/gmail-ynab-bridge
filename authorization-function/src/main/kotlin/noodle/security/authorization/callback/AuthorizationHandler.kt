@@ -30,8 +30,11 @@ abstract class AuthorizationHandler(
     val redirectUri = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
     val secretId = System.getenv("SECRET_ID")?.trim() ?: throw IllegalStateException()
 
-    val bitwardenCredentialsProvider = SecretsManagerCredentialsProvider("bitwarden", secretsManagerClient)
-    val authorityCredentialsProvider = BitwardenCredentialsProvider(secretId, bitwardenCredentialsProvider)
+    val bitwardenSecret = runBlocking { secretsManagerClient.getSecret("bitwarden").jsonObject() }
+    val bitwardenApiKey = bitwardenSecret.apiKey!!
+    val bitwardenClientId = bitwardenSecret.clientId!!
+
+    val bitwardenClient = runBlocking { bitwardenClient().apply { auth().authorize(bitwardenApiKey) } }
 
     override fun handleRequest(request: APIGatewayV2HTTPEvent, context: Context?): String? = runBlocking {
         log.debug("▶️ Start handling request [{}]", request)
@@ -49,12 +52,15 @@ abstract class AuthorizationHandler(
             return@runBlocking lambdaResponse(400)
         }
 
-        authorityCredentialsProvider.load()
+        val secret = bitwardenClient.secrets().getSecret(bitwardenClientId, secretId)?.jsonObject()
+
+        val clientId = secret?.clientId
+        val clientSecret = secret?.clientSecret
 
         val request = OAuth2TokenRequest(
             code,
-            authorityCredentialsProvider.clientId!!,
-            authorityCredentialsProvider.clientSecret,
+            clientId,
+            clientSecret,
             redirectUri
         )
 

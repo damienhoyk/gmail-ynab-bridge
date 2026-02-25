@@ -14,6 +14,7 @@ graalvmNative {
             imageName = "function"
 
             configurationFileDirectories.from(
+                file("../META-INF/native-image/com.aws/aws-java-sdk-dynamodb"),
                 file("../META-INF/native-image/com.aws/aws-lambda-java-core"),
                 file("../META-INF/native-image/com.aws/aws-lambda-java-events"),
                 file("../META-INF/native-image/com.aws/aws-lambda-java-runtime-interface-client"),
@@ -22,7 +23,8 @@ graalvmNative {
                 file("../META-INF/native-image/io.ktor/ktor-client-content-negotiation"),
                 file("../META-INF/native-image/io.ktor/ktor-client-core"),
                 file("../META-INF/native-image/noodle.home/security"),
-                file("../META-INF/native-image/noodle.home/bridge")
+                file("../META-INF/native-image/noodle.home/bridge"),
+                file("../META-INF/native-image/org.joda/joda-time")
             )
 
             buildArgs.addAll(listOf(

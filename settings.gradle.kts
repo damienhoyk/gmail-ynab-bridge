@@ -11,13 +11,17 @@ plugins {
 }
 
 include(":authorization-function")
+include(":bridge-repository")
+include(":email-repository")
+include(":email-dynamodb-event-handler")
 include(":google-auth")
 include(":google-authorization-function")
 include(":google-gmail")
 include(":gmail-ynab-job")
 include(":gmail-ynab-bot-function")
-include(":gmail-ynab-bridge-function")
+include(":gmail-pubsub-event-handler")
 include(":security")
+include(":security-repository")
 include(":ynab")
 include(":ynab-authorization-function")
 

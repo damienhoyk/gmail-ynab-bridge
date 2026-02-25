@@ -13,11 +13,13 @@ dependencies {
     implementation(project(":google-auth"))
     implementation(project(":google-gmail"))
     implementation(project(":security"))
+    implementation(project(":security-repository"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
     implementation(libs.kotlinx.coroutines)
     implementation("com.bitwarden:sdk-secrets:1.0.1")
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:secretsmanager")
+    implementation("software.amazon.awssdk:url-connection-client")
     runtimeOnly(libs.logback)
 }
