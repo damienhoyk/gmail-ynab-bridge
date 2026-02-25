@@ -37,34 +37,34 @@ class DynamoDbEventHandler : RequestHandler<DynamodbEvent, String> {
 
     private val initScope = CoroutineScope(Default)
 
-    private val credentialsProviderDeferred = initScope.async { EnvironmentVariableCredentialsProvider.create() }
-    private val dynamoDbClientDeferred = initScope.async {
+    private val credentialsProviderAsync = initScope.async { EnvironmentVariableCredentialsProvider.create() }
+    private val dynamoDbClientAsync = initScope.async {
         DynamoDbClient.builder()
-            .credentialsProvider(credentialsProviderDeferred.await())
+            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }
-    private val secretsManagerClientDeferred = initScope.async {
+    private val secretsManagerClientAsync = initScope.async {
         SecretsManagerClient.builder()
-            .credentialsProvider(credentialsProviderDeferred.await())
+            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }
 
-    private val tokenStoreDeferred = initScope.async { DynamoDbTokenStore(dynamoDbClientDeferred.await()) }
+    private val tokenStoreAsync = initScope.async { DynamoDbTokenStore(dynamoDbClientAsync.await()) }
 
-    private val bridgeRepositoryDeferred = initScope.async { BridgeRepository(dynamoDbClientDeferred.await()) }
-    private val matcherRepositoryDeferred = initScope.async { MatcherRepository(dynamoDbClientDeferred.await()) }
-    private val bitwardenClientDeferred = initScope.async { bitwardenClient() }
+    private val bridgeRepositoryAsync = initScope.async { BridgeRepository(dynamoDbClientAsync.await()) }
+    private val matcherRepositoryAsync = initScope.async { MatcherRepository(dynamoDbClientAsync.await()) }
+    private val bitwardenClientAsync = initScope.async { bitwardenClient() }
 
     private val googleAuthClient = GoogleAuthClient()
     private val ynabAuthClient = YnabAuthClient()
 
     override fun handleRequest(request: DynamodbEvent, context: Context?) = runBlocking {
-        val secretsManagerClient = secretsManagerClientDeferred.await()
-        val deferredBitwardenSecret = async(IO) { secretsManagerClient.getSecret("bitwarden") }
+        val secretsManagerClient = secretsManagerClientAsync.await()
+        val bitwardenSecretAsync = async(IO) { secretsManagerClient.getSecret("bitwarden") }
 
-        val bitwardenSecret = deferredBitwardenSecret.await().jsonObject()
+        val bitwardenSecret = bitwardenSecretAsync.await().jsonObject()
         val bitwardenApiKey = bitwardenSecret.clientSecret
         val bitwardenOrganizationId = bitwardenSecret.clientId
 
@@ -78,12 +78,12 @@ class DynamoDbEventHandler : RequestHandler<DynamodbEvent, String> {
             return@runBlocking buildJsonObject { put("statusCode", 500) }.toString()
         }
 
-        val bitwardenClient = bitwardenClientDeferred.await()
+        val bitwardenClient = bitwardenClientAsync.await()
         bitwardenClient.auth().authorize(bitwardenApiKey)
 
-        val tokenStore = tokenStoreDeferred.await()
-        val bridgeRepository = bridgeRepositoryDeferred.await()
-        val matcherRepository = matcherRepositoryDeferred.await()
+        val tokenStore = tokenStoreAsync.await()
+        val bridgeRepository = bridgeRepositoryAsync.await()
+        val matcherRepository = matcherRepositoryAsync.await()
 
         request.records.filter { "insert".equals(it.eventName, ignoreCase = true) }.map { record ->
             launch {
