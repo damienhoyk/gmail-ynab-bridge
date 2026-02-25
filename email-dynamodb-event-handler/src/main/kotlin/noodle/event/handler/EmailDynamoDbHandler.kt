@@ -1,4 +1,4 @@
-package noodle.email.handler
+package noodle.event.handler
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
@@ -31,7 +31,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 
-class DynamoDbEventHandler : RequestHandler<DynamodbEvent, String> {
+class EmailDynamoDbHandler : RequestHandler<DynamodbEvent, String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
 

@@ -1,4 +1,4 @@
-package noodle.telegram.bot
+package noodle.event.handler
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
@@ -20,6 +20,7 @@ import noodle.google.gmail.GoogleGmailClient
 import noodle.google.gmail.Label
 import noodle.google.gmail.WatchRequest
 import noodle.home.security.*
+import noodle.telegram.bot.TelegramBotClient
 import noodle.repository.LoginRepository
 import noodle.repository.TokenRepository
 import noodle.repository.UserRepository
@@ -34,7 +35,7 @@ import java.time.Instant.now
 import java.time.temporal.ChronoUnit.MINUTES
 import java.util.*
 
-class Handler : RequestHandler<APIGatewayV2HTTPEvent, String> {
+class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
 

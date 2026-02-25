@@ -1,4 +1,4 @@
-package noodle.gmail.handler
+package noodle.event.handler
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Default

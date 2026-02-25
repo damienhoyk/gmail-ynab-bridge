@@ -1,4 +1,4 @@
-package noodle.gmail.handler
+package noodle.event.handler
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
@@ -33,7 +33,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import java.util.Base64.getUrlDecoder
 
-class PubsubEventHandler: RequestHandler<APIGatewayV2HTTPEvent, String> {
+class GmailPubsubHandler: RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
 

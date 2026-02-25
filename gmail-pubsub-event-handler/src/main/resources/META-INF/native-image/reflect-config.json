@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.gmail.handler.PubsubEventHandler",
+    "name": "noodle.event.handler.GmailPubsubHandler",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,

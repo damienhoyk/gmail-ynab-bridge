@@ -1,4 +1,4 @@
-package noodle.security.authorization.callback
+package noodle.event.handler
 
 import io.ktor.client.call.body
 import kotlinx.coroutines.runBlocking
@@ -6,10 +6,11 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import noodle.home.security.TokenResponse
+import noodle.security.authorization.callback.AuthorizationHandler
 import noodle.ynab.YnabAuthClient
 import noodle.ynab.YnabClient
 
-class Handler : AuthorizationHandler(YnabAuthClient()) {
+class YnabOAuthHandler : AuthorizationHandler(YnabAuthClient()) {
 
     override fun getAuthority(response: TokenResponse): String? {
         val client = YnabClient(response.accessToken!!)

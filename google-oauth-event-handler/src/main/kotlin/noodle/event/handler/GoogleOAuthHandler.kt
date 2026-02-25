@@ -1,4 +1,4 @@
-package noodle.security.authorization.callback
+package noodle.event.handler
 
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -7,8 +7,9 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import noodle.google.auth.GoogleAuthClient
 import noodle.home.security.TokenResponse
+import noodle.security.authorization.callback.AuthorizationHandler
 
-class Handler : AuthorizationHandler(GoogleAuthClient()) {
+class GoogleOAuthHandler : AuthorizationHandler(GoogleAuthClient()) {
 
     override fun getAuthority(response: TokenResponse): String? {
         val tokenInfo = runBlocking {
