@@ -1,10 +1,9 @@
 plugins {
 	alias(libs.plugins.kotlin.serialization)
 	id("kotlin-jvm")
-    id("kotlin-function-native")
 }
 
-group = "noodle.finance.budget.bridge"
+group = "noodle.repository"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {

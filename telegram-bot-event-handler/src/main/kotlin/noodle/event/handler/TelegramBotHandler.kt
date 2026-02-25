@@ -102,7 +102,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         val bitwardenSecret = bitwardenSecretAsync.await()
         val bitwardenOrganizationId = bitwardenSecret.clientId!!
         val bitwardenClient = bitwardenClientAsync.await()
-        val ynabClientId = bitwardenClient.secrets().getClientId(bitwardenOrganizationId, "ynab")?.jsonObject()
+        val ynabClientId = bitwardenClient.secrets().getClientId(bitwardenOrganizationId, "ynab")
         val ynabRedirectUri = System.getenv("YNAB_REDIRECT_URI")?.trim() ?: throw IllegalStateException()
         "https://app.ynab.com/oauth/authorize" +
                 "?client_id=$ynabClientId" +
@@ -153,9 +153,8 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             val ttlInstant = now().plus(30, MINUTES)
             val ttl = ttlInstant.epochSecond
 
-
             tokenRepository.put(mapOf(
-                "token" to fromS(token),
+                "id" to fromS(token),
                 "userId" to fromS(userId),
                 "ttl" to fromN(ttl.toString())
             ))
@@ -181,7 +180,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             val ttl = ttlInstant.epochSecond
 
             tokenRepository.put(mapOf(
-                "token" to fromS(token),
+                "id" to fromS(token),
                 "userId" to fromS(userId),
                 "ttl" to fromN(ttl.toString())
             ))
