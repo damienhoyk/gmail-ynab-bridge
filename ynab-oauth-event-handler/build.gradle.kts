@@ -9,7 +9,7 @@ version = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":authorization-function"))
+    implementation(project(":oauth-event-handler-core"))
     implementation(project(":security"))
     implementation(project(":ynab"))
     implementation(libs.bundles.aws.lambda)

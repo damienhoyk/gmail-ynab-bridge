@@ -10,7 +10,7 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":authorization-function"))
+    implementation(project(":oauth-event-handler-core"))
     implementation(project(":google-auth"))
     implementation(project(":security"))
     implementation(libs.bundles.aws.lambda)

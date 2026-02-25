@@ -10,7 +10,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
-include(":authorization-function")
+include(":oauth-event-handler-core")
 include(":bridge-repository")
 include(":email-dynamodb-event-handler")
 include(":email-repository")

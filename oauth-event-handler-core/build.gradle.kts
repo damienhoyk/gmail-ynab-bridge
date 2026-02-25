@@ -3,7 +3,7 @@ plugins {
     id("kotlin-jvm")
 }
 
-group = "noodle.security.authorization"
+group = "noodle.event.handler"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {

@@ -1,4 +1,4 @@
-package noodle.security.authorization.callback
+package noodle.event.handler
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
@@ -15,7 +15,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 
-abstract class AuthorizationHandler(
+abstract class OAuthHandler(
     val client: OAuth2TokenProvider
 ) : RequestHandler<APIGatewayV2HTTPEvent, String> {
 

@@ -6,11 +6,10 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import noodle.home.security.TokenResponse
-import noodle.security.authorization.callback.AuthorizationHandler
 import noodle.ynab.YnabAuthClient
 import noodle.ynab.YnabClient
 
-class YnabOAuthHandler : AuthorizationHandler(YnabAuthClient()) {
+class YnabOAuthHandler : OAuthHandler(YnabAuthClient()) {
 
     override fun getAuthority(response: TokenResponse): String? {
         val client = YnabClient(response.accessToken!!)
