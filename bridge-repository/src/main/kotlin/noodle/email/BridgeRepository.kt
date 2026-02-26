@@ -1,12 +1,12 @@
 package noodle.email
 
-import noodle.dynamodb.SortCrudRepository
+import noodle.database.DynamoDbSortRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
 class BridgeRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null
-) : SortCrudRepository() {
+) : DynamoDbSortRepository() {
 
     override val name = "bridge"
     override val table = environment?.let { "$name-$it" } ?: name

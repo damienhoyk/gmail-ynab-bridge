@@ -1,0 +1,172 @@
+[
+  {
+    "name": "noodle.email.GmailHistory",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailHistory$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailHistory$Change",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailHistory$Change$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailHistory$Message",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailHistory$Message$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailLabel",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailLabel$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailLabel$List",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailLabel$List$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailMessage",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailMessage$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailMessage$Data",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailMessage$Data$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailMessage$List",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailMessage$List$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailMessage$Part",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailMessage$Part$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailProfile",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.GmailProfile$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  }
+]

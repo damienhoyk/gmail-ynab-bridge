@@ -1,0 +1,110 @@
+[
+  {
+    "name": "noodle.finance.YnabBudget",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.YnabBudget$Body",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.YnabBudget$Body$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.YnabBudget$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.YnabBudget$Data",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.YnabBudget$Data$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.YnabTransaction",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.YnabTransaction$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.YnabTransaction$Body",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.YnabTransaction$Body$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.YnabTransaction$Data",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.YnabTransaction$Data$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": [ ]
+      }
+    ]
+  },
+  {
+    "name": "java.util.LinkedHashSet",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allPublicMethods": true
+  }
+]

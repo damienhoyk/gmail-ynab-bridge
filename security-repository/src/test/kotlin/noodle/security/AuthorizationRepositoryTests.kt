@@ -23,15 +23,23 @@ class AuthorizationRepositoryTests {
     @Order(1)
     @Test
     fun put(): Unit = runBlocking {
-        val item = mapOf("id" to fromS(id))
-        repository.put(id) { put("refreshToken", fromS(refreshToken))}
+        repository.put(id) { put("refreshToken", fromS(refreshToken)) }
     }
 
+    @Order(2)
     @Test
     fun get(): Unit = runBlocking {
         val result = repository.get(id)
         val item = result.item()
         assertEquals(id, item["id"]?.s())
+    }
+
+    @Order(3)
+    @Test
+    fun update(): Unit = runBlocking {
+        val newRefreshToken = UUID.randomUUID().toString()
+        val newAuthorization = repository.update(id) { put("refreshToken", fromS(newRefreshToken)) }.attributes()
+        assertEquals(newRefreshToken, newAuthorization["refreshToken"]?.s())
     }
 
     @AfterAll

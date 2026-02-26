@@ -18,11 +18,12 @@ class MailboxRepositoryTests {
 
     val repository = MailboxRepository(environment = "test")
     val address = "test-${UUID.randomUUID()}@gmail.com"
+    val state = (100000 .. 199999).random()
 
     @Order(1)
     @Test
     fun put(): Unit = runBlocking {
-        repository.put(address) { put("state", fromN("999"))}
+        repository.put(address)
     }
 
     @Test
@@ -30,6 +31,13 @@ class MailboxRepositoryTests {
         val result = repository.get(address)
         val item = result.item()
         assertEquals(address, item["address"]?.s())
+    }
+
+    @Test
+    fun update(): Unit = runBlocking {
+        val item = repository.update(address) { put("state", fromN("$state")) }.attributes()
+        assertEquals(address, item["address"]?.s())
+        assertEquals(state, item["state"]?.n()?.toInt())
     }
 
     @AfterAll

@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.event.handler.YnabOAuthHandler",
+    "name": "noodle.security.YnabOAuthHandler",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,

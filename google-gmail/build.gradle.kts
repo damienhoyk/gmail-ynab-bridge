@@ -3,17 +3,15 @@ plugins {
     id("kotlin-jvm")
 }
 
+group = "noodle.email"
+version = "0.0.1-SNAPSHOT"
+
 dependencies {
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":dynamodb"))
-    implementation(project(":security"))
-    implementation(project(":google-auth"))
     implementation(libs.bundles.ktor.client)
     implementation("io.ktor:ktor-client-auth")
+    testImplementation("io.ktor:ktor-client-mock")
+    testImplementation(libs.jakarta.mail)
     testImplementation(libs.slf4j.simple)
     testImplementation(libs.slf4j.api)
-    testImplementation(platform(libs.aws.sdk.dependencies))
-    testImplementation("com.bitwarden:sdk-secrets:1.0.1")
-    testImplementation("software.amazon.awssdk:dynamodb")
-    testImplementation("software.amazon.awssdk:secretsmanager")
 }

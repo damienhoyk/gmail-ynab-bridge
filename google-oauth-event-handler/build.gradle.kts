@@ -4,7 +4,7 @@ plugins {
     id("kotlin-function-native")
 }
 
-group = "noodle.event.handler"
+group = "noodle.security"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {

@@ -2,13 +2,15 @@ plugins {
     id("kotlin-jvm")
 }
 
-group = "noodle.telegram.bot"
+group = "noodle.chat"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":security"))
     implementation(libs.bundles.ktor.client)
     implementation(libs.kotlinx.coroutines)
-    runtimeOnly(libs.logback)
+    testImplementation("io.ktor:ktor-client-mock")
+    testImplementation(project(":bitwarden"))
+    testImplementation(libs.slf4j.simple)
+    testImplementation(libs.slf4j.api)
 }

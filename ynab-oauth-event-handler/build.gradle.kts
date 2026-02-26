@@ -4,7 +4,7 @@ plugins {
     id("kotlin-function-native")
 }
 
-group = "noodle.event.handler"
+group = "noodle.security"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
@@ -12,6 +12,8 @@ dependencies {
     implementation(project(":oauth-event-handler-core"))
     implementation(project(":security"))
     implementation(project(":ynab"))
+    implementation(project(":ynab-auth"))
+    implementation(project(":ynab-client-factory"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
     implementation(libs.kotlinx.coroutines)
