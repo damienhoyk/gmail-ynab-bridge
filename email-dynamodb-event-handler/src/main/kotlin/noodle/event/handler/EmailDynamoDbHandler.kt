@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent
 import io.ktor.client.call.*
+import io.ktor.http.isSuccess
 import jakarta.mail.internet.InternetAddress
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
@@ -95,24 +96,35 @@ class EmailDynamoDbHandler : RequestHandler<DynamodbEvent, String> {
                 val mailId = mail["mailId"]?.s
 
                 if (mailId.isNullOrEmpty()) {
-                    log.info("Invalid mailId")
+                    log.error("Invalid mailId")
                     return@launch
                 }
 
                 if (mailAddress.isNullOrEmpty()) {
-                    log.info("Invalid mailAddress")
+                    log.error("Invalid mailAddress")
                     return@launch
                 }
 
                 val ynabTokenProvider = ynabTokenProviderAsync.await()
 
-                val (fromAddress, messageText) = when {
+                val messageResponse = when {
                     mailAddress.endsWith("gmail.com", ignoreCase = true) -> coroutineScope {
                         val googleTokenProvider = googleTokenProviderAsync.await()
                         val client = GoogleGmailClient(mailAddress, googleTokenProvider)
-
                         val request = MessageRequest(Format.FULL)
-                        val message = client.getMessage(id = mailId, request = request).body<Message>()
+                        client.getMessage(id = mailId, request = request)
+                    }
+                    else -> throw IllegalStateException("unknown mail provider")
+                }
+
+                if(!messageResponse.status.isSuccess()) {
+                    log.error("Invalid response")
+                    return@launch
+                }
+
+                val (fromAddress, messageText) = when {
+                    mailAddress.endsWith("gmail.com", ignoreCase = true) -> coroutineScope {
+                        val message = messageResponse.body<Message>()
                         val messageText = message.text
                         val messageHeaders = message.payload?.headers
 
