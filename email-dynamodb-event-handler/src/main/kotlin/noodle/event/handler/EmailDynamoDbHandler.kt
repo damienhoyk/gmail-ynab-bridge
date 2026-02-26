@@ -8,8 +8,6 @@ import jakarta.mail.internet.InternetAddress
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import noodle.google.auth.GoogleAuthClient
 import noodle.google.gmail.GoogleGmailClient
 import noodle.google.gmail.Message
@@ -25,6 +23,7 @@ import noodle.ynab.TransactionsRequest
 import noodle.ynab.YnabAuthClient
 import noodle.ynab.YnabClient
 import org.slf4j.LoggerFactory
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
@@ -33,55 +32,62 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 class EmailDynamoDbHandler : RequestHandler<DynamodbEvent, String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
-
     private val initScope = CoroutineScope(Default)
+
+    private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.create() }
 
     private val dynamoDbClientAsync = initScope.async {
         DynamoDbClient.builder()
+            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }
 
     private val secretsManagerClientAsync = initScope.async {
         SecretsManagerClient.builder()
+            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }
 
+    private val bitwardenSecretAsync = initScope.async {
+        val secretsManagerClient = secretsManagerClientAsync.await()
+        secretsManagerClient.getSecret("bitwarden")
+    }
+
+    private val bitwardenClientAsync = initScope.async {
+        val bitwardenClient = bitwardenClient()
+        val bitwardenSecret = bitwardenSecretAsync.await().jsonObject()
+        val bitwardenApiKey = bitwardenSecret.clientSecret!!
+        bitwardenClient.apply { auth().authorize(bitwardenApiKey) }
+    }
+
     private val tokenStoreAsync = initScope.async { DynamoDbTokenStore(dynamoDbClientAsync.await()) }
+
+    private val googleAuthClientAsync = initScope.async(IO) { GoogleAuthClient() }
+    private val googleTokenProviderAsync = initScope.async {
+        val bitwardenSecret = bitwardenSecretAsync.await().jsonObject()
+        val bitwardenOrganizationId = bitwardenSecret.clientId!!
+        val bitwardenClient = bitwardenClientAsync.await()
+        val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenClient, bitwardenOrganizationId)
+        val tokenStore = tokenStoreAsync.await()
+        CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClientAsync.await())
+    }
+
+    private val ynabAuthClientAsync = initScope.async { YnabAuthClient() }
+    private val ynabTokenProviderAsync = initScope.async {
+        val bitwardenSecret = bitwardenSecretAsync.await().jsonObject()
+        val bitwardenOrganizationId = bitwardenSecret.clientId!!
+        val bitwardenClient = bitwardenClientAsync.await()
+        val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenClient, bitwardenOrganizationId)
+        val tokenStore = tokenStoreAsync.await()
+        CachedAccessTokenProvider(ynabCredentialsProvider, tokenStore, ynabAuthClientAsync.await())
+    }
 
     private val bridgeRepositoryAsync = initScope.async { BridgeRepository(dynamoDbClientAsync.await()) }
     private val matcherRepositoryAsync = initScope.async { MatcherRepository(dynamoDbClientAsync.await()) }
-    private val bitwardenClientAsync = initScope.async { bitwardenClient() }
-
-    private val googleAuthClient = GoogleAuthClient()
-    private val ynabAuthClient = YnabAuthClient()
 
     override fun handleRequest(request: DynamodbEvent, context: Context?) = runBlocking {
-        val secretsManagerClient = secretsManagerClientAsync.await()
-        val bitwardenSecretAsync = async(IO) { secretsManagerClient.getSecret("bitwarden") }
-
-        val bitwardenSecret = bitwardenSecretAsync.await().jsonObject()
-        val bitwardenApiKey = bitwardenSecret.clientSecret
-        val bitwardenOrganizationId = bitwardenSecret.clientId
-
-        if (bitwardenApiKey.isNullOrEmpty()) {
-            log.warn("invalid bitwarden api key")
-            return@runBlocking buildJsonObject { put("statusCode", 500) }.toString()
-        }
-
-        if (bitwardenOrganizationId.isNullOrEmpty()) {
-            log.warn("invalid bitwarden organization id")
-            return@runBlocking buildJsonObject { put("statusCode", 500) }.toString()
-        }
-
-        val bitwardenClient = bitwardenClientAsync.await()
-        bitwardenClient.auth().authorize(bitwardenApiKey)
-
-        val tokenStore = tokenStoreAsync.await()
-        val bridgeRepository = bridgeRepositoryAsync.await()
-        val matcherRepository = matcherRepositoryAsync.await()
-
         request.records.filter { "insert".equals(it.eventName, ignoreCase = true) }.map { record ->
             launch {
                 val mail = record.dynamodb.newImage.toMutableMap()
@@ -98,13 +104,11 @@ class EmailDynamoDbHandler : RequestHandler<DynamodbEvent, String> {
                     return@launch
                 }
 
-                val ynabCredentialsProvider = BitwardenCredentialsProvider("ynab", bitwardenClient, bitwardenOrganizationId)
-                val ynabTokenProvider = CachedAccessTokenProvider(ynabCredentialsProvider, tokenStore, ynabAuthClient)
+                val ynabTokenProvider = ynabTokenProviderAsync.await()
 
                 val (fromAddress, messageText) = when {
                     mailAddress.endsWith("gmail.com", ignoreCase = true) -> coroutineScope {
-                        val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenClient, bitwardenOrganizationId)
-                        val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
+                        val googleTokenProvider = googleTokenProviderAsync.await()
                         val client = GoogleGmailClient(mailAddress, googleTokenProvider)
 
                         val request = MessageRequest(Format.FULL)
@@ -123,11 +127,13 @@ class EmailDynamoDbHandler : RequestHandler<DynamodbEvent, String> {
                     else -> throw IllegalStateException("unknown mail provider")
                 }
 
+                val bridgeRepository = bridgeRepositoryAsync.await()
                 val bridges = bridgeRepository.query(mailAddress).items()
                 val bridgeDestinations = bridges.mapNotNull { it["destination"]?.s() }
                 val bridgeDestinationClients = bridgeDestinations.map { YnabClient(it, ynabTokenProvider) }
                 val bridgeAccounts = bridges.mapNotNull { it["accounts"]?.m() }
 
+                val matcherRepository = matcherRepositoryAsync.await()
                 val matchers = matcherRepository.query(fromAddress).items().mapNotNull {
                     val datePattern = it["datePattern"]?.s()
                     val pattern = it["pattern"]?.s()?.toRegex()

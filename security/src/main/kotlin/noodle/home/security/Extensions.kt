@@ -4,7 +4,10 @@ import com.bitwarden.sdk.AuthClient
 import com.bitwarden.sdk.BitwardenClient
 import com.bitwarden.sdk.BitwardenSettings
 import com.bitwarden.sdk.SecretsClient
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -12,9 +15,9 @@ import kotlinx.serialization.json.jsonPrimitive
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import java.util.UUID.fromString
 
-suspend fun bitwardenClient() = coroutineScope { BitwardenClient(BitwardenSettings()) }
+suspend fun bitwardenClient() = withContext(Default) { BitwardenClient(BitwardenSettings()) }
 
-suspend fun SecretsClient.getSecret(organizationId: String, name: String) = coroutineScope {
+suspend fun SecretsClient.getSecret(organizationId: String, name: String) = withContext(IO) {
     val organizationId = fromString(organizationId)
 
     val secrets = list(organizationId)
@@ -41,9 +44,8 @@ suspend fun SecretsManagerClient.getApiKey(name: String) = getSecret(name)?.json
 suspend fun SecretsManagerClient.getClientId(name: String) = getSecret(name)?.jsonObject()?.clientId
 suspend fun SecretsManagerClient.getClientSecret(name: String) = getSecret(name)?.jsonObject()?.clientSecret
 
-suspend fun AuthClient.authorize(apiKey: String, stateFile: String = "build/bitwarden-state") = coroutineScope {
-    apply { loginAccessToken(apiKey, stateFile) }
-}
+suspend fun AuthClient.authorize(apiKey: String, stateFile: String = "build/bitwarden-state") =
+    withContext(IO) { apply { loginAccessToken(apiKey, stateFile) } }
 
 fun String.jsonObject() = Json.decodeFromString<JsonObject>(this)
 

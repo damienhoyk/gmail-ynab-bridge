@@ -6,13 +6,9 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.async
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -25,6 +21,7 @@ import noodle.home.security.*
 import noodle.repository.MailRepository
 import noodle.repository.MailboxRepository
 import org.slf4j.LoggerFactory
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
@@ -35,81 +32,76 @@ import java.util.Base64.getUrlDecoder
 class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
-
+    private val initScope = CoroutineScope(Default)
     private val mapper = Json { ignoreUnknownKeys = true }
 
-    private val initScope = CoroutineScope(Default)
+    private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.create() }
 
     private val dynamoDbClientAsync = initScope.async {
         DynamoDbClient.builder()
+            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }
+
     private val secretsManagerClientAsync = initScope.async {
         SecretsManagerClient.builder()
+            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }
-    private val bitwardenClientAsync = initScope.async { bitwardenClient() }
+
+    private val bitwardenSecretAsync = initScope.async(IO) {
+        val secretsManagerClient = secretsManagerClientAsync.await()
+        secretsManagerClient.getSecret("bitwarden")
+    }
+
+    private val bitwardenClientAsync = initScope.async {
+        val bitwardenClient = bitwardenClient()
+        val bitwardenSecret = bitwardenSecretAsync.await().jsonObject()
+        val bitwardenApiKey = bitwardenSecret.clientSecret!!
+        bitwardenClient.apply { auth().authorize(bitwardenApiKey) }
+    }
 
     private val tokenStoreAsync = initScope.async { DynamoDbTokenStore(dynamoDbClientAsync.await()) }
 
-    private val googleAuthClient = GoogleAuthClient()
-    private val decoder = getUrlDecoder()
+    private val googleAuthClientAsync = initScope.async(IO) { GoogleAuthClient() }
+    private val googleTokenProviderAsync = initScope.async {
+        val bitwardenSecret = bitwardenSecretAsync.await().jsonObject()
+        val bitwardenOrganizationId = bitwardenSecret.clientId!!
+        val bitwardenClient = bitwardenClientAsync.await()
+        val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenClient, bitwardenOrganizationId)
+        val tokenStore = tokenStoreAsync.await()
+        CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClientAsync.await())
+    }
 
     private val mailboxRepositoryAsync = initScope.async { MailboxRepository(dynamoDbClientAsync.await()) }
     private val mailRepositoryAsync = initScope.async { MailRepository(dynamoDbClientAsync.await()) }
 
+    private val decoder = getUrlDecoder()
+
     private val historyType = "messageAdded"
 
     override fun handleRequest(request: APIGatewayV2HTTPEvent, context: Context?) = runBlocking {
-        val secretsManagerClient = secretsManagerClientAsync.await()
-        val bitwardenSecretAsync = async(IO) { secretsManagerClient.getSecret("bitwarden") }
-
         val headers = request.headers
         val bearerToken = headers?.get("authorization")?.substringAfter("Bearer ")
-
-        val tokenInfoAsync = async(IO) { googleAuthClient.getTokenInfo { parameter("id_token", bearerToken) } }
 
         val notification = mapper.decodeFromString<PubsubNotification>(request.body)
         val notificationData = decoder.decode(notification.message.data)
         val event = mapper.decodeFromString<GmailEvent>(String(notificationData))
         val emailAddress = event.emailAddress
 
+        val googleAuthClient = googleAuthClientAsync.await()
+        val tokenInfoAsync = async { googleAuthClient.getTokenInfo { parameter("id_token", bearerToken) } }
+
         val mailboxRepository = mailboxRepositoryAsync.await()
-        val mailRepository = mailRepositoryAsync.await()
-        val mailboxAsync = async(IO) { mailboxRepository.get(emailAddress).item().toMutableMap() }
+        val mailboxAsync = async { mailboxRepository.get(emailAddress) }
 
-        val bitwardenSecret = bitwardenSecretAsync.await().jsonObject()
-        val bitwardenOrganizationId = bitwardenSecret.clientId
-        val bitwardenApiKey = bitwardenSecret.clientSecret
-
-        if (bitwardenApiKey.isNullOrEmpty()) {
-            log.warn("invalid bitwarden api key")
-            return@runBlocking buildJsonObject { put("statusCode", 500) }.toString()
-        }
-
-        if (bitwardenOrganizationId.isNullOrEmpty()) {
-            log.warn("invalid bitwarden organization id")
-            return@runBlocking buildJsonObject { put("statusCode", 500) }.toString()
-        }
-
-        val bitwardenClient = bitwardenClientAsync.await()
-        val authorizeBitwarden = launch(IO) { bitwardenClient.auth().authorize(bitwardenApiKey) }
-
-        val tokenStore = tokenStoreAsync.await()
-        val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenClient, bitwardenOrganizationId)
-        val googleTokenProvider = CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
+        val googleTokenProvider = googleTokenProviderAsync.await()
         val googleGmailClient = GoogleGmailClient(emailAddress, googleTokenProvider)
 
-        val mailbox = mailboxAsync.await().toMutableMap()
+        val mailbox = mailboxAsync.await().item().toMutableMap()
         val mailboxState = mailbox["state"]?.n()?.toLong()
-
-        val tokenInfo = tokenInfoAsync.await()
-
-        if (!tokenInfo.status.isSuccess()) {
-            return@runBlocking buildJsonObject { put("statusCode", tokenInfo.status.value) }.toString()
-        }
 
         if (mailboxState == null) {
             log.warn("invalid mailbox state")
@@ -117,11 +109,16 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
 
         val historyRequest = HistoryRequest(mailboxState, listOf(historyType))
-        val historyAsync = async(IO) { googleGmailClient.getHistory(request = historyRequest).body<History>() }
+        val history =  googleGmailClient.getHistory(request = historyRequest).body<History>()
 
-        authorizeBitwarden.join()
+        val tokenInfo = tokenInfoAsync.await()
 
-        val jobs = historyAsync.await().messagesAdded.asSequence().map {
+        if (!tokenInfo.status.isSuccess()) {
+            return@runBlocking buildJsonObject { put("statusCode", tokenInfo.status.value) }.toString()
+        }
+
+        val mailRepository = mailRepositoryAsync.await()
+        val mailJobs = history.messagesAdded.asSequence().map {
             mapOf(
                 mailRepository.partitionKey to fromS(emailAddress),
                 mailRepository.sortKey to fromS(it.message.id)
@@ -131,7 +128,7 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         mailbox[mailboxRepository.partitionKey] = fromS(emailAddress)
         mailbox["state"] = fromN(event.historyId.toString())
 
-        jobs.toList().joinAll()
+        mailJobs.toList().joinAll()
 
         mailboxRepository.put(mailbox)
 

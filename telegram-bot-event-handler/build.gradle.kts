@@ -10,6 +10,7 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
+    implementation(project(":email-repository"))
     implementation(project(":google-auth"))
     implementation(project(":google-gmail"))
     implementation(project(":security"))

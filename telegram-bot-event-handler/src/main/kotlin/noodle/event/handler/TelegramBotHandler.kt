@@ -5,27 +5,25 @@ import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.async
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import noodle.google.auth.GoogleAuthClient
 import noodle.google.gmail.GoogleGmailClient
 import noodle.google.gmail.Label
+import noodle.google.gmail.Profile
 import noodle.google.gmail.WatchRequest
 import noodle.home.security.*
-import noodle.telegram.bot.TelegramBotClient
 import noodle.repository.LoginRepository
+import noodle.repository.MailboxRepository
 import noodle.repository.TokenRepository
 import noodle.repository.UserRepository
+import noodle.telegram.bot.TelegramBotClient
 import org.slf4j.LoggerFactory
-
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
@@ -38,16 +36,20 @@ import java.util.*
 class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
-
     private val initScope = CoroutineScope(Default)
+
+    private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.create() }
 
     private val dynamoDbClientAsync = initScope.async {
         DynamoDbClient.builder()
+            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }
+
     private val secretsManagerClientAsync = initScope.async {
         SecretsManagerClient.builder()
+            .credentialsProvider(credentialsProviderAsync.await())
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build()
     }
@@ -63,7 +65,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         bitwardenClient().apply { auth().authorize(bitwardenApiKey) }
     }
 
-    private val botClientAsync = initScope.async {
+    private val botClientAsync = initScope.async(IO) {
         val bitwardenSecret = bitwardenSecretAsync.await()
         val bitwardenOrganizationId = bitwardenSecret.clientId!!
         val bitwardenClient = bitwardenClientAsync.await()
@@ -73,14 +75,14 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val tokenStoreAsync = initScope.async { DynamoDbTokenStore(dynamoDbClientAsync.await()) }
 
-    private val googleAuthClient = GoogleAuthClient()
+    private val googleAuthClientAsync = initScope.async { GoogleAuthClient() }
     private val googleTokenProviderAsync = initScope.async {
         val bitwardenSecret = bitwardenSecretAsync.await()
         val bitwardenOrganizationId = bitwardenSecret.clientId!!
         val bitwardenClient = bitwardenClientAsync.await()
         val googleCredentialsProvider = BitwardenCredentialsProvider("google", bitwardenClient, bitwardenOrganizationId)
         val tokenStore = tokenStoreAsync.await()
-        CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClient)
+        CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClientAsync.await())
     }
 
     private val googleAuthorizationUrlAsync = initScope.async {
@@ -113,6 +115,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val userRepositoryAsync = initScope.async { UserRepository(client = dynamoDbClientAsync.await()) }
     private val tokenRepositoryAsync = initScope.async { TokenRepository(client = dynamoDbClientAsync.await()) }
     private val loginRepositoryAsync = initScope.async { LoginRepository(client = dynamoDbClientAsync.await()) }
+    private val mailboxRepositoryAsync = initScope.async { MailboxRepository(client = dynamoDbClientAsync.await()) }
 
     override fun handleRequest(event: APIGatewayV2HTTPEvent, context: Context) = runBlocking {
         val body = Json.decodeFromString<JsonObject>(event.body!!)
@@ -211,15 +214,23 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             val topicName = "projects/lexical-cider-458409-d5/topics/gmail"
             val labelName = "money"
 
+            val mailboxRepository = mailboxRepositoryAsync.await()
+
             val jobs = emails.map { gmail ->
-                launch(Dispatchers.IO) {
+                launch(IO) {
                     val googleGmailClient = GoogleGmailClient(gmail, googleTokenProvider)
 
-                    val labelId = googleGmailClient.getLabels().body<Label.List>().labels
+                    val labels = googleGmailClient.getLabels().body<Label.List>().labels
+                    val profile = googleGmailClient.getProfile().body<Profile>()
+                    val state = profile.historyId.toString()
+                    val mailbox = mapOf("address" to fromS(gmail), "state" to fromN(state))
+
+                    val labelIds = labels
                         ?.filter { it.name.equals(labelName, true) }
                         ?.map { it.id } ?: emptyList()
 
-                    googleGmailClient.postWatch(request = WatchRequest(topicName, labelId))
+                    mailboxRepository.put(mailbox)
+                    googleGmailClient.postWatch(request = WatchRequest(topicName, labelIds))
                 }
             }
 

@@ -6,10 +6,9 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 
-class UserRepository(
-    private val table: String = "login",
-    private val client: DynamoDbClient = DynamoDbClient.create()
-) {
+class UserRepository(private val client: DynamoDbClient = DynamoDbClient.create()) {
+
+    private val table: String = "user"
 
     suspend fun get(id: String) = withContext(Dispatchers.IO) {
         client.getItem {

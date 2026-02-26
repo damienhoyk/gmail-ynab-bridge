@@ -3,7 +3,6 @@ package noodle.event.handler
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-
 import kotlin.system.measureTimeMillis
 
 class GmailPubsubHandlerTests {
