@@ -18,14 +18,13 @@ import noodle.google.gmail.GoogleGmailClient
 import noodle.google.gmail.History
 import noodle.google.gmail.HistoryRequest
 import noodle.home.security.*
-import noodle.repository.MailRepository
-import noodle.repository.MailboxRepository
+import noodle.email.MailRepository
+import noodle.email.MailboxRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import java.util.Base64.getUrlDecoder
 
@@ -75,8 +74,8 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         CachedAccessTokenProvider(googleCredentialsProvider, tokenStore, googleAuthClientAsync.await())
     }
 
-    private val mailboxRepositoryAsync = initScope.async { MailboxRepository(dynamoDbClientAsync.await()) }
-    private val mailRepositoryAsync = initScope.async { MailRepository(dynamoDbClientAsync.await()) }
+    private val mailboxRepositoryAsync = initScope.async { MailboxRepository(client = dynamoDbClientAsync.await()) }
+    private val mailRepositoryAsync = initScope.async { MailRepository(client = dynamoDbClientAsync.await()) }
 
     private val decoder = getUrlDecoder()
 
@@ -89,6 +88,7 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         val notification = mapper.decodeFromString<PubsubNotification>(request.body)
         val notificationData = decoder.decode(notification.message.data)
         val event = mapper.decodeFromString<GmailEvent>(String(notificationData))
+        val eventHistoryId = event.historyId
         val emailAddress = event.emailAddress
 
         val googleAuthClient = googleAuthClientAsync.await()
@@ -119,18 +119,12 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
         val mailRepository = mailRepositoryAsync.await()
         val mailJobs = history.messagesAdded.asSequence().map {
-            mapOf(
-                mailRepository.partitionKey to fromS(emailAddress),
-                mailRepository.sortKey to fromS(it.message.id)
-            )
-        }.map { launch { mailRepository.put(it) } }
-
-        mailbox[mailboxRepository.partitionKey] = fromS(emailAddress)
-        mailbox["state"] = fromN(event.historyId.toString())
+            launch { mailRepository.put(emailAddress, it.message.id!!) }
+        }
 
         mailJobs.toList().joinAll()
 
-        mailboxRepository.put(mailbox)
+        mailboxRepository.put(emailAddress) { put("state", fromN(eventHistoryId.toString())) }
 
         return@runBlocking buildJsonObject { put("statusCode", 201) }.toString()
     }

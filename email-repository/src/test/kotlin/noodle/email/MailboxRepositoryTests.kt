@@ -1,7 +1,6 @@
-package noodle.repository
+package noodle.email
 
 import kotlinx.coroutines.runBlocking
-import noodle.email.BridgeRepository
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
@@ -10,38 +9,32 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.TestMethodOrder
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 import java.util.UUID
 
 @TestMethodOrder(OrderAnnotation::class)
 @TestInstance(PER_CLASS)
-class BridgeRepositoryTests {
+class MailboxRepositoryTests {
 
-    val repository = BridgeRepository(environment = "test")
-    val source = "test-${UUID.randomUUID()}@gmail.com"
-    val destination = UUID.randomUUID().toString()
+    val repository = MailboxRepository(environment = "test")
+    val address = "test-${UUID.randomUUID()}@gmail.com"
 
     @Order(1)
     @Test
     fun put(): Unit = runBlocking {
-        repository.put(source, destination)
+        repository.put(address) { put("state", fromN("999"))}
     }
 
     @Test
     fun get(): Unit = runBlocking {
-        val result = repository.get(source, destination)
+        val result = repository.get(address)
         val item = result.item()
-        assertEquals(source, item["source"]?.s())
-    }
-
-    @Test
-    fun query(): Unit = runBlocking {
-        val results = repository.query(source)
-        assertEquals(1, results.count())
+        assertEquals(address, item["address"]?.s())
     }
 
     @AfterAll
     fun tearDown(): Unit = runBlocking {
-        repository.delete(source, destination)
+        repository.delete(address)
     }
 
 }

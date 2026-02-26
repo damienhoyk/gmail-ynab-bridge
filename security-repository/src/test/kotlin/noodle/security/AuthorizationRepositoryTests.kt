@@ -1,7 +1,6 @@
-package noodle.repository
+package noodle.security
 
 import kotlinx.coroutines.runBlocking
-import noodle.email.BridgeRepository
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
@@ -10,38 +9,34 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.TestMethodOrder
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 import java.util.UUID
 
 @TestMethodOrder(OrderAnnotation::class)
 @TestInstance(PER_CLASS)
-class BridgeRepositoryTests {
+class AuthorizationRepositoryTests {
 
-    val repository = BridgeRepository(environment = "test")
-    val source = "test-${UUID.randomUUID()}@gmail.com"
-    val destination = UUID.randomUUID().toString()
+    val repository = AuthorizationRepository(environment = "test")
+    val id = UUID.randomUUID().toString()
+    val refreshToken = UUID.randomUUID().toString()
 
     @Order(1)
     @Test
     fun put(): Unit = runBlocking {
-        repository.put(source, destination)
+        val item = mapOf("id" to fromS(id))
+        repository.put(id) { put("refreshToken", fromS(refreshToken))}
     }
 
     @Test
     fun get(): Unit = runBlocking {
-        val result = repository.get(source, destination)
+        val result = repository.get(id)
         val item = result.item()
-        assertEquals(source, item["source"]?.s())
-    }
-
-    @Test
-    fun query(): Unit = runBlocking {
-        val results = repository.query(source)
-        assertEquals(1, results.count())
+        assertEquals(id, item["id"]?.s())
     }
 
     @AfterAll
     fun tearDown(): Unit = runBlocking {
-        repository.delete(source, destination)
+        repository.delete(id)
     }
 
 }

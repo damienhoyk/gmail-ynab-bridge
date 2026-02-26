@@ -4,11 +4,17 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.call.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
 import noodle.home.security.*
+import noodle.security.LoginRepository
+import noodle.security.TokenRepository
+import noodle.user.UserRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
@@ -20,6 +26,7 @@ abstract class OAuthHandler(
 
     val log = LoggerFactory.getLogger(javaClass)
 
+    val initScope = CoroutineScope(Default)
     val dynamoDbClient = DynamoDbClient.builder().build()
     val secretsManagerClient = SecretsManagerClient.builder().build()
 
@@ -33,6 +40,10 @@ abstract class OAuthHandler(
     val bitwardenClientId = bitwardenSecret.clientId!!
 
     val bitwardenClient = runBlocking { bitwardenClient().apply { auth().authorize(bitwardenApiKey) } }
+
+    val loginRepositoryAsync = initScope.async { LoginRepository(client = dynamoDbClient) }
+    val userRepositoryAsync = initScope.async { UserRepository(client = dynamoDbClient) }
+    val tokenRepositoryAsync = initScope.async { TokenRepository(client = dynamoDbClient) }
 
     override fun handleRequest(request: APIGatewayV2HTTPEvent, context: Context?): String? = runBlocking {
         log.debug("▶️ Start handling request [{}]", request)
@@ -69,9 +80,8 @@ abstract class OAuthHandler(
             return@runBlocking lambdaResponse(401)
         }
 
-        val token = dynamoDbClient.getItem {
-            it.tableName("token").key(mapOf("id" to fromS(state)))
-        }.item()
+        val tokenRepository = tokenRepositoryAsync.await()
+        val token = tokenRepository.get(state).item()
 
         val userId = token["userId"]?.s()
 
@@ -82,15 +92,11 @@ abstract class OAuthHandler(
 
         log.info("🪪 Updating user login mapping for [{}] ...", userId)
 
-        dynamoDbClient.putItem {
-            val item = mapOf("id" to fromS(authority), "userId" to fromS(userId))
-            it.tableName("login").item(item)
-        }
+        val loginRepository = loginRepositoryAsync.await()
+        loginRepository.put(authority) { put("userId", fromS(userId)) }
 
-        dynamoDbClient.putItem {
-            val item = mapOf("id" to fromS(userId), "loginId" to fromS(authority))
-            it.tableName("user").item(item)
-        }
+        val userRepository = userRepositoryAsync.await()
+        userRepository.put(userId, authority)
 
         log.info("🎫 Storing tokens for authorization [{}] ...", authority)
 

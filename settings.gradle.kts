@@ -12,6 +12,7 @@ plugins {
 
 include(":oauth-event-handler-core")
 include(":bridge-repository")
+include(":dynamodb")
 include(":email-dynamodb-event-handler")
 include(":email-repository")
 include(":gmail-pubsub-event-handler")
@@ -23,6 +24,7 @@ include(":security")
 include(":security-repository")
 include(":telegram-bot")
 include(":telegram-bot-event-handler")
+include(":user-repository")
 include(":ynab")
 include(":ynab-oauth-event-handler")
 

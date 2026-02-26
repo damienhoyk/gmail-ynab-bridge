@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation(platform(libs.ktor.dependencies))
+    implementation(project(":dynamodb"))
     implementation(project(":security"))
     implementation(project(":google-auth"))
     implementation(libs.bundles.ktor.client)

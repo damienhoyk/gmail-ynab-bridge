@@ -11,6 +11,7 @@ dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
     implementation(project(":bridge-repository"))
+    implementation(project(":dynamodb"))
     implementation(project(":email-repository"))
     implementation(project(":google-gmail"))
     implementation(project(":google-auth"))

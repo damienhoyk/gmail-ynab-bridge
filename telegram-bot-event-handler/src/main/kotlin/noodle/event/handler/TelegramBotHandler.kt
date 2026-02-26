@@ -17,10 +17,10 @@ import noodle.google.gmail.Label
 import noodle.google.gmail.Profile
 import noodle.google.gmail.WatchRequest
 import noodle.home.security.*
-import noodle.repository.LoginRepository
-import noodle.repository.MailboxRepository
-import noodle.repository.TokenRepository
-import noodle.repository.UserRepository
+import noodle.security.LoginRepository
+import noodle.email.MailboxRepository
+import noodle.security.TokenRepository
+import noodle.user.UserRepository
 import noodle.telegram.bot.TelegramBotClient
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
@@ -126,7 +126,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
         val user = message["from"]?.jsonObject ?: return@runBlocking "OK"
         val text = message["text"]?.content
-        val authority = user["id"]?.content
+        val authority = user["id"]?.content ?: return@runBlocking "OK"
 
         if (text.equals("/start", true)) {
             val botClient = botClientAsync.await()
@@ -138,8 +138,8 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             val login = loginRepository.get(authority).item()
             val userId = login["userId"]?.s() ?: UUID.randomUUID().toString()
 
-            loginRepository.put(mapOf("id" to fromS(authority), "userId" to fromS(userId)))
-            userRepository.put(mapOf("id" to fromS(userId), "loginId" to fromS(authority)))
+            loginRepository.put(authority) { put("userId", fromS(userId))}
+            userRepository.put(userId, authority)
         }
 
         if (text.equals("/authorizegmail", true)) {
@@ -156,11 +156,10 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             val ttlInstant = now().plus(30, MINUTES)
             val ttl = ttlInstant.epochSecond
 
-            tokenRepository.put(mapOf(
-                "id" to fromS(token),
-                "userId" to fromS(userId),
-                "ttl" to fromN(ttl.toString())
-            ))
+            tokenRepository.put(token) {
+                put("userId", fromS(userId))
+                put("ttl", fromN(ttl.toString()))
+            }
 
             val message = "[🔑 Authorize Gmail]($googleAuthorizationUrl&state=$token)"
             botClient.sendMessage(chatId, message) {
@@ -182,11 +181,10 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             val ttlInstant = now().plus(30, MINUTES)
             val ttl = ttlInstant.epochSecond
 
-            tokenRepository.put(mapOf(
-                "id" to fromS(token),
-                "userId" to fromS(userId),
-                "ttl" to fromN(ttl.toString())
-            ))
+            tokenRepository.put(token) {
+                put("userId", fromS(userId))
+                put("ttl", fromN(ttl.toString()))
+            }
 
             val message = "[🔑 Authorize YNAB]($ynabAuthorizationUrl&state=$token)"
             botClient.sendMessage(chatId, message) {
@@ -223,13 +221,12 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                     val labels = googleGmailClient.getLabels().body<Label.List>().labels
                     val profile = googleGmailClient.getProfile().body<Profile>()
                     val state = profile.historyId.toString()
-                    val mailbox = mapOf("address" to fromS(gmail), "state" to fromN(state))
 
                     val labelIds = labels
                         ?.filter { it.name.equals(labelName, true) }
                         ?.map { it.id } ?: emptyList()
 
-                    mailboxRepository.put(mailbox)
+                    mailboxRepository.put(gmail) { "state" to fromN(state) }
                     googleGmailClient.postWatch(request = WatchRequest(topicName, labelIds))
                 }
             }

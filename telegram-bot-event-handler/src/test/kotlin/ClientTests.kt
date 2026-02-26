@@ -27,7 +27,7 @@ class ClientTests {
     @Test
     fun setWebhook() {
         runBlocking {
-            client.setWebhook("https://zpmjoqq5b4i3ohjawgu6jkt76q0dpeoe.lambda-url.ap-southeast-1.on.aws/")
+            client.setWebhook("https://xu5x3kradobxha47hnfdbkqjxu0sgbzf.lambda-url.ap-southeast-1.on.aws/")
         }
     }
 

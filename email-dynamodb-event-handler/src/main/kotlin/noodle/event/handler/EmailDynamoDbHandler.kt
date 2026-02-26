@@ -17,8 +17,8 @@ import noodle.google.gmail.MessageRequest.Format
 import noodle.home.gmail.ynab.job.TransactionMatcher
 import noodle.home.gmail.ynab.job.TransactionMatcher.RegexGroup
 import noodle.home.security.*
-import noodle.repository.BridgeRepository
-import noodle.repository.MatcherRepository
+import noodle.email.BridgeRepository
+import noodle.email.MatcherRepository
 import noodle.ynab.Transaction
 import noodle.ynab.TransactionsRequest
 import noodle.ynab.YnabAuthClient
@@ -85,8 +85,8 @@ class EmailDynamoDbHandler : RequestHandler<DynamodbEvent, String> {
         CachedAccessTokenProvider(ynabCredentialsProvider, tokenStore, ynabAuthClientAsync.await())
     }
 
-    private val bridgeRepositoryAsync = initScope.async { BridgeRepository(dynamoDbClientAsync.await()) }
-    private val matcherRepositoryAsync = initScope.async { MatcherRepository(dynamoDbClientAsync.await()) }
+    private val bridgeRepositoryAsync = initScope.async { BridgeRepository(client = dynamoDbClientAsync.await()) }
+    private val matcherRepositoryAsync = initScope.async { MatcherRepository(client = dynamoDbClientAsync.await()) }
 
     override fun handleRequest(request: DynamodbEvent, context: Context?) = runBlocking {
         request.records.filter { "insert".equals(it.eventName, ignoreCase = true) }.map { record ->
