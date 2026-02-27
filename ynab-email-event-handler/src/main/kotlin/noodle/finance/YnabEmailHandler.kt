@@ -101,7 +101,7 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
                 val ynab = ynabAsync.await()
 
                 val messageResponse = when {
-                    mailAddress.endsWith("gmail.com", ignoreCase = true) -> coroutineScope {
+                    mailAddress.endsWith("@gmail.com", ignoreCase = true) -> coroutineScope {
                         val google = googleAsync.await()
                         val client = google.gmailClient(mailAddress)
                         val request = GmailMessageRequest(GmailMessageRequest.Format.FULL)
@@ -117,7 +117,7 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
                 }
 
                 val (fromAddress, messageText) = when {
-                    mailAddress.endsWith("gmail.com", ignoreCase = true) -> coroutineScope {
+                    mailAddress.endsWith("@gmail.com", ignoreCase = true) -> coroutineScope {
                         val message = messageResponse.body<GmailMessage>()
                         val messageText = message.text
                         val messageHeaders = message.payload?.headers
@@ -135,9 +135,11 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
 
                 val bridgeRepository = bridgeRepositoryAsync.await()
                 val bridges = bridgeRepository.query(mailAddress).items()
-                val bridgeDestinations = bridges.mapNotNull { it["destination"]?.s() }
-                val bridgeDestinationClients = bridgeDestinations.map { ynab.client(it) }
-                val bridgeAccounts = bridges.mapNotNull { it["accounts"]?.m() }
+
+                val destinations = bridges.mapNotNull { it["destination"]?.s() }
+                val destinationIds = destinations.filter { it.endsWith("@app.ynab.com") }
+                val clients = destinationIds.map { ynab.client(it) }
+                val accounts = bridges.mapNotNull { it["accounts"]?.m() }
 
                 val matcherRepository = matcherRepositoryAsync.await()
                 val matchers = matcherRepository.query(fromAddress).items().mapNotNull {
@@ -154,7 +156,7 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
                     }
                 }
 
-                bridgeDestinationClients.zip(bridgeAccounts).forEach { (ynabClient, bridgeAccounts) ->
+                clients.zip(accounts).forEach { (ynabClient, bridgeAccounts) ->
                     val transaction = matchers.firstNotNullOfOrNull { it.parse(messageText) }
 
                     if (transaction == null) {

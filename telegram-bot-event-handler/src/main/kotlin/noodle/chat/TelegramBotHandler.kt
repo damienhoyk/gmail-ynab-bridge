@@ -122,7 +122,8 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
         val user = message["from"]?.jsonObject ?: return@runBlocking "OK"
         val text = message["text"]?.content
-        val authority = user["id"]?.content ?: return@runBlocking "OK"
+        val userId = user["id"]?.content ?: return@runBlocking "OK"
+        val authority = "$userId@web.telegram.org"
 
         if (text.equals("/start", true)) {
             val loginRepository = loginRepositoryAsync.await()
