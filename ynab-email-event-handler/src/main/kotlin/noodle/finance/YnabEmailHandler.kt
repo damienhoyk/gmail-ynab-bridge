@@ -18,6 +18,7 @@ import noodle.email.GmailMessage
 import noodle.email.GmailMessageRequest
 import noodle.client.Google
 import noodle.client.Ynab
+import noodle.email.MailRepository
 import noodle.email.MatcherRepository
 import noodle.email.TransactionMatcher
 import noodle.security.AuthorizationRepository
@@ -32,7 +33,11 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
+import kotlin.time.Clock.System.now
+import kotlin.time.Duration.Companion.days
 
 class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
 
@@ -79,6 +84,7 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
 
     private val authorizationRepositoryAsync = initScope.async { AuthorizationRepository(dynamoDbClientAsync.await()) }
     private val bridgeRepositoryAsync = initScope.async { BridgeRepository(client = dynamoDbClientAsync.await()) }
+    private val mailRepository = initScope.async { MailRepository(client = dynamoDbClientAsync.await()) }
     private val matcherRepositoryAsync = initScope.async { MatcherRepository(client = dynamoDbClientAsync.await()) }
 
     override fun handleRequest(request: DynamodbEvent, context: Context?) = runBlocking {
@@ -175,9 +181,18 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
                     val ynabTransaction = transaction.copy(accountId = ynabAccount)
                     val ynabBody = YnabTransaction.Body(transactions = listOf(ynabTransaction))
 
-                    launch {
+                    val ttl = now().plus(3.days).epochSeconds
+                    val mailRepository = mailRepository.await()
+
+                    val job1 = launch {
+                        mailRepository.update(mailAddress, mailId) { put("ttl", fromN("$ttl")) }
+                    }
+
+                    val job2 = launch {
                         ynabClient.postTransactions(request = YnabTransactionsRequest(ynabBody))
                     }
+
+                    listOf(job1, job2).joinAll()
                 }
             }
         }.joinAll()
