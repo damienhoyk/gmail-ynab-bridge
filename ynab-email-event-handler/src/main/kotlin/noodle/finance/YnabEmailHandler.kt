@@ -21,9 +21,9 @@ import noodle.client.Ynab
 import noodle.email.MailRepository
 import noodle.email.MatcherRepository
 import noodle.email.TransactionMatcher
-import noodle.security.AuthorizationRepository
 import noodle.security.Bitwarden
 import noodle.security.GoogleAuthClient
+import noodle.security.TokenRepository
 import noodle.security.YnabAuthClient
 import noodle.security.clientId
 import noodle.security.clientSecret
@@ -34,7 +34,6 @@ import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import kotlin.time.Clock.System.now
 import kotlin.time.Duration.Companion.days
@@ -67,7 +66,7 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val googleAsync = initScope.async {
         val secret = googleSecretAsync.await()
         Google(secret.clientId!!, secret.clientSecret!!,
-            authorizationRepositoryAsync.await(),
+            tokenRepositoryAsync.await(),
             googleAuthClientAsync.await()
         )
     }
@@ -77,12 +76,12 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val ynabAsync = initScope.async {
         val secret = ynabSecretAsync.await()
         Ynab(secret.clientId!!, secret.clientSecret!!,
-            authorizationRepositoryAsync.await(),
+            tokenRepositoryAsync.await(),
             ynabAuthClientAsync.await()
         )
     }
 
-    private val authorizationRepositoryAsync = initScope.async { AuthorizationRepository(dynamoDbClientAsync.await()) }
+    private val tokenRepositoryAsync = initScope.async { TokenRepository(dynamoDbClientAsync.await()) }
     private val bridgeRepositoryAsync = initScope.async { BridgeRepository(client = dynamoDbClientAsync.await()) }
     private val mailRepository = initScope.async { MailRepository(client = dynamoDbClientAsync.await()) }
     private val matcherRepositoryAsync = initScope.async { MatcherRepository(client = dynamoDbClientAsync.await()) }

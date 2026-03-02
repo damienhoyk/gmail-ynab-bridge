@@ -51,12 +51,12 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val googleAsync = initScope.async {
         val secret = googleSecretAsync.await()
         Google(secret.clientId!!, secret.clientSecret!!,
-            authorizationRepositoryAsync.await(),
+            tokenRepositoryAsync.await(),
             googleAuthClientAsync.await()
         )
     }
 
-    private val authorizationRepositoryAsync = initScope.async { AuthorizationRepository(client = dynamoDbClientAsync.await()) }
+    private val tokenRepositoryAsync = initScope.async { TokenRepository(client = dynamoDbClientAsync.await()) }
     private val mailboxRepositoryAsync = initScope.async { MailboxRepository(client = dynamoDbClientAsync.await()) }
     private val mailRepositoryAsync = initScope.async { MailRepository(client = dynamoDbClientAsync.await()) }
 

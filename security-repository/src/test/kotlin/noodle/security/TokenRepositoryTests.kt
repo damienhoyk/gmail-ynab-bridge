@@ -18,24 +18,26 @@ class TokenRepositoryTests {
 
     val repository = TokenRepository(environment = "test")
     val id = UUID.randomUUID().toString()
-    val userId = UUID.randomUUID().toString()
+    val type = listOf("state", "access", "refresh").random()
+    val value = UUID.randomUUID().toString()
 
     @Order(1)
     @Test
     fun put(): Unit = runBlocking {
-        repository.put(id) { put("userId", fromS(userId))}
+        repository.put(id, type) { put("value", fromS(value))}
     }
 
     @Test
     fun get(): Unit = runBlocking {
-        val result = repository.get(id)
+        val result = repository.get(id, type)
         val item = result.item()
         assertEquals(id, item["id"]?.s())
+        assertEquals(value, item["value"]?.s())
     }
 
     @AfterAll
     fun tearDown(): Unit = runBlocking {
-        repository.delete(id)
+        repository.delete(id, type)
     }
 
 }

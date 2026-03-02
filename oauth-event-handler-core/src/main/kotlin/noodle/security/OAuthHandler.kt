@@ -7,6 +7,8 @@ import io.ktor.client.call.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -47,7 +49,6 @@ abstract class OAuthHandler(
 
     val bitwardenAsync = initScope.async { Bitwarden(secretsManagerClientAsync.await()) }
 
-    val authorizationRepositoryAsync = initScope.async { AuthorizationRepository(dynamoDbClientAsync.await()) }
     val loginRepositoryAsync = initScope.async { LoginRepository(client = dynamoDbClientAsync.await()) }
     val userRepositoryAsync = initScope.async { UserRepository(client = dynamoDbClientAsync.await()) }
     val tokenRepositoryAsync = initScope.async { TokenRepository(client = dynamoDbClientAsync.await()) }
@@ -89,9 +90,9 @@ abstract class OAuthHandler(
         }
 
         val tokenRepository = tokenRepositoryAsync.await()
-        val token = tokenRepository.get(state).item()
+        val token = tokenRepository.get(state, "state").item()
 
-        val userId = token["userId"]?.s()
+        val userId = token["value"]?.s()
 
         if (userId.isNullOrEmpty()) {
             log.error("💩 user id is null")
@@ -108,9 +109,15 @@ abstract class OAuthHandler(
 
         log.info("🎫 Storing tokens for authorization [{}] ...", authority)
 
-        val tokenStore = authorizationRepositoryAsync.await()
-        tokenStore.update(authority) { put("accessToken", fromS(response.accessToken!!)) }
-        tokenStore.update(authority) { put("refreshToken", fromS(response.refreshToken!!)) }
+        val job1 = launch {
+            tokenRepository.update(authority, "access") { put("value", fromS(response.accessToken)) }
+        }
+
+        val job2 = launch {
+            tokenRepository.update(authority, "refresh") { put("value", fromS(response.refreshToken)) }
+        }
+
+        listOf(job1, job2).joinAll()
 
         return@runBlocking "🔓 Completed authorization!"
     }

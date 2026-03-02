@@ -21,7 +21,6 @@ import noodle.email.GmailLabel
 import noodle.email.MailboxRepository
 import noodle.email.GmailProfile
 import noodle.email.GmailWatchRequest
-import noodle.security.AuthorizationRepository
 import noodle.security.Bitwarden
 import noodle.security.LoginRepository
 import noodle.security.TokenRepository
@@ -71,7 +70,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val googleAsync = initScope.async {
         val secret = googleSecretAsync.await()
         Google( secret.clientId!!, secret.clientSecret!!,
-            authorizationRepositoryAsync.await(),
+            tokenRepositoryAsync.await(),
             googleAuthClientAsync.await()
         )
     }
@@ -105,7 +104,6 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                 "&response_type=code"
     }
 
-    private val authorizationRepositoryAsync = initScope.async { AuthorizationRepository(dynamoDbClientAsync.await()) }
     private val userRepositoryAsync = initScope.async { UserRepository(client = dynamoDbClientAsync.await()) }
     private val tokenRepositoryAsync = initScope.async { TokenRepository(client = dynamoDbClientAsync.await()) }
     private val loginRepositoryAsync = initScope.async { LoginRepository(client = dynamoDbClientAsync.await()) }
@@ -151,8 +149,8 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             val ttlInstant = Instant.now().plus(30, ChronoUnit.MINUTES)
             val ttl = ttlInstant.epochSecond
 
-            tokenRepository.put(token) {
-                put("userId", fromS(userId))
+            tokenRepository.put(token, "state") {
+                put("value", fromS(userId))
                 put("ttl", fromN(ttl.toString()))
             }
 
@@ -175,8 +173,8 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             val ttlInstant = Instant.now().plus(30, ChronoUnit.MINUTES)
             val ttl = ttlInstant.epochSecond
 
-            tokenRepository.put(token) {
-                put("userId", fromS(userId))
+            tokenRepository.put(token, "state") {
+                put("value", fromS(userId))
                 put("ttl", fromN(ttl.toString()))
             }
 
