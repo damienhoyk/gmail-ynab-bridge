@@ -58,7 +58,8 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val tokenRepositoryAsync = initScope.async { TokenRepository(client = dynamoDbClientAsync.await()) }
     private val mailboxRepositoryAsync = initScope.async { MailboxRepository(client = dynamoDbClientAsync.await()) }
-    private val mailRepositoryAsync = initScope.async { MailRepository(client = dynamoDbClientAsync.await()) }
+    private val outboxRepositoryAsync = initScope.async { OutboxRepository(client = dynamoDbClientAsync.await()) }
+    private val bridgeRepositoryAsync = initScope.async { BridgeRepository(client = dynamoDbClientAsync.await()) }
 
     private val decoder = getUrlDecoder()
 
@@ -73,6 +74,8 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         val event = mapper.decodeFromString<GmailEvent>(String(notificationData))
         val eventHistoryId = event.historyId
         val emailAddress = event.emailAddress
+
+        log.info("📨 Got message from [{}]", emailAddress)
 
         val googleAuthClient = googleAuthClientAsync.await()
         val tokenInfoAsync = async { googleAuthClient.getTokenInfo { parameter("id_token", bearerToken) } }
@@ -100,14 +103,20 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             return@runBlocking buildJsonObject { put("statusCode", tokenInfo.status.value) }.toString()
         }
 
-        val mailRepository = mailRepositoryAsync.await()
-        val mailJobs = history.messagesAdded.asSequence().map {
-            launch { mailRepository.put(emailAddress, it.message.id!!) }
-        }
-
-        mailJobs.toList().joinAll()
-
         mailboxRepository.put(emailAddress) { put("state", fromN(eventHistoryId.toString())) }
+
+        val bridgeRepository = bridgeRepositoryAsync.await()
+        val bridges = bridgeRepository.query(emailAddress).items()
+
+        val destinations = bridges.mapNotNull { it["destination"]?.s() }
+
+        history.messagesAdded.flatMap {
+            destinations.map { destination ->
+                launch {
+                    outboxRepositoryAsync.await().put(destination, "${it.message.id}:$emailAddress")
+                }
+            }
+        }.joinAll()
 
         return@runBlocking buildJsonObject { put("statusCode", 201) }.toString()
     }

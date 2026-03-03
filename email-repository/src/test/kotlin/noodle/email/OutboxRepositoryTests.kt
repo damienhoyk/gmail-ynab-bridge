@@ -13,35 +13,37 @@ import java.util.UUID
 
 @TestMethodOrder(OrderAnnotation::class)
 @TestInstance(PER_CLASS)
-class MailRepositoryTests {
+class OutboxRepositoryTests {
 
-    val repository = MailRepository(environment = "test")
+    val repository = OutboxRepository(environment = "test")
+    val destination = "${UUID.randomUUID()}@app.ynab.com"
     val address = "test-${UUID.randomUUID()}@gmail.com"
     val mailId = UUID.randomUUID().toString()
+    val source = "$mailId:$address"
 
     @Order(1)
     @Test
     fun put(): Unit = runBlocking {
-        repository.put(address, mailId)
+        repository.put(destination, source)
     }
 
     @Test
     fun get(): Unit = runBlocking {
-        val result = repository.get(address, mailId)
+        val result = repository.get(destination, source)
         val item = result.item()
-        assertEquals(address, item["address"]?.s())
-        assertEquals(mailId, item["mailId"]?.s())
+        assertEquals(destination, item["destination"]?.s())
+        assertEquals(source, item["source"]?.s())
     }
 
     @Test
     fun query(): Unit = runBlocking {
-        val results = repository.query(address)
+        val results = repository.query(destination)
         assertEquals(1, results.count())
     }
 
     @AfterAll
     fun tearDown(): Unit = runBlocking {
-        repository.delete(address, mailId)
+        repository.delete(destination, source)
     }
 
 }

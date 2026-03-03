@@ -3,13 +3,13 @@ package noodle.finance
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent
+import com.amazonaws.services.lambda.runtime.events.DynamodbEvent.DynamodbStreamRecord
 import io.ktor.client.call.body
 import io.ktor.http.isSuccess
 import jakarta.mail.internet.InternetAddress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -18,9 +18,11 @@ import noodle.email.GmailMessage
 import noodle.email.GmailMessageRequest
 import noodle.client.Google
 import noodle.client.Ynab
-import noodle.email.MailRepository
+import noodle.email.GmailMessageRequest.Format
 import noodle.email.MatcherRepository
+import noodle.email.OutboxRepository
 import noodle.email.TransactionMatcher
+import noodle.email.TransactionMatcher.RegexGroup
 import noodle.security.Bitwarden
 import noodle.security.GoogleAuthClient
 import noodle.security.TokenRepository
@@ -36,7 +38,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import kotlin.time.Clock.System.now
-import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
 
@@ -81,122 +83,132 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
         )
     }
 
-    private val tokenRepositoryAsync = initScope.async { TokenRepository(dynamoDbClientAsync.await()) }
+    private val tokenRepositoryAsync = initScope.async { TokenRepository(client = dynamoDbClientAsync.await()) }
     private val bridgeRepositoryAsync = initScope.async { BridgeRepository(client = dynamoDbClientAsync.await()) }
-    private val mailRepository = initScope.async { MailRepository(client = dynamoDbClientAsync.await()) }
     private val matcherRepositoryAsync = initScope.async { MatcherRepository(client = dynamoDbClientAsync.await()) }
+    private val outboxRepositoryAsync = initScope.async { OutboxRepository(client = dynamoDbClientAsync.await()) }
 
     override fun handleRequest(request: DynamodbEvent, context: Context?) = runBlocking {
-        request.records.filter { "insert".equals(it.eventName, ignoreCase = true) }.map { record ->
-            launch {
-                val mail = record.dynamodb.newImage.toMutableMap()
-                val mailAddress = mail["address"]?.s
-                val mailId = mail["mailId"]?.s
-
-                if (mailId.isNullOrEmpty()) {
-                    log.error("Invalid mailId")
-                    return@launch
-                }
-
-                if (mailAddress.isNullOrEmpty()) {
-                    log.error("Invalid mailAddress")
-                    return@launch
-                }
-
-                val ynab = ynabAsync.await()
-
-                val messageResponse = when {
-                    mailAddress.endsWith("@gmail.com", ignoreCase = true) -> coroutineScope {
-                        val google = googleAsync.await()
-                        val client = google.gmailClient(mailAddress)
-                        val request = GmailMessageRequest(GmailMessageRequest.Format.FULL)
-                        client.getMessage(id = mailId, request = request)
-                    }
-
-                    else -> throw IllegalStateException("unknown mail provider")
-                }
-
-                if (!messageResponse.status.isSuccess()) {
-                    log.error("Invalid response")
-                    return@launch
-                }
-
-                val (fromAddress, messageText) = when {
-                    mailAddress.endsWith("@gmail.com", ignoreCase = true) -> coroutineScope {
-                        val message = messageResponse.body<GmailMessage>()
-                        val messageText = message.text
-                        val messageHeaders = message.payload?.headers
-
-                        val fromHeader = messageHeaders?.find { it["name"].equals("from", true) }
-                        val fromValue = fromHeader?.get("value")
-
-                        val fromAddress = InternetAddress(fromValue).address
-
-                        fromAddress to messageText
-                    }
-
-                    else -> throw IllegalStateException("unknown mail provider")
-                }
-
-                val bridgeRepository = bridgeRepositoryAsync.await()
-                val bridges = bridgeRepository.query(mailAddress).items()
-
-                val destinations = bridges.mapNotNull { it["destination"]?.s() }
-                val destinationIds = destinations.filter { it.endsWith("@app.ynab.com") }
-                val clients = destinationIds.map { ynab.client(it) }
-                val accounts = bridges.mapNotNull { it["accounts"]?.m() }
-
-                val matcherRepository = matcherRepositoryAsync.await()
-                val matchers = matcherRepository.query(fromAddress).items().mapNotNull {
-                    val datePattern = it["datePattern"]?.s()
-                    val pattern = it["pattern"]?.s()?.toRegex()
-                    val order =
-                        it["order"]?.l()?.map(AttributeValue::s)?.map(TransactionMatcher.RegexGroup::valueOf)?.toSet()
-
-                    if (datePattern.isNullOrBlank() || pattern == null || order.isNullOrEmpty()) {
-                        log.warn("💩 Matcher [${it["source"] ?: "unknown"}] has invalid configuration")
-                        null
-                    } else {
-                        TransactionMatcher(pattern, order = order, inputDatePattern = datePattern)
-                    }
-                }
-
-                clients.zip(accounts).forEach { (ynabClient, bridgeAccounts) ->
-                    val transaction = matchers.firstNotNullOfOrNull { it.parse(messageText) }
-
-                    if (transaction == null) {
-                        log.warn("⚠️ Did not extract any transaction from message [{} ...]", messageText.take(50))
-                        return@launch
-                    }
-
-                    val bankAccount = transaction.accountId
-                    val ynabAccount = bridgeAccounts[bankAccount]?.s()
-
-                    if (ynabAccount.isNullOrEmpty()) {
-                        log.warn("⚠️ Transaction did not map to any account [{}]", transaction)
-                        return@launch
-                    }
-
-                    val ynabTransaction = transaction.copy(accountId = ynabAccount)
-                    val ynabBody = YnabTransaction.Body(transactions = listOf(ynabTransaction))
-
-                    val ttl = now().plus(3.days).epochSeconds
-                    val mailRepository = mailRepository.await()
-
-                    val job1 = launch {
-                        mailRepository.update(mailAddress, mailId) { put("ttl", fromN("$ttl")) }
-                    }
-
-                    val job2 = launch {
-                        ynabClient.postTransactions(request = YnabTransactionsRequest(ynabBody))
-                    }
-
-                    listOf(job1, job2).joinAll()
-                }
-            }
-        }.joinAll()
-
+        request.records
+            .filter { "insert".equals(it.eventName, ignoreCase = true) }
+            .map { launch { handle(it) } }.joinAll()
         return@runBlocking "OK"
     }
 
+    private suspend fun handle(record: DynamodbStreamRecord) {
+        val outbox = record.dynamodb.newImage.toMutableMap()
+
+        val destination = outbox["destination"]?.s
+        val source = outbox["source"]?.s
+
+        if (destination.isNullOrEmpty()) {
+            log.error("Invalid destination")
+            return
+        }
+
+        if (!destination.endsWith("@app.ynab.com", ignoreCase = true)) {
+            log.info("Filter destination [{}]", destination)
+            return
+        }
+
+        if (source.isNullOrEmpty()) {
+            log.error("Invalid source")
+            return
+        }
+
+        val (mailId, mailAddress) = source.split(":")
+
+        if (mailId.isEmpty()) {
+            log.error("Invalid mailId")
+            return
+        }
+
+        if (mailAddress.isEmpty()) {
+            log.error("Invalid mailAddress")
+            return
+        }
+
+        val ynab = ynabAsync.await()
+
+        val messageResponse = when {
+            mailAddress.endsWith("@gmail.com", ignoreCase = true) -> {
+                val google = googleAsync.await()
+                val client = google.gmailClient(mailAddress)
+                val request = GmailMessageRequest(Format.FULL)
+                client.getMessage(id = mailId, request = request)
+            }
+            else -> throw IllegalStateException("unknown mail provider")
+        }
+
+        when (messageResponse.status.value) {
+            403, 404, 410
+                -> outboxRepositoryAsync.await().update(destination, source) {
+                put("ttl", fromN("${(now() + 1.hours).epochSeconds}"))
+            }
+            else -> outboxRepositoryAsync.await().update(destination, source) {
+                put("ttl", fromN("${(now() + 120.hours).epochSeconds}"))
+            }
+        }
+
+        if (!messageResponse.status.isSuccess()) {
+            log.error("Invalid response")
+            return
+        }
+
+        val (fromAddress, messageText) = when {
+            mailAddress.endsWith("@gmail.com", ignoreCase = true) -> {
+                val message = messageResponse.body<GmailMessage>()
+                val messageText = message.text
+                val messageHeaders = message.payload?.headers
+
+                val fromHeader = messageHeaders?.find { it["name"].equals("from", true) }
+                val fromValue = fromHeader?.get("value")
+
+                val fromAddress = InternetAddress(fromValue).address
+
+                fromAddress to messageText
+            }
+            else -> throw IllegalStateException("unknown mail provider")
+        }
+
+        val bridgeRepository = bridgeRepositoryAsync.await()
+        val bridge = bridgeRepository.get(mailAddress, destination).item()
+
+        val client = ynab.client(destination)
+        val accounts = bridge["accounts"]?.m() ?: emptyMap()
+
+        val matcherRepository = matcherRepositoryAsync.await()
+        val matchers = matcherRepository.query(fromAddress).items().mapNotNull {
+            val datePattern = it["datePattern"]?.s()
+            val pattern = it["pattern"]?.s()?.toRegex()
+            val order = it["order"]?.l()?.map(AttributeValue::s)?.map(RegexGroup::valueOf)?.toSet()
+
+            if (datePattern.isNullOrBlank() || pattern == null || order.isNullOrEmpty()) {
+                log.warn("💩 Matcher [${it["source"] ?: "unknown"}] has invalid configuration")
+                null
+            } else {
+                TransactionMatcher(pattern, order = order, inputDatePattern = datePattern)
+            }
+        }
+
+        val transaction = matchers.firstNotNullOfOrNull { it.parse(messageText) }
+
+        if (transaction == null) {
+            log.warn("⚠️ Did not extract any transaction from message [{}|{} ...]", mailId, messageText.take(50))
+            outboxRepositoryAsync.await().update(destination, source) {
+                put("ttl", fromN("${(now() + 1.hours).epochSeconds}"))
+            }
+            return
+        }
+
+        val ynabAccount = accounts[transaction.accountId]?.s()
+        val ynabTransaction = transaction.copy(accountId = ynabAccount)
+        val ynabBody = YnabTransaction.Body(transactions = listOf(ynabTransaction))
+
+        client.postTransactions(request = YnabTransactionsRequest(ynabBody))
+
+        outboxRepositoryAsync.await().update(destination, source) {
+            put("ttl", fromN("${(now() + 24.hours).epochSeconds}"))
+        }
+    }
 }
