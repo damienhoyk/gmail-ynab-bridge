@@ -5,7 +5,6 @@ import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import noodle.email.GmailClient
 import noodle.security.GoogleAuthClient
@@ -21,49 +20,37 @@ class Google(
     private val authClient: GoogleAuthClient = GoogleAuthClient()
 ) {
 
-    suspend fun gmailClient(user: String) = coroutineScope {
-        GmailClient {
-            install(Auth) {
-                bearer {
-                    loadTokens {
-                        val authorization = tokenRepository.get(user, "access")?.item()
-                        val accessToken = authorization?.get("value")?.s()
-                        BearerTokens(accessToken!!, null)
-                    }
+    fun gmailClient(user: String) = GmailClient {
+        install(Auth) {
+            bearer {
+                loadTokens {
+                    val token = tokenRepository.get(user, "access")?.item()
+                    val value = token?.get("value")?.s()
+                    BearerTokens(value!!, null)
+                }
 
-                    refreshTokens {
-                        val authorization = tokenRepository.get(user, "refresh")?.item()
-                        val refreshToken = authorization?.get("value")?.s()
+                refreshTokens {
+                    val token = tokenRepository.get(user, "refresh")?.item()
+                    val value = token?.get("value")?.s()
 
-                        val authRequest = OAuth2TokenRequest(
-                            grantType = "refresh_token",
-                            clientId = id,
-                            clientSecret = secret,
-                            refreshToken = refreshToken
-                        )
+                    val authRequest = OAuth2TokenRequest(
+                        grantType = "refresh_token",
+                        clientId = id,
+                        clientSecret = secret,
+                        refreshToken = value
+                    )
 
-                        val response = authClient.getToken(authRequest).body<TokenResponse>()
+                    val response = authClient.getToken(authRequest).body<TokenResponse>()
 
-                        val newAccessToken = response.accessToken
-                        val newRefreshToken = response.refreshToken
-
-                        val job1 = newAccessToken?.let {
-                            launch {
-                                tokenRepository.update(user, "access") { put("value", fromS(it)) }
+                    coroutineScope {
+                        launch {
+                            tokenRepository.update(user, "access") {
+                                put("value", fromS(response.accessToken!!))
                             }
                         }
-
-                        val job2 = newRefreshToken?.let {
-                            launch {
-                                tokenRepository.update(user, "refresh") { put("value", fromS(it)) }
-                            }
-                        }
-
-                        listOfNotNull(job1, job2).joinAll()
-
-
-                        BearerTokens(newAccessToken!!, newRefreshToken)
                     }
+
+                    BearerTokens(response.accessToken!!, response.refreshToken)
                 }
             }
         }
