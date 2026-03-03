@@ -49,7 +49,6 @@ class TransactionMatcher(
             throw IllegalStateException()
         }
 
-        // Optimize amount parsing to avoid string allocations and replacement
         var mills = 0
         for (i in 0 until amountMatch.length) {
             val c = amountMatch[i]
@@ -68,7 +67,6 @@ class TransactionMatcher(
         val dayOfMonth = if (parsedDate.isSupported(DAY_OF_MONTH)) parsedDate.get(DAY_OF_MONTH) else systemDate.get(DAY_OF_MONTH)
 
         val resolvedDate = LocalDate.of(year, monthOfYear, dayOfMonth)
-        // Use LocalDate.toString() for ISO-8601 formatting (yyyy-MM-dd)
         val date = resolvedDate.toString()
 
         YnabTransaction(accountId = accountMatch, amount = amount, date = date, payeeName = payeeMatch)
