@@ -13,8 +13,9 @@ class TransactionMatcher(
     inputDatePattern: String,
 ) {
 
-    private val fields = listOf(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH)
-    private val outputDatePattern = "yyyy-MM-dd"
+    companion object {
+        private val fields = listOf(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH)
+    }
 
     constructor(configuration: Configuration.Matcher) : this(
         configuration.pattern.toRegex(),
@@ -24,19 +25,20 @@ class TransactionMatcher(
     )
 
     private val inputDateFormatter = DateTimeFormatter.ofPattern(inputDatePattern)
-    private val outputDateFormatter = DateTimeFormatter.ofPattern(outputDatePattern)
+
+    // Pre-calculate regex group indexes to avoid repeated set creation and lookups in the parse method.
+    private val groupIndexes = RegexGroup.entries.map { group ->
+        val index = order.indexOf(group)
+        if (index > -1) index + 1 else -1
+    }
 
     fun parse(input: String) = regex.find(input)?.groupValues?.let { match ->
-        val order = setOf("ENTIRE_MATCH") + order
-
-        val indexes = RegexGroup.entries.map { order.indexOf(it) }
-
         val (
             accountMatch,
             amountMatch,
             dateMatch,
             payeeMatch
-        ) = indexes.map { if (it > -1) match[it] else null }
+        ) = groupIndexes.map { if (it > -1) match[it] else null }
 
         if (amountMatch == null) {
             throw IllegalStateException()
@@ -59,7 +61,8 @@ class TransactionMatcher(
         ) = fields.map { if (parsedDate.isSupported(it)) parsedDate.get(it) else systemDate.get(it) }
 
         val resolvedDate = LocalDate.of(year, monthOfYear, dayOfMonth)
-        val date = outputDateFormatter.format(resolvedDate)
+        // Optimized: LocalDate.toString() is faster than DateTimeFormatter for ISO-8601 'yyyy-MM-dd' format.
+        val date = resolvedDate.toString()
 
         YnabTransaction(accountId = accountMatch, amount = amount, date = date, payeeName = payeeMatch)
     }
