@@ -1,10 +1,11 @@
 package noodle.security
 
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
 import org.slf4j.LoggerFactory
 
-class GoogleAuthClient : OidcClient("https://accounts.google.com/.well-known/openid-configuration") {
+class GoogleAuthClient(block: HttpClientConfig<*>.() -> Unit = {}) : OidcClient("https://accounts.google.com/.well-known/openid-configuration", block) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 

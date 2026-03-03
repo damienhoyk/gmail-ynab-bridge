@@ -3,7 +3,6 @@ package noodle.security
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.engine.cio.CIOEngineConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
@@ -16,7 +15,7 @@ import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
 import kotlinx.serialization.json.Json
 
-class YnabAuthClient(block: HttpClientConfig<CIOEngineConfig>.() -> Unit = {}) : OAuth2TokenProvider() {
+class YnabAuthClient(block: HttpClientConfig<*>.() -> Unit = {}) : OAuth2TokenProvider() {
 
     private val initScope = CoroutineScope(Default)
 
