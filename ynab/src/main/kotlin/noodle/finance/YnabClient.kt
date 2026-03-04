@@ -11,6 +11,7 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.ContentType.*
+import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
@@ -29,7 +30,8 @@ class YnabClient(engine: HttpClientEngine = CIO.create(), block: HttpClientConfi
     val httpClient = HttpClient(engine) {
         install(Logging) {
             logger = Logger.DEFAULT
-            level = LogLevel.INFO
+            level = LogLevel.NONE
+            sanitizeHeader { it == HttpHeaders.Authorization }
         }
 
         defaultRequest {

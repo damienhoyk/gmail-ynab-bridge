@@ -1,7 +1,9 @@
 package noodle.security
 
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.parameter
+import io.ktor.client.request.forms.FormDataContent
+import io.ktor.client.request.setBody
+import io.ktor.http.Parameters
 
 data class OAuth2TokenRequest(
     val code: String? = null,
@@ -13,11 +15,13 @@ data class OAuth2TokenRequest(
 ) {
 
     val block: HttpRequestBuilder.() -> Unit = {
-        code?.let { parameter("code", it) }
-        clientId?.let { parameter("client_id", it) }
-        clientSecret?.let { parameter("client_secret", it) }
-        redirectUri?.let { parameter("redirect_uri", it) }
-        refreshToken?.let { parameter("refresh_token", it) }
-        grantType?.let { parameter("grant_type", it) }
+        setBody(FormDataContent(Parameters.build {
+            code?.let { append("code", it) }
+            clientId?.let { append("client_id", it) }
+            clientSecret?.let { append("client_secret", it) }
+            redirectUri?.let { append("redirect_uri", it) }
+            refreshToken?.let { append("refresh_token", it) }
+            grantType?.let { append("grant_type", it) }
+        }))
     }
 }

@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.FormDataContent
 import io.ktor.http.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Default
@@ -78,7 +79,13 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         log.info("📨 Got message from [{}]", emailAddress)
 
         val googleAuthClient = googleAuthClientAsync.await()
-        val tokenInfoAsync = async { googleAuthClient.getTokenInfo { parameter("id_token", bearerToken) } }
+        val tokenInfoAsync = async {
+            googleAuthClient.getTokenInfo {
+                setBody(FormDataContent(Parameters.build {
+                    bearerToken?.let { append("id_token", it) }
+                }))
+            }
+        }
 
         val mailboxRepository = mailboxRepositoryAsync.await()
         val mailboxAsync = async { mailboxRepository.get(emailAddress) }

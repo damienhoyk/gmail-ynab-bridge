@@ -8,6 +8,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
@@ -28,6 +29,7 @@ open class OidcClient(
         install(Logging) {
             logger = Logger.DEFAULT
             level = LogLevel.INFO
+            sanitizeHeader { it == HttpHeaders.Authorization }
         }
 
         install(ContentNegotiation) {

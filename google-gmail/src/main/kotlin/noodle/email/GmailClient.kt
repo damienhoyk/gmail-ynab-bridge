@@ -9,6 +9,7 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.ContentType.*
+import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
@@ -18,6 +19,7 @@ class GmailClient(engine: HttpClientEngine = CIO.create(), block: HttpClientConf
         install(Logging) {
             logger = Logger.DEFAULT
             level = LogLevel.INFO
+            sanitizeHeader { it == HttpHeaders.Authorization }
         }
 
         defaultRequest {
