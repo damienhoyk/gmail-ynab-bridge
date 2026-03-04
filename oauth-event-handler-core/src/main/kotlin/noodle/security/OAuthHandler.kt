@@ -4,15 +4,14 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.call.*
+import io.ktor.http.headers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonObject
 import noodle.user.UserRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
@@ -60,13 +59,19 @@ abstract class OAuthHandler(
         val state = request.queryStringParameters?.get("state")
 
         if (code == null) {
-            log.info("💩 code is null")
-            return@runBlocking lambdaResponse(400)
+            log.error("💩 code is null")
+            return@runBlocking buildJsonObject {
+                put("statusCode", 400)
+                put("body", "⛔ Failed authorization")
+            }.toString()
         }
 
         if (state == null) {
-            log.info("💩 state is null")
-            return@runBlocking lambdaResponse(400)
+            log.error("💩 state is null")
+            return@runBlocking buildJsonObject {
+                put("statusCode", 400)
+                put("body", "⛔ Failed authorization")
+            }.toString()
         }
 
         val bitwarden = bitwardenAsync.await()
@@ -86,7 +91,11 @@ abstract class OAuthHandler(
         val authority = getAuthority(response)
 
         if (authority.isNullOrBlank()) {
-            return@runBlocking lambdaResponse(401)
+            log.error("🐳 authority is null")
+            return@runBlocking buildJsonObject {
+                put("statusCode", 500)
+                put("body", "🐳 Internal server error")
+            }.toString()
         }
 
         val tokenRepository = tokenRepositoryAsync.await()
@@ -95,8 +104,11 @@ abstract class OAuthHandler(
         val userId = token["value"]?.s()
 
         if (userId.isNullOrEmpty()) {
-            log.error("💩 user id is null")
-            return@runBlocking lambdaResponse(500)
+            log.error("🐳 user id is null")
+            return@runBlocking buildJsonObject {
+                put("statusCode", 500)
+                put("body", "🐳 Internal server error")
+            }.toString()
         }
 
         log.info("🪪 Updating user login mapping for [{}] ...", userId)
@@ -109,26 +121,24 @@ abstract class OAuthHandler(
 
         log.info("🎫 Storing tokens for authorization [{}] ...", authority)
 
-        val job1 = launch {
-            tokenRepository.update(authority, "access") { put("value", fromS(response.accessToken)) }
+        launch {
+            tokenRepository.update(authority, "access") {
+                put("value", fromS(response.accessToken))
+            }
         }
 
-        val job2 = launch {
-            tokenRepository.update(authority, "refresh") { put("value", fromS(response.refreshToken)) }
+        launch {
+            tokenRepository.update(authority, "refresh") {
+                put("value", fromS(response.refreshToken))
+            }
         }
 
-        listOf(job1, job2).joinAll()
-
-        return@runBlocking "🔓 Completed authorization!"
+        return@runBlocking buildJsonObject {
+            put("statusCode", 200)
+            put("body", "🔓 Completed authorization!")
+        }.toString()
     }
 
     abstract fun getAuthority(response: TokenResponse): String?
-
-    private fun lambdaResponse(statusCode: Int, message: String? = null) = buildJsonObject {
-        put("statusCode", statusCode)
-        putJsonObject("body") {
-            put("message", message)
-        }
-    }.toString()
 
 }
