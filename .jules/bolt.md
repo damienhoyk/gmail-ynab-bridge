@@ -5,3 +5,7 @@
 ## 2025-05-15 - List Iteration and View vs Copy
 **Learning:** Using `reversed()` on a list creates a new list copy, which is inefficient when only read-only reverse iteration is needed.
 **Action:** Use `asReversed()` to get a reversed view of the list instead of a copy when possible.
+
+## 2026-03-04 - Hot-path Transaction Parsing Optimizations
+**Learning:** Transaction parsing from email snippets is a hot path. Previous implementation used O(n) lookups and multiple collection allocations (`setOf`, `listOf`, `map`) per `parse()` call.
+**Action:** Pre-calculate capturing group indices in constructors. Avoid intermediate string and collection allocations in high-frequency methods. Use `LocalDate.toString()` for ISO-8601 formatting.

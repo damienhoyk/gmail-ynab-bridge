@@ -9,12 +9,9 @@ import java.time.temporal.ChronoField.*
 class TransactionMatcher(
     val regex: Regex,
     val outgoing: Boolean = true,
-    val order: Set<RegexGroup>,
+    order: Set<RegexGroup>,
     inputDatePattern: String,
 ) {
-
-    private val fields = listOf(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH)
-    private val outputDatePattern = "yyyy-MM-dd"
 
     constructor(configuration: Configuration.Matcher) : this(
         configuration.pattern.toRegex(),
@@ -24,42 +21,50 @@ class TransactionMatcher(
     )
 
     private val inputDateFormatter = DateTimeFormatter.ofPattern(inputDatePattern)
-    private val outputDateFormatter = DateTimeFormatter.ofPattern(outputDatePattern)
+
+    // Pre-calculate indices to avoid O(n) lookups in parse()
+    private val accountIndex = getIndex(RegexGroup.ACCOUNT, order)
+    private val amountIndex = getIndex(RegexGroup.AMOUNT, order)
+    private val dateIndex = getIndex(RegexGroup.DATE, order)
+    private val payeeIndex = getIndex(RegexGroup.PAYEE, order)
+
+    private fun getIndex(group: RegexGroup, order: Set<RegexGroup>): Int {
+        val index = order.indexOf(group)
+        return if (index != -1) index + 1 else -1 // +1 to account for group 0 (entire match)
+    }
 
     fun parse(input: String) = regex.find(input)?.groupValues?.let { match ->
-        val order = setOf("ENTIRE_MATCH") + order
+        val accountMatch = if (accountIndex != -1) match[accountIndex] else null
+        val amountMatch = if (amountIndex != -1) match[amountIndex] else null
+        val dateMatch = if (dateIndex != -1) match[dateIndex] else null
+        val payeeMatch = if (payeeIndex != -1) match[payeeIndex] else null
 
-        val indexes = RegexGroup.entries.map { order.indexOf(it) }
-
-        val (
-            accountMatch,
-            amountMatch,
-            dateMatch,
-            payeeMatch
-        ) = indexes.map { if (it > -1) match[it] else null }
-
-        if (amountMatch == null) {
+        if (amountMatch == null || dateMatch == null) {
             throw IllegalStateException()
         }
 
-        if (dateMatch == null) {
-            throw IllegalStateException()
+        // Fast currency parsing: avoid intermediate string allocations by removing '.' manually
+        var mills = 0
+        for (char in amountMatch) {
+            if (char in '0'..'9') {
+                mills = mills * 10 + (char - '0')
+            }
         }
-
-        val mills = amountMatch.replace(".", "").toInt() * 10
-        val amount =  if (outgoing) -mills else mills
+        mills *= 10 // Convert to milliunits (assuming 2 decimal places in input)
+        val amount = if (outgoing) -mills else mills
 
         val parsedDate = inputDateFormatter.parse(dateMatch)
         val systemDate = LocalDate.now()
 
-        val (
-            year,
-            monthOfYear,
-            dayOfMonth
-        ) = fields.map { if (parsedDate.isSupported(it)) parsedDate.get(it) else systemDate.get(it) }
+        // Direct property access instead of list mapping for date resolution
+        val year = if (parsedDate.isSupported(YEAR)) parsedDate.get(YEAR) else systemDate.get(YEAR)
+        val monthOfYear = if (parsedDate.isSupported(MONTH_OF_YEAR)) parsedDate.get(MONTH_OF_YEAR) else systemDate.get(MONTH_OF_YEAR)
+        val dayOfMonth = if (parsedDate.isSupported(DAY_OF_MONTH)) parsedDate.get(DAY_OF_MONTH) else systemDate.get(DAY_OF_MONTH)
 
         val resolvedDate = LocalDate.of(year, monthOfYear, dayOfMonth)
-        val date = outputDateFormatter.format(resolvedDate)
+
+        // Use LocalDate.toString() for standard ISO-8601 'yyyy-MM-dd' format as it is faster
+        val date = resolvedDate.toString()
 
         YnabTransaction(accountId = accountMatch, amount = amount, date = date, payeeName = payeeMatch)
     }
