@@ -14,7 +14,6 @@ class TransactionMatcher(
 ) {
 
     private val fields = listOf(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH)
-    private val outputDatePattern = "yyyy-MM-dd"
 
     constructor(configuration: Configuration.Matcher) : this(
         configuration.pattern.toRegex(),
@@ -24,7 +23,6 @@ class TransactionMatcher(
     )
 
     private val inputDateFormatter = DateTimeFormatter.ofPattern(inputDatePattern)
-    private val outputDateFormatter = DateTimeFormatter.ofPattern(outputDatePattern)
 
     fun parse(input: String) = regex.find(input)?.groupValues?.let { match ->
         val order = setOf("ENTIRE_MATCH") + order
@@ -59,7 +57,8 @@ class TransactionMatcher(
         ) = fields.map { if (parsedDate.isSupported(it)) parsedDate.get(it) else systemDate.get(it) }
 
         val resolvedDate = LocalDate.of(year, monthOfYear, dayOfMonth)
-        val date = outputDateFormatter.format(resolvedDate)
+        // Opt: LocalDate implicitly uses ISO-8601 (yyyy-MM-dd), avoiding DateTimeFormatter overhead
+        val date = resolvedDate.toString()
 
         YnabTransaction(accountId = accountMatch, amount = amount, date = date, payeeName = payeeMatch)
     }
