@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.finance.YnabEmailHandler",
+    "name": "noodle.finance.infrastructure.in.YnabEmailHandler",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,

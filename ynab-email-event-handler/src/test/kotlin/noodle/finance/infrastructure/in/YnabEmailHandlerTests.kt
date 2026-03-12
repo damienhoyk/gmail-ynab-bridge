@@ -1,4 +1,4 @@
-package noodle.finance
+package noodle.finance.infrastructure.`in`
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test
 import kotlin.system.measureTimeMillis
 
 class YnabEmailHandlerTests {
-
     @Test
     fun initTime() {
-        val timeInMillis = measureTimeMillis {
-            YnabEmailHandler()
-        }
+        val timeInMillis =
+            measureTimeMillis {
+                YnabEmailHandler()
+            }
 
         println("Init time: $timeInMillis ms")
         Assertions.assertTrue(timeInMillis < 5000) { "Init took too long: $timeInMillis ms" }
@@ -23,5 +23,4 @@ class YnabEmailHandlerTests {
         val handler = YnabEmailHandler()
         TODO("Not yet implemented")
     }
-
 }
