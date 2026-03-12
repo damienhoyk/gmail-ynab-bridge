@@ -12,7 +12,10 @@ import java.util.UUID.fromString
 
 suspend fun bitwardenClient() = withContext(Default) { BitwardenClient(BitwardenSettings()) }
 
-suspend fun SecretsClient.getSecret(organizationId: String, name: String) = withContext(IO) {
+suspend fun SecretsClient.getSecret(
+    organizationId: String,
+    name: String,
+) = withContext(IO) {
     val organizationId = fromString(organizationId)
 
     val secrets = list(organizationId)
@@ -23,17 +26,24 @@ suspend fun SecretsClient.getSecret(organizationId: String, name: String) = with
     secretValue
 }
 
-suspend fun SecretsClient.getApiKey(organizationId: String, name: String) =
-    getSecret(organizationId, name)?.jsonObject()?.apiKey
+suspend fun SecretsClient.getApiKey(
+    organizationId: String,
+    name: String,
+) = getSecret(organizationId, name)?.jsonObject()?.apiKey
 
-suspend fun SecretsClient.getClientId(organizationId: String, name: String) =
-    getSecret(organizationId, name)?.jsonObject()?.clientId
+suspend fun SecretsClient.getClientId(
+    organizationId: String,
+    name: String,
+) = getSecret(organizationId, name)?.jsonObject()?.clientId
 
-suspend fun SecretsClient.getClientSecret(organizationId: String, name: String) =
-    getSecret(organizationId, name)?.jsonObject()?.clientSecret
+suspend fun SecretsClient.getClientSecret(
+    organizationId: String,
+    name: String,
+) = getSecret(organizationId, name)?.jsonObject()?.clientSecret
 
-suspend fun AuthClient.authorize(apiKey: String, stateFile: String = "build/bitwarden-state") =
-    withContext(IO) { apply { loginAccessToken(apiKey, stateFile) } }
+suspend fun AuthClient.authorize(
+    apiKey: String,
+    stateFile: String = "build/bitwarden-state",
+) = withContext(IO) { apply { loginAccessToken(apiKey, stateFile) } }
 
-suspend fun SecretsManagerClient.getSecret(name: String) =
-    withContext(IO) { getSecretValue { it.secretId(name) }.secretString() }
+suspend fun SecretsManagerClient.getSecret(name: String) = withContext(IO) { getSecretValue { it.secretId(name) }.secretString() }
