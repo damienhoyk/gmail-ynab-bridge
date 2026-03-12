@@ -12,4 +12,3 @@ val JsonObject.clientId get() = get("clientId")?.content
 val JsonObject.clientSecret get() = get("clientSecret")?.content
 
 val JsonElement.content get() = jsonPrimitive.content
-

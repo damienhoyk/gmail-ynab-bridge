@@ -1,0 +1,16 @@
+package noodle.security.port.out
+
+import noodle.security.domain.Token
+
+interface TokenRepository {
+    suspend fun getToken(
+        id: String,
+        type: String,
+    ): Token?
+
+    suspend fun updateTokenValue(
+        id: String,
+        type: String,
+        value: String,
+    ): Token
+}
