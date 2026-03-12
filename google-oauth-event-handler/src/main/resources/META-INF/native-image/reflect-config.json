@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.security.GoogleOAuthHandler",
+    "name": "noodle.security.infrastructure.in.GoogleOAuthHandler",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,
