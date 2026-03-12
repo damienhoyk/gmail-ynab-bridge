@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.email.GmailHistory",
+    "name": "noodle.email.infrastructure.serialization.GmailHistory",
     "fields": [
       {
         "name": "Companion"
@@ -8,16 +8,16 @@
     ]
   },
   {
-    "name": "noodle.email.GmailHistory$Companion",
+    "name": "noodle.email.infrastructure.serialization.GmailHistory$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.email.GmailHistory$Change",
+    "name": "noodle.email.infrastructure.serialization.GmailHistory$Change",
     "fields": [
       {
         "name": "Companion"
@@ -25,16 +25,16 @@
     ]
   },
   {
-    "name": "noodle.email.GmailHistory$Change$Companion",
+    "name": "noodle.email.infrastructure.serialization.GmailHistory$Change$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.email.GmailHistory$Message",
+    "name": "noodle.email.infrastructure.serialization.GmailHistory$Message",
     "fields": [
       {
         "name": "Companion"
@@ -42,16 +42,16 @@
     ]
   },
   {
-    "name": "noodle.email.GmailHistory$Message$Companion",
+    "name": "noodle.email.infrastructure.serialization.GmailHistory$Message$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.email.GmailLabel",
+    "name": "noodle.email.infrastructure.serialization.GmailLabel",
     "fields": [
       {
         "name": "Companion"
@@ -59,16 +59,16 @@
     ]
   },
   {
-    "name": "noodle.email.GmailLabel$Companion",
+    "name": "noodle.email.infrastructure.serialization.GmailLabel$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.email.GmailLabel$List",
+    "name": "noodle.email.infrastructure.serialization.GmailLabel$List",
     "fields": [
       {
         "name": "Companion"
@@ -76,16 +76,16 @@
     ]
   },
   {
-    "name": "noodle.email.GmailLabel$List$Companion",
+    "name": "noodle.email.infrastructure.serialization.GmailLabel$List$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.email.GmailMessage",
+    "name": "noodle.email.infrastructure.serialization.GmailMessage",
     "fields": [
       {
         "name": "Companion"
@@ -93,16 +93,16 @@
     ]
   },
   {
-    "name": "noodle.email.GmailMessage$Companion",
+    "name": "noodle.email.infrastructure.serialization.GmailMessage$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.email.GmailMessage$Data",
+    "name": "noodle.email.infrastructure.serialization.GmailMessage$Data",
     "fields": [
       {
         "name": "Companion"
@@ -110,16 +110,16 @@
     ]
   },
   {
-    "name": "noodle.email.GmailMessage$Data$Companion",
+    "name": "noodle.email.infrastructure.serialization.GmailMessage$Data$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.email.GmailMessage$List",
+    "name": "noodle.email.infrastructure.serialization.GmailMessage$List",
     "fields": [
       {
         "name": "Companion"
@@ -127,16 +127,16 @@
     ]
   },
   {
-    "name": "noodle.email.GmailMessage$List$Companion",
+    "name": "noodle.email.infrastructure.serialization.GmailMessage$List$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.email.GmailMessage$Part",
+    "name": "noodle.email.infrastructure.serialization.GmailMessage$Part",
     "fields": [
       {
         "name": "Companion"
@@ -144,16 +144,16 @@
     ]
   },
   {
-    "name": "noodle.email.GmailMessage$Part$Companion",
+    "name": "noodle.email.infrastructure.serialization.GmailMessage$Part$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.email.GmailProfile",
+    "name": "noodle.email.infrastructure.serialization.GmailProfile",
     "fields": [
       {
         "name": "Companion"
@@ -161,11 +161,45 @@
     ]
   },
   {
-    "name": "noodle.email.GmailProfile$Companion",
+    "name": "noodle.email.infrastructure.serialization.GmailProfile$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.infrastructure.serialization.GmailWatch",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.infrastructure.serialization.GmailWatch$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.infrastructure.serialization.GmailWatch$Error",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.email.infrastructure.serialization.GmailWatch$Error$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": []
       }
     ]
   }

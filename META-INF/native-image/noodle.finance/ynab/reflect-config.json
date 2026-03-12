@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.finance.YnabBudget",
+    "name": "noodle.finance.infrastructure.serialization.YnabBudget",
     "fields": [
       {
         "name": "Companion"
@@ -8,7 +8,7 @@
     ]
   },
   {
-    "name": "noodle.finance.YnabBudget$Body",
+    "name": "noodle.finance.infrastructure.serialization.YnabBudget$Body",
     "fields": [
       {
         "name": "Companion"
@@ -16,25 +16,25 @@
     ]
   },
   {
-    "name": "noodle.finance.YnabBudget$Body$Companion",
+    "name": "noodle.finance.infrastructure.serialization.YnabBudget$Body$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.finance.YnabBudget$Companion",
+    "name": "noodle.finance.infrastructure.serialization.YnabBudget$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.finance.YnabBudget$Data",
+    "name": "noodle.finance.infrastructure.serialization.YnabBudget$Data",
     "fields": [
       {
         "name": "Companion"
@@ -42,16 +42,16 @@
     ]
   },
   {
-    "name": "noodle.finance.YnabBudget$Data$Companion",
+    "name": "noodle.finance.infrastructure.serialization.YnabBudget$Data$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.finance.YnabTransaction",
+    "name": "noodle.finance.infrastructure.serialization.YnabTransaction",
     "fields": [
       {
         "name": "Companion"
@@ -59,16 +59,16 @@
     ]
   },
   {
-    "name": "noodle.finance.YnabTransaction$Companion",
+    "name": "noodle.finance.infrastructure.serialization.YnabTransaction$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.finance.YnabTransaction$Body",
+    "name": "noodle.finance.infrastructure.serialization.YnabTransaction$Body",
     "fields": [
       {
         "name": "Companion"
@@ -76,16 +76,16 @@
     ]
   },
   {
-    "name": "noodle.finance.YnabTransaction$Body$Companion",
+    "name": "noodle.finance.infrastructure.serialization.YnabTransaction$Body$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-    "name": "noodle.finance.YnabTransaction$Data",
+    "name": "noodle.finance.infrastructure.serialization.YnabTransaction$Data",
     "fields": [
       {
         "name": "Companion"
@@ -93,11 +93,62 @@
     ]
   },
   {
-    "name": "noodle.finance.YnabTransaction$Data$Companion",
+    "name": "noodle.finance.infrastructure.serialization.YnabTransaction$Data$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.infrastructure.serialization.YnabAccount",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.infrastructure.serialization.YnabAccount$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.infrastructure.serialization.YnabAccount$Body",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.infrastructure.serialization.YnabAccount$Body$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.infrastructure.serialization.YnabAccount$Data",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
+  {
+    "name": "noodle.finance.infrastructure.serialization.YnabAccount$Data$Companion",
+    "methods": [
+      {
+        "name": "serializer",
+        "parameterTypes": []
       }
     ]
   },
