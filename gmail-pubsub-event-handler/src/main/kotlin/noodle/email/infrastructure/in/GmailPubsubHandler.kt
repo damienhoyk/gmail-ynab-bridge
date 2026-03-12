@@ -1,0 +1,125 @@
+package noodle.email.infrastructure.`in`
+
+import com.amazonaws.services.lambda.runtime.Context
+import com.amazonaws.services.lambda.runtime.RequestHandler
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import noodle.bridge.infrastructure.out.DynamoDbBridgeRepository
+import noodle.email.domain.SyncMailboxCommand
+import noodle.email.infrastructure.KtorGmailClientFactory
+import noodle.email.infrastructure.out.DynamoDbMailboxRepository
+import noodle.email.infrastructure.out.DynamoDbOutboxRepository
+import noodle.email.infrastructure.serialization.GmailEvent
+import noodle.email.infrastructure.serialization.PubsubNotification
+import noodle.email.port.`in`.GmailPubsubService
+import noodle.security.Bitwarden
+import noodle.security.clientId
+import noodle.security.clientSecret
+import noodle.security.infrastructure.out.DynamoDbTokenRepository
+import noodle.security.infrastructure.out.KtorGoogleAuthClient
+import noodle.security.jsonObject
+import noodle.security.port.`in`.AuthTokenService
+import org.slf4j.LoggerFactory
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
+import java.util.Base64
+
+class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
+    private val log = LoggerFactory.getLogger(javaClass)
+    private val initScope = CoroutineScope(Dispatchers.Default)
+    private val decoder = Base64.getUrlDecoder()
+    private val mapper = Json { ignoreUnknownKeys = true }
+
+    private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.create() }
+    private val urlConnectionClient = UrlConnectionHttpClient.builder()
+
+    private val dynamoDbClientAsync =
+        initScope.async {
+            DynamoDbClient.builder()
+                .credentialsProvider(credentialsProviderAsync.await())
+                .httpClientBuilder(urlConnectionClient)
+                .build()
+        }
+
+    private val secretsManagerClientAsync =
+        initScope.async {
+            SecretsManagerClient.builder()
+                .credentialsProvider(credentialsProviderAsync.await())
+                .httpClientBuilder(urlConnectionClient)
+                .build()
+        }
+
+    private val bitwardenAsync = initScope.async { Bitwarden(secretsManagerClientAsync.await()) }
+
+    private val engine = CIO.create()
+
+    private val googleSecretAsync =
+        initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
+    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClient(HttpClient(engine)) }
+    private val googleAuthTokenService =
+        initScope.async {
+            val secret = googleSecretAsync.await()
+            AuthTokenService(
+                clientId = secret.clientId!!,
+                clientSecret = secret.clientSecret!!,
+                tokenRepository = tokenRepositoryAsync.await(),
+                authClient = googleAuthClientAsync.await(),
+            )
+        }
+
+    private val gmailClientFactory =
+        initScope.async { KtorGmailClientFactory(googleAuthTokenService.await(), engine) }
+
+    private val bridgeRepositoryAsync =
+        initScope.async { DynamoDbBridgeRepository(client = dynamoDbClientAsync.await()) }
+    private val mailboxRepositoryAsync =
+        initScope.async { DynamoDbMailboxRepository(client = dynamoDbClientAsync.await()) }
+    private val outboxRepositoryAsync =
+        initScope.async { DynamoDbOutboxRepository(client = dynamoDbClientAsync.await()) }
+    private val tokenRepositoryAsync =
+        initScope.async { DynamoDbTokenRepository(client = dynamoDbClientAsync.await()) }
+
+    private val service =
+        GmailPubsubService(
+            gmailClientFactory = gmailClientFactory,
+            googleAuthClient = googleAuthClientAsync,
+            mailboxRepository = mailboxRepositoryAsync,
+            bridgeRepository = bridgeRepositoryAsync,
+            outboxRepository = outboxRepositoryAsync,
+        )
+
+    override fun handleRequest(
+        request: APIGatewayV2HTTPEvent,
+        context: Context?,
+    ) = runBlocking {
+        val headers = request.headers
+
+        val notification = mapper.decodeFromString<PubsubNotification>(request.body)
+        val notificationData = decoder.decode(notification.message.data)
+
+        val event = mapper.decodeFromString<GmailEvent>(String(notificationData))
+
+        val emailAddress = event.emailAddress
+        val state = event.historyId
+        val authorization = headers?.get("authorization")
+
+        if (authorization.isNullOrEmpty()) {
+            return@runBlocking buildJsonObject { put("statusCode", 403) }.toString()
+        }
+
+        val command = SyncMailboxCommand(emailAddress, authorization, state)
+        val statusCode = service.execute(command)
+
+        buildJsonObject { put("statusCode", statusCode) }.toString()
+    }
+}

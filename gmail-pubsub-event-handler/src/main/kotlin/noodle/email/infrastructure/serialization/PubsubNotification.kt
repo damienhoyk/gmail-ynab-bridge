@@ -1,4 +1,4 @@
-package noodle.email
+package noodle.email.infrastructure.serialization
 
 import kotlinx.serialization.Serializable
 
