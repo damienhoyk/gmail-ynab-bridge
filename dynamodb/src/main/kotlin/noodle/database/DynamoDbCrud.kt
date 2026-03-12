@@ -9,7 +9,6 @@ import software.amazon.awssdk.services.dynamodb.model.ReturnValue
 import java.time.Instant.now
 
 abstract class DynamoDbCrud {
-
     typealias Item = MutableMap<String, AttributeValue>
     typealias Key = Map<String, AttributeValue>
 
@@ -17,7 +16,10 @@ abstract class DynamoDbCrud {
 
     abstract val table: String
 
-    suspend fun put(key: Key, block: Item.() -> Unit = {}) = withContext(IO) {
+    suspend fun put(
+        key: Key,
+        block: Item.() -> Unit = {},
+    ) = withContext(IO) {
         val item = mutableMapOf<String, AttributeValue>().apply(block)
         item["modified"] = fromN("${now().epochSecond}")
         client.putItem { it.tableName(table).item(item + key) }
@@ -25,7 +27,10 @@ abstract class DynamoDbCrud {
 
     suspend fun get(key: Key) = withContext(IO) { client.getItem { it.tableName(table).key(key) } }
 
-    suspend fun update(key: Key, block: Item.() -> Unit = {}) = withContext(IO) {
+    suspend fun update(
+        key: Key,
+        block: Item.() -> Unit = {},
+    ) = withContext(IO) {
         val item = mutableMapOf<String, AttributeValue>().apply(block)
         item["modified"] = fromN("${now().epochSecond}")
 
@@ -46,5 +51,4 @@ abstract class DynamoDbCrud {
     }
 
     suspend fun delete(key: Key) = withContext(IO) { client.deleteItem { it.tableName(table).key(key) } }
-
 }

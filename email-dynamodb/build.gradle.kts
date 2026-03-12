@@ -1,0 +1,16 @@
+plugins {
+    id("kotlin-jvm")
+}
+
+group = "noodle.email"
+version = "0.0.1-SNAPSHOT"
+
+dependencies {
+    implementation(platform(libs.aws.sdk.dependencies))
+    implementation(project(":ynab-email"))
+    implementation(project(":gmail-pubsub"))
+    implementation(project(":telegram-bot"))
+    implementation(project(":dynamodb"))
+    implementation("software.amazon.awssdk:dynamodb")
+    implementation(libs.kotlinx.coroutines)
+}

@@ -1,13 +1,16 @@
 plugins {
-    alias(libs.plugins.kotlin.serialization)
     id("kotlin-jvm")
 }
 
-group = "noodle.database"
+group = "noodle.bridge"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
+    implementation(project(":dynamodb"))
+    implementation(project(":gmail-pubsub"))
+    implementation(project(":ynab-email"))
     implementation(libs.kotlinx.coroutines)
     implementation("software.amazon.awssdk:dynamodb")
+    runtimeOnly(libs.logback)
 }
