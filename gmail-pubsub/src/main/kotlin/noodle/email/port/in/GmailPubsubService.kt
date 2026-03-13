@@ -26,7 +26,19 @@ class GmailPubsubService(
 
     suspend fun execute(command: SyncMailboxCommand) =
         coroutineScope {
+            if (command.email.isNullOrEmpty()) {
+                return@coroutineScope 400
+            }
+
+            if (command.state == null) {
+                return@coroutineScope 400
+            }
+
             log.info("📨 Got message from [{}]", command.email)
+
+            if (command.authorization.isNullOrEmpty()) {
+                return@coroutineScope 403
+            }
 
             if (command.bearerToken.isEmpty()) {
                 return@coroutineScope 400

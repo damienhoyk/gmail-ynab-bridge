@@ -102,6 +102,36 @@ class GmailPubsubServiceTest {
         }
 
     @Test
+    fun `should return 400 when email is missing`() =
+        runBlocking {
+            val command = SyncMailboxCommand(email = null, authorization = "Bearer valid-token", state = nextState)
+
+            val result = service.execute(command)
+
+            assertEquals(400, result)
+        }
+
+    @Test
+    fun `should return 400 when state is missing`() =
+        runBlocking {
+            val command = SyncMailboxCommand(email = email, authorization = "Bearer valid-token", state = null)
+
+            val result = service.execute(command)
+
+            assertEquals(400, result)
+        }
+
+    @Test
+    fun `should return 403 when authorization is missing`() =
+        runBlocking {
+            val command = SyncMailboxCommand(email = email, authorization = null, state = nextState)
+
+            val result = service.execute(command)
+
+            assertEquals(403, result)
+        }
+
+    @Test
     fun `should return 500 when mailbox state is null`() =
         runBlocking {
             val command = SyncMailboxCommand(email = "invalid@example.com", authorization = "Bearer valid-token", state = nextState)

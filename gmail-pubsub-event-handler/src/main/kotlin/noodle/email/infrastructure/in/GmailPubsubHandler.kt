@@ -102,22 +102,17 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         request: APIGatewayV2HTTPEvent,
         context: Context?,
     ) = runBlocking {
-        val headers = request.headers
-
         val notification = mapper.decodeFromString<PubsubNotification>(request.body)
         val notificationData = decoder.decode(notification.message.data)
-
         val event = mapper.decodeFromString<GmailEvent>(String(notificationData))
 
-        val emailAddress = event.emailAddress
-        val state = event.historyId
-        val authorization = headers?.get("authorization")
+        val command =
+            SyncMailboxCommand(
+                email = event.emailAddress,
+                authorization = request.headers?.get("authorization"),
+                state = event.historyId,
+            )
 
-        if (authorization.isNullOrEmpty()) {
-            return@runBlocking buildJsonObject { put("statusCode", 403) }.toString()
-        }
-
-        val command = SyncMailboxCommand(emailAddress, authorization, state)
         val statusCode = service.execute(command)
 
         buildJsonObject { put("statusCode", statusCode) }.toString()
