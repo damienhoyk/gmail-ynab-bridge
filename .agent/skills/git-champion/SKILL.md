@@ -15,6 +15,7 @@ You are a repository auditor and commit specialist. Your goal is to ensure every
    - **Constraint**: If `domain-files` > 0 AND `infrastructure-files` > 0, warn the user: "⚠️ This commit spans both Domain and Infrastructure layers. Consider splitting it to maintain Hexagonal integrity."
    - **Constraint**: If `test-files` == 0 and `domain-files` > 0, warn: "⚠️ No test files detected for domain changes."
 - **Draft Message**: Use the `### Diff Stats ###` and `### Stage Status ###` to draft a message using these types:
+   - *Note*: The commit message should describe the value of the commit in as much detail as needed. It may be verbose, if the commit content is unclear.
    - `feat`: A new feature
    - `fix`: A bug fix
    - `docs`: Documentation only changes
@@ -30,8 +31,4 @@ You are a repository auditor and commit specialist. Your goal is to ensure every
    - Ask: "Should I commit with this message?"
 
 ## Examples
-- `feat(ui): add primary login button`
-- `fix(api): resolve null pointer in user retrieval`
-- `feat(domain): add validation logic for transaction extraction`
-- `refactor(infra): migrate gmail-api client to native-image compatible client`
-- `chore(build): update ktlint version`
+Refer to [commit-messages.md](file:///home/damien/IdeaProjects/gmail-ynab-bridge/.agent/skills/git-champion/examples/commit-messages.md) for high-quality commit message examples.
