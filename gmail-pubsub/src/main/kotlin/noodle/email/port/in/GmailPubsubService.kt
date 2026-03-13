@@ -26,25 +26,20 @@ class GmailPubsubService(
 
     suspend fun execute(command: SyncMailboxCommand) =
         coroutineScope {
-            val bearerToken = command.authorization.substringAfter("Bearer ")
+            log.info("📨 Got message from [{}]", command.email)
 
-            val state = command.state
-            val emailAddress = command.emailAddress
-
-            log.info("📨 Got message from [{}]", emailAddress)
-
-            if (bearerToken.isEmpty()) {
+            if (command.bearerToken.isEmpty()) {
                 return@coroutineScope 400
             }
 
             val googleAuthClient = googleAuthClient()
-            val tokenInfoAsync = async { googleAuthClient.getTokenInfo(bearerToken) }
+            val tokenInfoAsync = async { googleAuthClient.getTokenInfo(command.bearerToken) }
 
             val mailboxRepository = mailboxRepository()
-            val mailboxAsync = async { mailboxRepository.getMailbox(emailAddress) }
+            val mailboxAsync = async { mailboxRepository.getMailbox(command.email) }
 
             val gmailClientFactory = gmailClientFactory()
-            val googleGmailClient = gmailClientFactory.create(emailAddress)
+            val googleGmailClient = gmailClientFactory.create(command.email)
 
             val mailbox = mailboxAsync.await()
             val mailboxState = mailbox.state
@@ -63,10 +58,10 @@ class GmailPubsubService(
                 return@coroutineScope 403
             }
 
-            mailboxRepository.putMailbox(mailbox.copy(state = state))
+            mailboxRepository.putMailbox(mailbox.copy(state = command.state))
 
             val bridgeRepository = bridgeRepository()
-            val bridges = bridgeRepository.queryBridge(emailAddress)
+            val bridges = bridgeRepository.queryBridge(command.email)
 
             val destinations = bridges.map { it.destination }
 
@@ -77,7 +72,7 @@ class GmailPubsubService(
                         val outbox =
                             Outbox(
                                 destination = destination,
-                                sourceAddress = emailAddress,
+                                sourceAddress = command.email,
                                 messageId = it.message.id,
                             )
                         launch { outboxRepository.putOutbox(outbox) }
