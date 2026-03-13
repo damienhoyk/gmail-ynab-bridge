@@ -8,3 +8,4 @@ trigger: always_on
 - Prioritize clean, concise, and highly readable code over clever or overly abstract implementations.
 - Default to Hexagonal Architecture (Ports and Adapters) for system design.
 - Optimize for performance without sacrificing code clarity.
+- Don't repeat yourself
