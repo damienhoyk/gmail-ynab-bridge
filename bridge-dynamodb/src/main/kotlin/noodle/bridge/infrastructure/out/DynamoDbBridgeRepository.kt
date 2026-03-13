@@ -16,8 +16,8 @@ class DynamoDbBridgeRepository(
     override val partitionKey = "source"
     override val sortKey = "destination"
 
-    override suspend fun queryBridges(source: String) =
-        super.query(source).items()
+    override suspend fun queryBridge(source: String) =
+        query(source).items()
             .map {
                 val source = it["source"]?.s()!!
                 val destination = it["destination"]?.s()!!

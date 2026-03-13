@@ -36,7 +36,7 @@ class DynamoDbBridgeRepositoryTests {
     @Test
     fun queryBridges(): Unit =
         runBlocking {
-            val results = repository.queryBridges(source)
+            val results = repository.queryBridge(source)
             assertEquals(1, results.count())
         }
 

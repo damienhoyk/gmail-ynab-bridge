@@ -67,7 +67,7 @@ class GmailPubsubService(
             mailboxRepository.putMailbox(mailbox.copy(state = state))
 
             val bridgeRepository = bridgeRepository.await()
-            val bridges = bridgeRepository.queryBridges(emailAddress)
+            val bridges = bridgeRepository.queryBridge(emailAddress)
 
             val destinations = bridges.map { it.destination }
 
