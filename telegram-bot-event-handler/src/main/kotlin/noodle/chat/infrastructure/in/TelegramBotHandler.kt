@@ -137,14 +137,14 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val service =
         TelegramBotService(
-            botClient = telegramBotClient,
-            googleAuthorizationUrl = googleAuthorizationUrl,
-            ynabAuthorizationUrl = ynabAuthorizationUrl,
-            mailboxRepository = mailboxRepository,
-            loginRepository = loginRepository,
-            tokenRepository = tokenRepository,
-            userRepository = userRepository,
-            gmailClientFactory = gmailClientFactory,
+            botClient = { telegramBotClient.await() },
+            googleAuthorizationUrl = { googleAuthorizationUrl.await() },
+            ynabAuthorizationUrl = { ynabAuthorizationUrl.await() },
+            mailboxRepository = { mailboxRepository.await() },
+            loginRepository = { loginRepository.await() },
+            tokenRepository = { tokenRepository.await() },
+            userRepository = { userRepository.await() },
+            gmailClientFactory = { gmailClientFactory.await() },
         )
 
     override fun handleRequest(

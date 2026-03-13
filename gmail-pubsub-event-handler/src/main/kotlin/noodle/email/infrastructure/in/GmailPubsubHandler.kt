@@ -91,11 +91,11 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val service =
         GmailPubsubService(
-            gmailClientFactory = gmailClientFactory,
-            googleAuthClient = googleAuthClientAsync,
-            mailboxRepository = mailboxRepositoryAsync,
-            bridgeRepository = bridgeRepositoryAsync,
-            outboxRepository = outboxRepositoryAsync,
+            gmailClientFactory = { gmailClientFactory.await() },
+            googleAuthClient = { googleAuthClientAsync.await() },
+            mailboxRepository = { mailboxRepositoryAsync.await() },
+            bridgeRepository = { bridgeRepositoryAsync.await() },
+            outboxRepository = { outboxRepositoryAsync.await() },
         )
 
     override fun handleRequest(

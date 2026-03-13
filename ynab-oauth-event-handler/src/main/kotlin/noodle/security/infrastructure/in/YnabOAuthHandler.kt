@@ -76,11 +76,11 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             clientId = runBlocking { secretAsync.await().clientId!! },
             clientSecret = runBlocking { secretAsync.await().clientSecret!! },
             redirectUri = redirectUri,
-            authClient = ynabAuthClient,
-            loginIdProvider = ynabClient,
-            tokenRepository = tokenRepository,
-            userRepository = userRepository,
-            loginRepository = loginRepository,
+            authClient = { ynabAuthClient.await() },
+            loginIdProvider = { ynabClient.await() },
+            tokenRepository = { tokenRepository.await() },
+            userRepository = { userRepository.await() },
+            loginRepository = { loginRepository.await() },
         )
 
     override fun handleRequest(

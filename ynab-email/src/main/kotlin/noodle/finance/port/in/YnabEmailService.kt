@@ -1,7 +1,6 @@
 package noodle.finance.port.`in`
 
 import jakarta.mail.internet.InternetAddress
-import kotlinx.coroutines.Deferred
 import noodle.email.domain.GmailMessageRequest
 import noodle.email.domain.GmailMessageRequest.Format
 import noodle.finance.domain.SyncYnabCommand
@@ -16,11 +15,11 @@ import kotlin.text.equals
 import kotlin.time.Duration.Companion.hours
 
 class YnabEmailService(
-    val ynabClientFactory: Deferred<YnabClientFactory>,
-    val gmailClientFactory: Deferred<GmailClientFactory>,
-    val bridgeRepository: Deferred<BridgeRepository>,
-    val matcherRepository: Deferred<MatcherRepository>,
-    val outboxRepository: Deferred<OutboxRepository>,
+    val ynabClientFactory: suspend () -> YnabClientFactory,
+    val gmailClientFactory: suspend () -> GmailClientFactory,
+    val bridgeRepository: suspend () -> BridgeRepository,
+    val matcherRepository: suspend () -> MatcherRepository,
+    val outboxRepository: suspend () -> OutboxRepository,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -55,12 +54,12 @@ class YnabEmailService(
             return
         }
 
-        val ynabClientFactory = ynabClientFactory.await()
+        val ynabClientFactory = ynabClientFactory()
 
         val messageResponse =
             when {
                 mailAddress.endsWith("@gmail.com", ignoreCase = true) -> {
-                    val gmailClientFactory = gmailClientFactory.await()
+                    val gmailClientFactory = gmailClientFactory()
                     val client = gmailClientFactory.create(mailAddress)
                     val request = GmailMessageRequest(mailId, Format.FULL)
                     client.getMessage(request)
@@ -69,8 +68,8 @@ class YnabEmailService(
             }
 
         when (messageResponse.status) {
-            403, 404, 410 -> outboxRepository.await().updateTtl(destination, source, 1.hours)
-            else -> outboxRepository.await().updateTtl(destination, source, 120.hours)
+            403, 404, 410 -> outboxRepository().updateTtl(destination, source, 1.hours)
+            else -> outboxRepository().updateTtl(destination, source, 120.hours)
         }
 
         if (messageResponse.status?.equals(200) == false) {
@@ -97,7 +96,7 @@ class YnabEmailService(
 
         log.info("Getting bridge for [{}|{}] ...", mailAddress, destination)
 
-        val bridgeRepository = bridgeRepository.await()
+        val bridgeRepository = bridgeRepository()
         val bridge = bridgeRepository.getBridge(mailAddress, destination)
 
         val client = ynabClientFactory.create(destination)
@@ -107,7 +106,7 @@ class YnabEmailService(
 
         log.info("Getting matchers for [{}] ...", fromAddress)
 
-        val matcherRepository = matcherRepository.await()
+        val matcherRepository = matcherRepository()
         val matchers = matcherRepository.queryMatcher(fromAddress)
 
         log.info("Got [{}] matchers", matchers.count())
@@ -120,7 +119,7 @@ class YnabEmailService(
                 mailId,
                 messageText.take(50),
             )
-            outboxRepository.await().updateTtl(destination, source, 1.hours)
+            outboxRepository().updateTtl(destination, source, 1.hours)
             return
         }
 
@@ -137,6 +136,6 @@ class YnabEmailService(
 
         client.postTransactions(transactions = listOf(ynabTransaction))
 
-        outboxRepository.await().updateTtl(destination, source, 24.hours)
+        outboxRepository().updateTtl(destination, source, 24.hours)
     }
 }

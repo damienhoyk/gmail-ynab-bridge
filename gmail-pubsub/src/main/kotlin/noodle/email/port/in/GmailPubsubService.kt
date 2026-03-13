@@ -1,6 +1,5 @@
 package noodle.email.port.`in`
 
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
@@ -16,11 +15,11 @@ import noodle.security.port.out.GoogleAuthClient
 import org.slf4j.LoggerFactory
 
 class GmailPubsubService(
-    private val gmailClientFactory: Deferred<GmailClientFactory>,
-    private val googleAuthClient: Deferred<GoogleAuthClient>,
-    private val bridgeRepository: Deferred<BridgeRepository>,
-    private val mailboxRepository: Deferred<MailboxRepository>,
-    private val outboxRepository: Deferred<OutboxRepository>,
+    private val gmailClientFactory: suspend () -> GmailClientFactory,
+    private val googleAuthClient: suspend () -> GoogleAuthClient,
+    private val bridgeRepository: suspend () -> BridgeRepository,
+    private val mailboxRepository: suspend () -> MailboxRepository,
+    private val outboxRepository: suspend () -> OutboxRepository,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
     private val historyType = "messageAdded"
@@ -38,13 +37,13 @@ class GmailPubsubService(
                 return@coroutineScope 400
             }
 
-            val googleAuthClient = googleAuthClient.await()
+            val googleAuthClient = googleAuthClient()
             val tokenInfoAsync = async { googleAuthClient.getTokenInfo(bearerToken) }
 
-            val mailboxRepository = mailboxRepository.await()
+            val mailboxRepository = mailboxRepository()
             val mailboxAsync = async { mailboxRepository.getMailbox(emailAddress) }
 
-            val gmailClientFactory = gmailClientFactory.await()
+            val gmailClientFactory = gmailClientFactory()
             val googleGmailClient = gmailClientFactory.create(emailAddress)
 
             val mailbox = mailboxAsync.await()
@@ -66,12 +65,12 @@ class GmailPubsubService(
 
             mailboxRepository.putMailbox(mailbox.copy(state = state))
 
-            val bridgeRepository = bridgeRepository.await()
+            val bridgeRepository = bridgeRepository()
             val bridges = bridgeRepository.queryBridge(emailAddress)
 
             val destinations = bridges.map { it.destination }
 
-            val outboxRepository = outboxRepository.await()
+            val outboxRepository = outboxRepository()
             history.messagesAdded
                 .flatMap {
                     destinations.map { destination ->

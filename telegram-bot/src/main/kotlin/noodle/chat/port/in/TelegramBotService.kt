@@ -1,6 +1,5 @@
 package noodle.chat.port.`in`
 
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -22,24 +21,24 @@ import java.util.UUID
 import kotlin.time.Duration.Companion.minutes
 
 class TelegramBotService(
-    private val botClient: Deferred<TelegramBotClient>,
-    private val googleAuthorizationUrl: Deferred<String>,
-    private val ynabAuthorizationUrl: Deferred<String>,
-    private val mailboxRepository: Deferred<MailboxRepository>,
-    private val loginRepository: Deferred<LoginRepository>,
-    private val tokenRepository: Deferred<TokenRepository>,
-    private val userRepository: Deferred<UserRepository>,
-    private val gmailClientFactory: Deferred<GmailClientFactory>,
+    private val botClient: suspend () -> TelegramBotClient,
+    private val googleAuthorizationUrl: suspend () -> String,
+    private val ynabAuthorizationUrl: suspend () -> String,
+    private val mailboxRepository: suspend () -> MailboxRepository,
+    private val loginRepository: suspend () -> LoginRepository,
+    private val tokenRepository: suspend () -> TokenRepository,
+    private val userRepository: suspend () -> UserRepository,
+    private val gmailClientFactory: suspend () -> GmailClientFactory,
 ) {
     suspend fun execute(command: RespondChatCommand) =
         coroutineScope {
             val text = command.message
             val chatId = command.chatId
-            val botClient = botClient.await()
+            val botClient = botClient()
 
             if (text.equals("/start", true)) {
-                val loginRepository = loginRepository.await()
-                val userRepository = userRepository.await()
+                val loginRepository = loginRepository()
+                val userRepository = userRepository()
 
                 botClient.sendChatAction(chatId, "typing")
 
@@ -51,9 +50,9 @@ class TelegramBotService(
             }
 
             if (text.equals("/authorizegmail", true)) {
-                val loginRepository = loginRepository.await()
-                val tokenRepository = tokenRepository.await()
-                val googleAuthorizationUrl = googleAuthorizationUrl.await()
+                val loginRepository = loginRepository()
+                val tokenRepository = tokenRepository()
+                val googleAuthorizationUrl = googleAuthorizationUrl()
 
                 botClient.sendChatAction(chatId, "typing")
                 val login = loginRepository.getLogin(command.telegramUserId)
@@ -75,9 +74,9 @@ class TelegramBotService(
 
             if (text.equals("/authorizeynab", true)) {
                 botClient.sendChatAction(chatId, "typing")
-                val loginRepository = loginRepository.await()
-                val tokenRepository = tokenRepository.await()
-                val ynabAuthorizationUrl = ynabAuthorizationUrl.await()
+                val loginRepository = loginRepository()
+                val tokenRepository = tokenRepository()
+                val ynabAuthorizationUrl = ynabAuthorizationUrl()
 
                 val login = loginRepository.getLogin(command.telegramUserId)
                 val userId = login?.userId
@@ -91,9 +90,9 @@ class TelegramBotService(
 
             if (text.equals("/watchgmail", true)) {
                 botClient.sendChatAction(chatId, "typing")
-                val loginRepository = loginRepository.await()
-                val userRepository = userRepository.await()
-                val gmailClientFactory = gmailClientFactory.await()
+                val loginRepository = loginRepository()
+                val userRepository = userRepository()
+                val gmailClientFactory = gmailClientFactory()
 
                 val login = loginRepository.getLogin(command.telegramUserId)
                 val userId = login?.userId!!
@@ -104,7 +103,7 @@ class TelegramBotService(
                 val topicName = "projects/lexical-cider-458409-d5/topics/gmail"
                 val labelName = "money"
 
-                val mailboxRepository = mailboxRepository.await()
+                val mailboxRepository = mailboxRepository()
 
                 val jobs =
                     emails.map { gmail ->

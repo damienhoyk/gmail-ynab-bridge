@@ -1,6 +1,5 @@
 package noodle.security.port.`in`
 
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import noodle.security.domain.AuthorizeCommand
@@ -18,11 +17,11 @@ class OAuth2Service(
     val clientId: String,
     val clientSecret: String,
     val redirectUri: String,
-    val authClient: Deferred<OAuth2TokenProvider>,
-    val loginIdProvider: Deferred<LoginIdProvider>,
-    val tokenRepository: Deferred<TokenRepository>,
-    val userRepository: Deferred<UserRepository>,
-    val loginRepository: Deferred<LoginRepository>,
+    val authClient: suspend () -> OAuth2TokenProvider,
+    val loginIdProvider: suspend () -> LoginIdProvider,
+    val tokenRepository: suspend () -> TokenRepository,
+    val userRepository: suspend () -> UserRepository,
+    val loginRepository: suspend () -> LoginRepository,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -49,10 +48,10 @@ class OAuth2Service(
                     redirectUri,
                 )
 
-            val authClient = authClient.await()
+            val authClient = authClient()
             val response = authClient.getToken(request)
 
-            val loginIdProvider = loginIdProvider.await()
+            val loginIdProvider = loginIdProvider()
             val authority = loginIdProvider.getLoginId(response)
 
             if (authority.isNullOrBlank()) {
@@ -60,7 +59,7 @@ class OAuth2Service(
                 return@runBlocking 500
             }
 
-            val tokenRepository = tokenRepository.await()
+            val tokenRepository = tokenRepository()
             val token = tokenRepository.getToken(state, "state")
 
             val userId = token?.value
@@ -72,10 +71,10 @@ class OAuth2Service(
 
             log.info("🪪 Updating user login mapping for [{}] ...", userId)
 
-            val loginRepository = loginRepository.await()
+            val loginRepository = loginRepository()
             loginRepository.putLogin(Login(authority, userId))
 
-            val userRepository = userRepository.await()
+            val userRepository = userRepository()
             userRepository.putUser(User(userId, authority))
 
             log.info("🎫 Storing tokens for authorization [{}] ...", authority)

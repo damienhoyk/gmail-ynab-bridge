@@ -95,11 +95,11 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
 
     private val service =
         YnabEmailService(
-            ynabClientFactory = ynabClientFactory,
-            gmailClientFactory = gmailClientFactory,
-            bridgeRepository = bridgeRepositoryAsync,
-            matcherRepository = matcherRepositoryAsync,
-            outboxRepository = outboxRepositoryAsync,
+            ynabClientFactory = { ynabClientFactory.await() },
+            gmailClientFactory = { gmailClientFactory.await() },
+            bridgeRepository = { bridgeRepositoryAsync.await() },
+            matcherRepository = { matcherRepositoryAsync.await() },
+            outboxRepository = { outboxRepositoryAsync.await() },
         )
 
     override fun handleRequest(
