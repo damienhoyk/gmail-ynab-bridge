@@ -11,7 +11,7 @@ ZIP=$(ls "$MODULE"/build/distributions/*-native.zip | head -n 1)
 
 if [[ -z "$HANDLER" ]]; then
     FILE=$(find "$MODULE/src/main/kotlin" -name "*Handler.kt" | head -n 1)
-    PKG=$(grep -m1 "^package " "$FILE" | cut -d' ' -f2 | tr -d ';')
+    PKG=$(grep -m1 "^package " "$FILE" | cut -d' ' -f2 | tr -d ';\`')
     HANDLER="$PKG.$(basename "$FILE" .kt)::handleRequest"
 fi
 
