@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.java.Java
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
@@ -50,8 +50,8 @@ class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                 .build()
         }
 
-    val engine = CIO.create()
-    val googleAuthClient = initScope.async { KtorGoogleAuthClient(HttpClient(engine)) }
+    private val engineAsync = initScope.async { Java.create() }
+    val googleAuthClient = initScope.async { KtorGoogleAuthClient(HttpClient(engineAsync.await())) }
 
     val redirectUri = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
     val secretId = System.getenv("SECRET_ID")?.trim() ?: throw IllegalStateException()
@@ -73,11 +73,11 @@ class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             clientId = runBlocking { secretAsync.await().clientId!! },
             clientSecret = runBlocking { secretAsync.await().clientSecret!! },
             redirectUri = redirectUri,
-            authClient = googleAuthClient,
-            loginIdProvider = googleAuthClient,
-            tokenRepository = tokenRepository,
-            userRepository = userRepository,
-            loginRepository = loginRepository,
+            authClient = { googleAuthClient.await() },
+            loginIdProvider = { googleAuthClient.await() },
+            tokenRepository = { tokenRepository.await() },
+            userRepository = { userRepository.await() },
+            loginRepository = { loginRepository.await() },
         )
 
     override fun handleRequest(

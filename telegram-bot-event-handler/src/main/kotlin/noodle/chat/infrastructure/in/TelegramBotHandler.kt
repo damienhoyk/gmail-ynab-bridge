@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.java.Java
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.http.ContentType.Application
 import io.ktor.http.contentType
@@ -64,7 +64,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val bitwardenAsync = initScope.async { Bitwarden(secretsManagerClientAsync.await()) }
 
-    private val engine = CIO.create()
+    private val engineAsync = initScope.async { Java.create() }
 
     private val googleSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
@@ -73,7 +73,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val telegramSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("telegram")?.jsonObject()!! }
 
-    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClient(HttpClient(engine)) }
+    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClient(HttpClient(engineAsync.await())) }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
@@ -86,7 +86,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
 
     private val gmailClientFactory =
-        initScope.async { KtorGmailClientFactory(googleAuthTokenService.await(), engine) }
+        initScope.async { KtorGmailClientFactory(googleAuthTokenService.await(), engineAsync.await()) }
 
     private val googleAuthorizationUrl =
         initScope.async {
@@ -118,7 +118,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val telegramBotClient =
         initScope.async(Dispatchers.IO) {
             val secret = telegramSecretAsync.await()
-            KtorTelegramBotClient(HttpClient(engine)) {
+            KtorTelegramBotClient(HttpClient(engineAsync.await())) {
                 defaultRequest {
                     contentType(Application.Json)
                     url("https://api.telegram.org/bot${secret.apiKey!!}/")

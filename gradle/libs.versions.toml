@@ -35,7 +35,7 @@ kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutin
 ktor-dependencies = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation" }
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core" }
-ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio" }
+ktor-client-java = { group = "io.ktor", name = "ktor-client-java" }
 ktor-client-json = { group = "io.ktor", name = "ktor-client-json" }
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json" }
@@ -47,7 +47,7 @@ google-oauth2 = { module = "com.google.auth:google-auth-library-oauth2-http", ve
 spring-shell-dependencies = { module = "org.springframework.shell:spring-shell-dependencies", version.ref = "spring-shell" }
 
 [bundles]
-ktor-client = ["ktor-client-content-negotiation", "ktor-client-core", "ktor-client-cio", "ktor-client-json", "ktor-client-logging", "ktor-serialization-kotlinx-json"]
+ktor-client = ["ktor-client-content-negotiation", "ktor-client-core", "ktor-client-java", "ktor-client-json", "ktor-client-logging", "ktor-serialization-kotlinx-json"]
 aws-lambda = ["aws-lambda-core", "aws-lambda-events", "aws-lambda-ric"]
 
 [plugins]

@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.java.Java
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
@@ -51,10 +51,10 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                 .build()
         }
 
-    val engine = CIO.create()
+    private val engineAsync = initScope.async { Java.create() }
 
-    val ynabAuthClient = initScope.async { KtorYnabAuthClient(HttpClient(engine)) }
-    val ynabClient = initScope.async { KtorYnabClient(HttpClient(engine)) }
+    val ynabAuthClient = initScope.async { KtorYnabAuthClient(HttpClient(engineAsync.await())) }
+    val ynabClient = initScope.async { KtorYnabClient(HttpClient(engineAsync.await())) }
 
     val redirectUri = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
     val secretId = System.getenv("SECRET_ID")?.trim() ?: throw IllegalStateException()

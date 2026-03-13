@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.java.Java
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -57,10 +57,10 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
 
     private val bitwardenAsync = initScope.async { Bitwarden(secretsManagerClientAsync.await()) }
 
-    private val engine = CIO.create()
+    private val engineAsync = initScope.async { Java.create() }
 
     private val googleSecretAsync = initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
-    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClient(HttpClient(engine)) }
+    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClient(HttpClient(engineAsync.await())) }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
@@ -73,7 +73,7 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
         }
 
     private val ynabSecretAsync = initScope.async { bitwardenAsync.await().getSecret("ynab")?.jsonObject()!! }
-    private val ynabAuthClientAsync = initScope.async { KtorYnabAuthClient(HttpClient(engine)) }
+    private val ynabAuthClientAsync = initScope.async { KtorYnabAuthClient(HttpClient(engineAsync.await())) }
     private val ynabAuthTokenService =
         initScope.async {
             val secret = ynabSecretAsync.await()
@@ -85,8 +85,8 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
             )
         }
 
-    private val gmailClientFactory = initScope.async { KtorGmailClientFactory(googleAuthTokenService.await(), engine) }
-    private val ynabClientFactory = initScope.async { KtorYnabClientFactory(ynabAuthTokenService.await(), engine) }
+    private val gmailClientFactory = initScope.async { KtorGmailClientFactory(googleAuthTokenService.await(), engineAsync.await()) }
+    private val ynabClientFactory = initScope.async { KtorYnabClientFactory(ynabAuthTokenService.await(), engineAsync.await()) }
 
     private val bridgeRepositoryAsync = initScope.async { DynamoDbBridgeRepository(client = dynamoDbClientAsync.await()) }
     private val matcherRepositoryAsync = initScope.async { DynamoDbMatcherRepository(client = dynamoDbClientAsync.await()) }

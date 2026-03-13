@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.java.Java
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -61,11 +61,11 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val bitwardenAsync = initScope.async { Bitwarden(secretsManagerClientAsync.await()) }
 
-    private val engine = CIO.create()
+    private val engineAsync = initScope.async { Java.create() }
 
     private val googleSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
-    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClient(HttpClient(engine)) }
+    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClient(HttpClient(engineAsync.await())) }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
@@ -78,7 +78,7 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
 
     private val gmailClientFactory =
-        initScope.async { KtorGmailClientFactory(googleAuthTokenService.await(), engine) }
+        initScope.async { KtorGmailClientFactory(googleAuthTokenService.await(), engineAsync.await()) }
 
     private val bridgeRepositoryAsync =
         initScope.async { DynamoDbBridgeRepository(client = dynamoDbClientAsync.await()) }
