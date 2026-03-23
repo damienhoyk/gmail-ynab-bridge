@@ -26,17 +26,25 @@ class TransactionMatcher(
     private val inputDateFormatter = DateTimeFormatter.ofPattern(inputDatePattern)
     private val outputDateFormatter = DateTimeFormatter.ofPattern(outputDatePattern)
 
+    // Pre-calculate indices to avoid dynamic set allocations and lookups on every parse
+    private val accountIndex: Int
+    private val amountIndex: Int
+    private val dateIndex: Int
+    private val payeeIndex: Int
+
+    init {
+        val orderList = listOf("ENTIRE_MATCH") + order.toList()
+        accountIndex = orderList.indexOf(RegexGroup.ACCOUNT)
+        amountIndex = orderList.indexOf(RegexGroup.AMOUNT)
+        dateIndex = orderList.indexOf(RegexGroup.DATE)
+        payeeIndex = orderList.indexOf(RegexGroup.PAYEE)
+    }
+
     fun parse(input: String) = regex.find(input)?.groupValues?.let { match ->
-        val order = setOf("ENTIRE_MATCH") + order
-
-        val indexes = RegexGroup.entries.map { order.indexOf(it) }
-
-        val (
-            accountMatch,
-            amountMatch,
-            dateMatch,
-            payeeMatch
-        ) = indexes.map { if (it > -1) match[it] else null }
+        val accountMatch = if (accountIndex > -1) match[accountIndex] else null
+        val amountMatch = if (amountIndex > -1) match[amountIndex] else null
+        val dateMatch = if (dateIndex > -1) match[dateIndex] else null
+        val payeeMatch = if (payeeIndex > -1) match[payeeIndex] else null
 
         if (amountMatch == null) {
             throw IllegalStateException()
