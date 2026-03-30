@@ -16,6 +16,19 @@ class TransactionMatcher(
     private val fields = listOf(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH)
     private val outputDatePattern = "yyyy-MM-dd"
 
+    private val accountIndex: Int
+    private val amountIndex: Int
+    private val dateIndex: Int
+    private val payeeIndex: Int
+
+    init {
+        val fullOrder = listOf<Any>("ENTIRE_MATCH") + order
+        accountIndex = fullOrder.indexOf(RegexGroup.ACCOUNT)
+        amountIndex = fullOrder.indexOf(RegexGroup.AMOUNT)
+        dateIndex = fullOrder.indexOf(RegexGroup.DATE)
+        payeeIndex = fullOrder.indexOf(RegexGroup.PAYEE)
+    }
+
     constructor(configuration: Configuration.Matcher) : this(
         configuration.pattern.toRegex(),
         configuration.outgoing,
@@ -27,16 +40,10 @@ class TransactionMatcher(
     private val outputDateFormatter = DateTimeFormatter.ofPattern(outputDatePattern)
 
     fun parse(input: String) = regex.find(input)?.groupValues?.let { match ->
-        val order = setOf("ENTIRE_MATCH") + order
-
-        val indexes = RegexGroup.entries.map { order.indexOf(it) }
-
-        val (
-            accountMatch,
-            amountMatch,
-            dateMatch,
-            payeeMatch
-        ) = indexes.map { if (it > -1) match[it] else null }
+        val accountMatch = if (accountIndex > -1) match[accountIndex] else null
+        val amountMatch = if (amountIndex > -1) match[amountIndex] else null
+        val dateMatch = if (dateIndex > -1) match[dateIndex] else null
+        val payeeMatch = if (payeeIndex > -1) match[payeeIndex] else null
 
         if (amountMatch == null) {
             throw IllegalStateException()
