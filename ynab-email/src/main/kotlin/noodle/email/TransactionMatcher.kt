@@ -26,17 +26,16 @@ class TransactionMatcher(
     private val inputDateFormatter = DateTimeFormatter.ofPattern(inputDatePattern)
     private val outputDateFormatter = DateTimeFormatter.ofPattern(outputDatePattern)
 
+    private val accountIndex = order.indexOf(RegexGroup.ACCOUNT).let { if (it > -1) it + 1 else -1 }
+    private val amountIndex = order.indexOf(RegexGroup.AMOUNT).let { if (it > -1) it + 1 else -1 }
+    private val dateIndex = order.indexOf(RegexGroup.DATE).let { if (it > -1) it + 1 else -1 }
+    private val payeeIndex = order.indexOf(RegexGroup.PAYEE).let { if (it > -1) it + 1 else -1 }
+
     fun parse(input: String) = regex.find(input)?.groupValues?.let { match ->
-        val order = setOf("ENTIRE_MATCH") + order
-
-        val indexes = RegexGroup.entries.map { order.indexOf(it) }
-
-        val (
-            accountMatch,
-            amountMatch,
-            dateMatch,
-            payeeMatch
-        ) = indexes.map { if (it > -1) match[it] else null }
+        val accountMatch = if (accountIndex > -1) match[accountIndex] else null
+        val amountMatch = if (amountIndex > -1) match[amountIndex] else null
+        val dateMatch = if (dateIndex > -1) match[dateIndex] else null
+        val payeeMatch = if (payeeIndex > -1) match[payeeIndex] else null
 
         if (amountMatch == null) {
             throw IllegalStateException()
