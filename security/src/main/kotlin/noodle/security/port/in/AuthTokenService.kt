@@ -7,6 +7,7 @@ import noodle.security.domain.OAuth2TokenRequest
 import noodle.security.domain.RefreshTokensCommand
 import noodle.security.port.out.OAuth2TokenProvider
 import noodle.security.port.out.TokenRepository
+import org.slf4j.LoggerFactory
 
 class AuthTokenService(
     private val clientId: String,
@@ -14,6 +15,8 @@ class AuthTokenService(
     private val tokenRepository: TokenRepository,
     private val authClient: OAuth2TokenProvider,
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     suspend fun execute(command: LoadTokensCommand): String {
         val token = tokenRepository.getToken(command.loginId, "access")
         val value = token?.value!!
@@ -35,15 +38,20 @@ class AuthTokenService(
 
         val response = authClient.getToken(authRequest)
 
+        if (response.accessToken.isNullOrBlank()) {
+            log.error("🐳 refresh token is invalid")
+            throw IllegalStateException("$loginId refresh token is invalid")
+        }
+
         coroutineScope {
             launch {
-                response.accessToken?.let { tokenRepository.updateTokenValue(loginId, "access", it) }
+                response.accessToken.let { tokenRepository.updateTokenValue(loginId, "access", it) }
             }
             launch {
                 response.refreshToken?.let { tokenRepository.updateTokenValue(loginId, "refresh", it) }
             }
         }
 
-        return response.accessToken!!
+        return response.accessToken
     }
 }
