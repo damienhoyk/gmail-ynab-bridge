@@ -15,8 +15,6 @@ import noodle.chat.port.out.TelegramBotClient
 import noodle.chat.port.out.TokenRepository
 import noodle.chat.port.out.UserRepository
 import noodle.email.domain.GmailWatchRequest
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlin.time.Duration.Companion.minutes
 
@@ -30,11 +28,13 @@ class TelegramBotService(
     private val userRepository: suspend () -> UserRepository,
     private val gmailClientFactory: suspend () -> GmailClientFactory,
 ) {
+    val topicName = "projects/lexical-cider-458409-d5/topics/gmail"
+    val labelName = "money"
+
     suspend fun execute(command: RespondChatCommand): Int =
         coroutineScope {
             val text = command.text ?: return@coroutineScope 400
             val chatId = command.chatId ?: return@coroutineScope 400
-            val telegramUserId = command.telegramUserId ?: return@coroutineScope 400
             val authority = command.authority ?: return@coroutineScope 400
 
             val botClient = botClient()
@@ -61,9 +61,6 @@ class TelegramBotService(
                 val login = loginRepository.getLogin(authority)
                 val userId = login?.userId
                 val token = UUID.randomUUID().toString()
-
-                val ttlInstant = Instant.now().plus(30, ChronoUnit.MINUTES)
-                val ttl = ttlInstant.epochSecond
 
                 if (userId.isNullOrEmpty()) {
                     return@coroutineScope 500
@@ -102,9 +99,6 @@ class TelegramBotService(
                 val user = userRepository.queryUser(userId)
 
                 val emails = user.map { it.loginId }.filter { it.endsWith("@gmail.com") }
-
-                val topicName = "projects/lexical-cider-458409-d5/topics/gmail"
-                val labelName = "money"
 
                 val mailboxRepository = mailboxRepository()
 
