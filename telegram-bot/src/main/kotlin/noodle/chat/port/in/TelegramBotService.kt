@@ -1,8 +1,8 @@
 package noodle.chat.port.`in`
 
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import noodle.chat.domain.Login
 import noodle.chat.domain.Mailbox
 import noodle.chat.domain.RespondChatCommand
@@ -102,9 +102,9 @@ class TelegramBotService(
 
                 val mailboxRepository = mailboxRepository()
 
-                val jobs =
+                supervisorScope {
                     emails.map { gmail ->
-                        launch {
+                        async {
                             val gmailClient = gmailClientFactory.create(gmail)
 
                             val labels = gmailClient.getLabels()?.labels ?: emptyList()
@@ -116,12 +116,20 @@ class TelegramBotService(
 
                             mailboxRepository.updateMailbox(Mailbox(gmail, state))
                             gmailClient.postWatch(GmailWatchRequest(topicName, labelIds))
+                            gmail
                         }
                     }
-
-                jobs.joinAll()
-
-                botClient.sendMessage(chatId, "🔭 I am now watching your gmails labelled *$labelName*")
+                        .forEach { job ->
+                            runCatching { job.await() }
+                                .onFailure {
+                                    it.printStackTrace()
+                                    botClient.sendMessage(chatId, "🐳 ${it.message}")
+                                }
+                                .onSuccess {
+                                    botClient.sendMessage(chatId, "🔭 I am now watching $it label *$labelName*")
+                                }
+                        }
+                }
             }
 
             return@coroutineScope 200
