@@ -126,7 +126,7 @@ class TelegramBotService(
                                     botClient.sendMessage(chatId, "🐳 ${it.message}")
                                 }
                                 .onSuccess {
-                                    botClient.sendMessage(chatId, "🔭 I am now watching $it label *$labelName*")
+                                    botClient.sendMessage(chatId, "🔭 I am now watching ${it.replace(".", "\\.")} label *$labelName*")
                                 }
                         }
                 }
