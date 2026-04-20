@@ -5,3 +5,7 @@
 ## 2025-05-15 - List Iteration and View vs Copy
 **Learning:** Using `reversed()` on a list creates a new list copy, which is inefficient when only read-only reverse iteration is needed.
 **Action:** Use `asReversed()` to get a reversed view of the list instead of a copy when possible.
+
+## 2025-05-15 - Redundant List Allocation in TransactionMatcher
+**Learning:** Using `order.toList().indexOf(...)` for a small Set creates an unnecessary List allocation. `Iterable.indexOf` is available directly on Sets and avoids this extra memory allocation, improving performance, especially if such objects are created frequently.
+**Action:** Use `.indexOf()` directly on Set/Iterable objects instead of calling `.toList()` first.

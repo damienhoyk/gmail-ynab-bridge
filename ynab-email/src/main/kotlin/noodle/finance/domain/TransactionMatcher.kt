@@ -22,13 +22,12 @@ class TransactionMatcher(
 
     private val inputDateFormatter = DateTimeFormatter.ofPattern(inputDatePattern)
 
-    private val orderList = order.toList()
     private val accountIndex =
-        orderList.indexOf(RegexGroup.ACCOUNT).let { if (it >= 0) it + 1 else -1 }
+        order.indexOf(RegexGroup.ACCOUNT).let { if (it >= 0) it + 1 else -1 }
     private val amountIndex =
-        orderList.indexOf(RegexGroup.AMOUNT).let { if (it >= 0) it + 1 else -1 }
-    private val dateIndex = orderList.indexOf(RegexGroup.DATE).let { if (it >= 0) it + 1 else -1 }
-    private val payeeIndex = orderList.indexOf(RegexGroup.PAYEE).let { if (it >= 0) it + 1 else -1 }
+        order.indexOf(RegexGroup.AMOUNT).let { if (it >= 0) it + 1 else -1 }
+    private val dateIndex = order.indexOf(RegexGroup.DATE).let { if (it >= 0) it + 1 else -1 }
+    private val payeeIndex = order.indexOf(RegexGroup.PAYEE).let { if (it >= 0) it + 1 else -1 }
 
     fun parse(input: String) =
         regex.find(input)?.groupValues?.let { match ->
