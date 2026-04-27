@@ -15,4 +15,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines)
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:secretsmanager")
+    testImplementation("software.amazon.awssdk:signin")
 }

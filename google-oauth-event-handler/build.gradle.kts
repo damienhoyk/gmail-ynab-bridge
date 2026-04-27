@@ -24,6 +24,7 @@ dependencies {
     implementation("software.amazon.awssdk:secretsmanager")
     implementation("software.amazon.awssdk:url-connection-client")
     runtimeOnly(libs.logback)
+    testImplementation("software.amazon.awssdk:signin")
 }
 
 tasks.withType<Test>().configureEach {

@@ -12,4 +12,5 @@ dependencies {
     implementation(project(":telegram-bot"))
     implementation("software.amazon.awssdk:dynamodb")
     implementation(libs.kotlinx.coroutines)
+    testImplementation("software.amazon.awssdk:signin")
 }

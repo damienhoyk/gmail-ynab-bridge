@@ -13,4 +13,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines)
     implementation("software.amazon.awssdk:dynamodb")
     runtimeOnly(libs.logback)
+    testImplementation("software.amazon.awssdk:signin")
 }

@@ -13,4 +13,5 @@ dependencies {
     implementation(project(":dynamodb"))
     implementation("software.amazon.awssdk:dynamodb")
     implementation(libs.kotlinx.coroutines)
+    testImplementation("software.amazon.awssdk:signin")
 }
