@@ -16,7 +16,6 @@ import io.ktor.http.HttpStatusCode.Companion.NotFound
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
-import jakarta.mail.internet.InternetAddress
 import kotlinx.coroutines.runBlocking
 import noodle.email.domain.GmailHistoryRequest
 import noodle.email.domain.GmailMessageRequest
@@ -192,11 +191,7 @@ class KtorGmailClientTests {
         runBlocking {
             val message =
                 googleGmailClient.getMessage(request = GmailMessageRequest(messageId, GmailMessageRequest.Format.FULL))
-            val headers = message.payload?.headers
-            val fromHeader = headers?.find { it["name"].equals("from", ignoreCase = true) }
-            val from = fromHeader?.get("value")?.let { InternetAddress(it) }
-            assertEquals(senderName, from?.personal)
-            assertEquals(senderEmail, from?.address)
+            assertEquals(senderEmail, message.senderEmail)
             assertEquals(this@KtorGmailClientTests.message, message.text)
         }
 

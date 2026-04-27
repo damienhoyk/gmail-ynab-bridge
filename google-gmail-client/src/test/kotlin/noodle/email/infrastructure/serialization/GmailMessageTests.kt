@@ -1,4 +1,4 @@
-package noodle.finance.domain
+package noodle.email.infrastructure.serialization
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test

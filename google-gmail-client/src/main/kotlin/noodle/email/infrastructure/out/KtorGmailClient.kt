@@ -81,11 +81,17 @@ open class KtorGmailClient(httpClient: HttpClient, block: HttpClientConfig<*>.()
         user: String = "me",
         messageId: String,
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.get("$user/messages/$messageId", block).body<GmailMessage>()
+    ) = httpClient.get("$user/messages/$messageId", block)
 
     override suspend fun getMessage(request: GmailMessageRequest) =
-        getMessage(messageId = request.id) { parameter("format", request.format.value) }
-            .toFinanceDomain()
+        getMessage(messageId = request.id) {
+            parameter("format", request.format.value)
+        }.let {
+            when (val status = it.status.value) {
+                200 -> it.body<GmailMessage>().toFinanceDomain().copy(status = status)
+                else -> noodle.finance.domain.GmailMessage(status = status)
+            }
+        }
 
     suspend fun getProfile(
         user: String = "me",

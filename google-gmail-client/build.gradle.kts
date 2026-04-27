@@ -15,9 +15,9 @@ dependencies {
     implementation(project(":telegram-bot"))
     implementation(project(":ynab-email"))
     implementation(libs.bundles.ktor.client)
+    implementation(libs.jakarta.mail)
     implementation("io.ktor:ktor-client-auth")
     testImplementation("io.ktor:ktor-client-mock")
-    testImplementation(libs.jakarta.mail)
     testImplementation(libs.slf4j.simple)
     testImplementation(libs.slf4j.api)
 }

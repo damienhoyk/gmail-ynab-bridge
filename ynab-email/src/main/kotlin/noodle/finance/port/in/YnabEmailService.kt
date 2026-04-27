@@ -1,6 +1,5 @@
 package noodle.finance.port.`in`
 
-import jakarta.mail.internet.InternetAddress
 import noodle.email.domain.GmailMessageRequest
 import noodle.email.domain.GmailMessageRequest.Format
 import noodle.finance.domain.SyncYnabCommand
@@ -11,7 +10,6 @@ import noodle.finance.port.out.MatcherRepository
 import noodle.finance.port.out.OutboxRepository
 import noodle.finance.port.out.YnabClientFactory
 import org.slf4j.LoggerFactory
-import kotlin.text.equals
 import kotlin.time.Duration.Companion.hours
 
 class YnabEmailService(
@@ -56,7 +54,7 @@ class YnabEmailService(
 
         val ynabClientFactory = ynabClientFactory()
 
-        val messageResponse =
+        val message =
             when {
                 mailAddress.endsWith("@gmail.com", ignoreCase = true) -> {
                     val gmailClientFactory = gmailClientFactory()
@@ -67,32 +65,16 @@ class YnabEmailService(
                 else -> throw IllegalStateException("unknown mail provider")
             }
 
-        when (messageResponse.status) {
-            403, 404, 410 -> outboxRepository().updateTtl(destination, source, 1.hours)
+        when (message.status) {
+            200 -> outboxRepository().updateTtl(destination, source, 24.hours)
+            404 -> outboxRepository().updateTtl(destination, source, 1.hours)
             else -> outboxRepository().updateTtl(destination, source, 120.hours)
         }
 
-        if (messageResponse.status?.equals(200) == false) {
-            log.error("Invalid response")
+        if (message.status?.equals(200) == false) {
+            log.error("Failed to get message [{}]", source)
             return
         }
-
-        val (fromAddress, messageText) =
-            when {
-                mailAddress.endsWith("@gmail.com", ignoreCase = true) -> {
-                    val message = messageResponse
-                    val messageText = message.text
-                    val messageHeaders = message.payload?.headers
-
-                    val fromHeader = messageHeaders?.find { it["name"].equals("from", true) }
-                    val fromValue = fromHeader?.get("value")
-
-                    val fromAddress = InternetAddress(fromValue).address
-
-                    fromAddress to messageText
-                }
-                else -> throw IllegalStateException("unknown mail provider")
-            }
 
         log.info("Getting bridge for [{}|{}] ...", mailAddress, destination)
 
@@ -104,20 +86,20 @@ class YnabEmailService(
 
         log.info("Bridge has [{}] accounts", accounts.size)
 
-        log.info("Getting matchers for [{}] ...", fromAddress)
+        log.info("Getting matchers for [{}] ...", message.senderEmail)
 
         val matcherRepository = matcherRepository()
-        val matchers = matcherRepository.queryMatcher(fromAddress)
+        val matchers = matcherRepository.queryMatcher(message.senderEmail!!)
 
         log.info("Got [{}] matchers", matchers.count())
 
-        val transaction = matchers.firstNotNullOfOrNull { it.parse(messageText) }
+        val transaction = matchers.firstNotNullOfOrNull { it.parse(message.text!!) }
 
         if (transaction == null) {
             log.warn(
                 "⚠️ Did not extract any transaction from message [{}|{} ...]",
                 mailId,
-                messageText.take(50),
+                message.text?.take(50),
             )
             outboxRepository().updateTtl(destination, source, 1.hours)
             return
