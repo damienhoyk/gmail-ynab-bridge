@@ -16,12 +16,14 @@ data class GmailMessage(
     val parts
         get() = payload?.flatten() ?: emptyList()
 
-    val text
-        get() =
-            parts
+    val text: String
+        get() {
+            val decoder = Base64.getUrlDecoder()
+            return parts
+                .asSequence()
                 .mapNotNull { it.data }
-                .map { Base64.getUrlDecoder().decode(it) }
-                .joinToString(" ") { String(it).stripHtml().trim() }
+                .joinToString(" ") { String(decoder.decode(it)).stripHtml().trim() }
+        }
 
     data class Data(val data: String? = null)
 
