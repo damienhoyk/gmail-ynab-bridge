@@ -9,3 +9,6 @@
 ## 2025-05-15 - Redundant List Allocation in TransactionMatcher
 **Learning:** Using `order.toList().indexOf(...)` for a small Set creates an unnecessary List allocation. `Iterable.indexOf` is available directly on Sets and avoids this extra memory allocation, improving performance, especially if such objects are created frequently.
 **Action:** Use `.indexOf()` directly on Set/Iterable objects instead of calling `.toList()` first.
+## 2026-05-04 - Sequence Processing in Kotlin Pipelines
+**Learning:** In Kotlin data processing pipelines, using `asSequence()` before chaining operations like `mapNotNull` and combining transformations into terminal operations (e.g., `joinToString`) avoids allocating intermediate lists. This measurably improves performance by preventing unnecessary memory copies, particularly in models like `GmailMessage` where large part payloads are flattened and processed.
+**Action:** When transforming lists with multiple sequential operations (e.g., map, filter) in hot paths, consider inserting `.asSequence()` to prevent intermediate allocations, especially if the pipeline results in a terminal collection or string.

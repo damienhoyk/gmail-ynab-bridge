@@ -19,6 +19,8 @@ data class GmailMessage(
     val text
         get() =
             parts
+                // Optimize: Use asSequence() to prevent allocating intermediate lists during map/filter operations
+                .asSequence()
                 .mapNotNull { it.data }
                 .map { Base64.getUrlDecoder().decode(it) }
                 .joinToString(" ") { String(it).stripHtml().trim() }
