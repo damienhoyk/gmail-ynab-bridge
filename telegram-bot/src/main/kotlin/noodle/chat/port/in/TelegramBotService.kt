@@ -107,12 +107,15 @@ class TelegramBotService(
                         async {
                             val gmailClient = gmailClientFactory.create(gmail)
 
-                            val labels = gmailClient.getLabels()?.labels ?: emptyList()
+                            val labels = gmailClient.getLabels()
                             val profile = gmailClient.getProfile()
                             val state = profile?.historyId
 
                             val labelIds =
-                                labels.filter { it.name.equals(labelName, true) }.map { it.id }
+                                labels
+                                    .filterValues { it.equals(labelName, true) }
+                                    .keys
+                                    .toList()
 
                             mailboxRepository.updateMailbox(Mailbox(gmail, state))
                             gmailClient.postWatch(GmailWatchRequest(topicName, labelIds))
