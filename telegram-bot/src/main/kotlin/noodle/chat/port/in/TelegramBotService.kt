@@ -15,6 +15,7 @@ import noodle.chat.port.out.TelegramBotClient
 import noodle.chat.port.out.TokenRepository
 import noodle.chat.port.out.UserRepository
 import noodle.email.domain.GmailWatchRequest
+import org.slf4j.LoggerFactory
 import java.util.UUID
 import kotlin.time.Duration.Companion.minutes
 
@@ -30,6 +31,8 @@ class TelegramBotService(
     private val userRepository: suspend () -> UserRepository,
     private val gmailClientFactory: suspend () -> GmailClientFactory,
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     suspend fun execute(command: RespondChatCommand): Int =
         coroutineScope {
             val text = command.text ?: return@coroutineScope 400
@@ -98,6 +101,8 @@ class TelegramBotService(
                 val user = userRepository.queryUser(userId)
 
                 val emails = user.map { it.loginId }.filter { it.endsWith("@gmail.com") }
+
+                log.info("found [{}] emails for user", emails.count())
 
                 val mailboxRepository = mailboxRepository()
 
