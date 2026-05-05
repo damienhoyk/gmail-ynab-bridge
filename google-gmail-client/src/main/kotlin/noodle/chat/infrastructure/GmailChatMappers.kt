@@ -21,4 +21,3 @@ fun GmailWatch.Error.toChatDomain() =
         code = code,
         message = message,
     )
-
