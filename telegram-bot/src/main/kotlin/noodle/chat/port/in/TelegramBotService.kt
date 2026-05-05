@@ -112,18 +112,15 @@ class TelegramBotService(
                             mailboxRepository.updateMailbox(Mailbox(gmail, state))
                             gmailClient.postWatch(GmailWatchRequest(topicName, labelIds))
                             gmail
+                        }.runCatching { await() }
+                    }.map { result ->
+                        result.onFailure {
+                            it.printStackTrace()
+                            botClient.sendMessage(chatId, "🐳 ${it.message}")
+                        }.onSuccess {
+                            botClient.sendMessage(chatId, "🔭 I am now watching ${it.replace(".", "\\.")} label *$labelName*")
                         }
                     }
-                        .forEach { job ->
-                            runCatching { job.await() }
-                                .onFailure {
-                                    it.printStackTrace()
-                                    botClient.sendMessage(chatId, "🐳 ${it.message}")
-                                }
-                                .onSuccess {
-                                    botClient.sendMessage(chatId, "🔭 I am now watching ${it.replace(".", "\\.")} label *$labelName*")
-                                }
-                        }
                 }
             }
 
