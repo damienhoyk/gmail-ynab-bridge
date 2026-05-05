@@ -140,6 +140,9 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             botClient = { telegramBotClient.await() },
             googleAuthorizationUrl = { googleAuthorizationUrl.await() },
             ynabAuthorizationUrl = { ynabAuthorizationUrl.await() },
+            topicName = System.getenv("GMAIL_PUBSUB_TOPIC_NAME")?.trim()
+                ?: "projects/lexical-cider-458409-d5/topics/gmail",
+            labelName = System.getenv("GMAIL_WATCH_LABEL_NAME")?.trim() ?: "money",
             mailboxRepository = { mailboxRepository.await() },
             loginRepository = { loginRepository.await() },
             tokenRepository = { tokenRepository.await() },

@@ -22,15 +22,14 @@ class TelegramBotService(
     private val botClient: suspend () -> TelegramBotClient,
     private val googleAuthorizationUrl: suspend () -> String,
     private val ynabAuthorizationUrl: suspend () -> String,
+    private val topicName: String,
+    private val labelName: String,
     private val mailboxRepository: suspend () -> MailboxRepository,
     private val loginRepository: suspend () -> LoginRepository,
     private val tokenRepository: suspend () -> TokenRepository,
     private val userRepository: suspend () -> UserRepository,
     private val gmailClientFactory: suspend () -> GmailClientFactory,
 ) {
-    val topicName = "projects/lexical-cider-458409-d5/topics/gmail"
-    val labelName = "money"
-
     suspend fun execute(command: RespondChatCommand): Int =
         coroutineScope {
             val text = command.text ?: return@coroutineScope 400
