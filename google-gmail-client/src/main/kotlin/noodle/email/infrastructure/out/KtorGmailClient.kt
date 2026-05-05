@@ -105,7 +105,11 @@ open class KtorGmailClient(httpClient: HttpClient, block: HttpClientConfig<*>.()
         block: HttpRequestBuilder.() -> Unit = {},
     ) = httpClient.get("$user/labels", block).body<GmailLabel.List>()
 
-    override suspend fun getLabels() = getLabels {}.toMap()
+    override suspend fun getLabelId(labelName: String) =
+        getLabels {}
+            .labels
+            .firstOrNull { it.name.equals(labelName, ignoreCase = true) }
+            ?.id
 
     suspend fun postWatch(
         user: String = "me",
