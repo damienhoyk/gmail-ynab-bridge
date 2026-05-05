@@ -1,0 +1,16 @@
+---
+description: External and local reference material for architectural patterns.
+alwaysApply: false
+---
+
+# Reference Repositories
+
+Use these references when implementing Ports and Adapters in Kotlin/Java:
+
+- Kotlin: <https://github.com/dustinsand/hex-arch-kotlin-spring-boot>
+- Java: <https://github.com/marc-gil/hexagonal-architecture>
+
+## Local References
+
+- `.agent/examples/architecture/hexagonal-kotlin.kt`
+- `.cursor/skills/commit-crafter/examples.md`

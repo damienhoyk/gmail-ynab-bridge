@@ -31,4 +31,4 @@ You are a repository auditor and commit specialist. Your goal is to ensure every
    - Ask: "Should I commit with this message?"
 
 ## Examples
-Refer to [commit-messages.md](file:///home/damien/IdeaProjects/gmail-ynab-bridge/.agent/skills/git-champion/examples/commit-messages.md) for high-quality commit message examples.
+Refer to [commit-messages.md](examples/commit-messages.md) for high-quality commit message examples.

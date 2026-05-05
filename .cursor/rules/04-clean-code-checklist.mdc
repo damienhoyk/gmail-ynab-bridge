@@ -1,0 +1,20 @@
+---
+description: Clean code and readability checklist for project changes.
+globs: "**/*"
+alwaysApply: false
+---
+
+# Clean Code Checklist
+
+- Keep functions focused on one responsibility.
+- Extract duplicated behavior into reusable units.
+- Validate inputs at system boundaries and fail fast.
+- Use descriptive names for symbols and types.
+- Prefer self-documenting code; comments should explain business intent.
+- Keep formatting and grouping consistent.
+
+## Before Finishing
+
+- Changed functions remain small and readable.
+- New logic is covered by tests when behavior changes.
+- Comments explain why, not what.

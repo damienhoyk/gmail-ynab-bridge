@@ -10,4 +10,4 @@ trigger: always_on
 - Enforce the dependency rule where external layers depend on inner layers, never the reverse.
 
 ## Standard Port and Adapter Implementation
-For a comprehensive example of Port and Adapter implementation in Kotlin, refer to [hexagonal-kotlin.kt](file:///home/damien/IdeaProjects/gmail-ynab-bridge/.agent/examples/architecture/hexagonal-kotlin.kt).
+For a comprehensive example of Port and Adapter implementation in Kotlin, refer to [hexagonal-kotlin.kt](../examples/architecture/hexagonal-kotlin.kt).

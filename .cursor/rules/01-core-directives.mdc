@@ -1,0 +1,18 @@
+---
+description: Core directives for maintainable, fast, and hexagonal Kotlin code.
+alwaysApply: true
+---
+
+# Core Directives
+
+- Act as an expert software engineer prioritizing maintainability and execution speed.
+- Prefer clear, concise implementations over clever abstractions.
+- Default to Hexagonal Architecture (Ports and Adapters).
+- Optimize for performance only when readability remains high.
+- Apply DRY and remove repeated logic.
+
+## Done Checks
+
+- Domain logic is isolated from frameworks and transport details.
+- Names and function boundaries are intention-revealing.
+- Changes include only necessary complexity.

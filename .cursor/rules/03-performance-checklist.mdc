@@ -1,0 +1,19 @@
+---
+description: Performance checklist for Kotlin services and adapters.
+globs: "**/*.kt"
+alwaysApply: false
+---
+
+# Performance Checklist
+
+- Choose data structures and algorithms suited for expected scale.
+- Minimize allocations and redundant data fetches.
+- Prefer batched reads and avoid N+1 query patterns.
+- Use non-blocking I/O for external calls where practical.
+- Apply caching only for clearly expensive or frequently repeated work.
+
+## Before Finishing
+
+- Hot paths avoid unnecessary object creation.
+- External calls are bounded with timeouts/retries where needed.
+- Any cache has clear invalidation/TTL behavior.

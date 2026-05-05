@@ -1,0 +1,22 @@
+---
+description: Hexagonal architecture checklist for Kotlin modules.
+globs: "**/*.kt"
+alwaysApply: false
+---
+
+# Architecture Checklist
+
+- Keep domain logic free of framework and adapter imports.
+- Define typed ports for external communication.
+- Implement adapters in infrastructure modules and wire them through ports.
+- Enforce dependency direction: outer layers depend on inner layers.
+
+## Before Finishing
+
+- New interfaces are placed in domain or application ports.
+- Adapter-specific DTOs stay outside domain.
+- Boundaries are explicit in package names and constructors.
+
+## Example
+
+Use `.agent/examples/architecture/hexagonal-kotlin.kt` as the reference shape.
