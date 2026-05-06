@@ -15,8 +15,8 @@ import noodle.bridge.infrastructure.out.DynamoDbBridgeRepository
 import noodle.bridge.infrastructure.out.DynamoDbMatcherRepository
 import noodle.email.infrastructure.out.DynamoDbOutboxRepository
 import noodle.finance.domain.SyncYnabCommand
-import noodle.finance.infrastructure.KtorGmailClientFactory
 import noodle.finance.infrastructure.KtorYnabClientFactory
+import noodle.finance.infrastructure.out.KtorGmailClientFactory
 import noodle.finance.port.`in`.YnabEmailService
 import noodle.security.Bitwarden
 import noodle.security.clientId

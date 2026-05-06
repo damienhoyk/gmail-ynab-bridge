@@ -18,7 +18,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import noodle.chat.domain.RespondChatCommand
-import noodle.chat.infrastructure.KtorGmailClientFactory
+import noodle.chat.infrastructure.out.KtorGmailClientFactory
 import noodle.chat.infrastructure.out.KtorTelegramBotClient
 import noodle.chat.infrastructure.serialization.TelegramWebhookEvent
 import noodle.chat.port.`in`.TelegramBotService

@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.bitwarden.secrets)
     implementation(libs.jakarta.mail)
     implementation(libs.kotlinx.coroutines)
+    implementation("io.ktor:ktor-client-auth")
     implementation("joda-time:joda-time:2.14.0")
     implementation("com.amazonaws:aws-java-sdk-dynamodb:1.12.797")
     implementation("software.amazon.awssdk:dynamodb")

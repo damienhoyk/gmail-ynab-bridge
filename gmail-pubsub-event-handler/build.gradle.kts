@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.bundles.ktor.client)
     implementation(libs.bitwarden.secrets)
     implementation(libs.kotlinx.coroutines)
+    implementation("io.ktor:ktor-client-auth")
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:secretsmanager")
     implementation("software.amazon.awssdk:url-connection-client")

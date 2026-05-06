@@ -1,6 +1,7 @@
 package noodle.email.infrastructure.out
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.respondError
@@ -17,9 +18,10 @@ import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
-import noodle.email.domain.GmailHistoryRequest
-import noodle.email.domain.GmailMessageRequest
-import noodle.email.domain.GmailWatchRequest
+import noodle.email.infrastructure.serialization.GmailHistory
+import noodle.email.infrastructure.serialization.GmailMessage
+import noodle.email.infrastructure.serialization.GmailProfile
+import noodle.email.infrastructure.serialization.GmailWatch
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -172,7 +174,7 @@ class KtorGmailClientTests {
     @Test
     fun getProfile() =
         runBlocking {
-            val profile = googleGmailClient.getProfile()
+            val profile = googleGmailClient.getProfile {}.body<GmailProfile>()
             assertEquals(gmail, profile.emailAddress)
             assertEquals(historyId, profile.historyId.toString())
         }
@@ -180,7 +182,7 @@ class KtorGmailClientTests {
     @Test
     fun getHistory() =
         runBlocking {
-            val history = googleGmailClient.getHistory(request = GmailHistoryRequest(historyId.toLong()))
+            val history = googleGmailClient.getHistory().body<GmailHistory>()
             val message = history.history.first().messagesAdded.first()
             assertEquals(newHistoryId, history.historyId.toString())
             assertEquals(messageId, message.message.id)
@@ -190,8 +192,8 @@ class KtorGmailClientTests {
     fun getMessage(): Unit =
         runBlocking {
             val message =
-                googleGmailClient.getMessage(request = GmailMessageRequest(messageId, GmailMessageRequest.Format.FULL))
-            assertEquals(senderEmail, message.senderEmail)
+                googleGmailClient.getMessage(messageId = messageId).body<GmailMessage>()
+            assertEquals(senderEmail, message.from?.address)
             assertEquals(this@KtorGmailClientTests.message, message.text)
         }
 
@@ -204,7 +206,7 @@ class KtorGmailClientTests {
     @Test
     fun postWatch(): Unit =
         runBlocking {
-            val result = googleGmailClient.postWatch(GmailWatchRequest())
+            val result = googleGmailClient.postWatch().body<GmailWatch>()
             assertEquals(historyId, result.historyId.toString())
             assertEquals(expiration, result.expiration)
         }

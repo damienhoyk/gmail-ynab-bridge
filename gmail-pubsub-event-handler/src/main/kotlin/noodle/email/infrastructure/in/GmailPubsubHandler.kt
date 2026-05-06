@@ -14,9 +14,9 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bridge.infrastructure.out.DynamoDbBridgeRepository
 import noodle.email.domain.SyncMailboxCommand
-import noodle.email.infrastructure.KtorGmailClientFactory
 import noodle.email.infrastructure.out.DynamoDbMailboxRepository
 import noodle.email.infrastructure.out.DynamoDbOutboxRepository
+import noodle.email.infrastructure.out.KtorGmailClientFactory
 import noodle.email.infrastructure.serialization.GmailEvent
 import noodle.email.infrastructure.serialization.PubsubNotification
 import noodle.email.port.`in`.GmailPubsubService

@@ -22,6 +22,7 @@ dependencies {
     implementation(project(":telegram-bot"))
     implementation(project(":telegram-bot-client"))
     implementation(project(":user-dynamodb"))
+    implementation("io.ktor:ktor-client-auth")
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
     implementation(libs.bitwarden.secrets)
