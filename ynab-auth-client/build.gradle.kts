@@ -9,6 +9,8 @@ dependencies {
     implementation(platform(libs.ktor.dependencies))
     implementation(project(":security"))
     implementation(project(":security-client"))
+    implementation(project(":ynab-client"))
+    implementation("io.ktor:ktor-client-auth")
     implementation(libs.bundles.ktor.client)
     testImplementation("io.ktor:ktor-client-mock")
     testImplementation(libs.slf4j.simple)

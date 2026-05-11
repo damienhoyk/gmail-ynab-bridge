@@ -11,7 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import noodle.finance.infrastructure.out.KtorYnabClient
+import noodle.security.infrastructure.out.KtorYnabClientAdapter
 import noodle.security.Bitwarden
 import noodle.security.clientId
 import noodle.security.clientSecret
@@ -54,7 +54,7 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val engineAsync = initScope.async { Java.create() }
 
     val ynabAuthClient = initScope.async { KtorYnabAuthClient(HttpClient(engineAsync.await())) }
-    val ynabClient = initScope.async { KtorYnabClient(HttpClient(engineAsync.await())) }
+    val ynabClient = initScope.async { KtorYnabClientAdapter(HttpClient(engineAsync.await())) }
 
     val redirectUri = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
     val secretId = System.getenv("SECRET_ID")?.trim() ?: throw IllegalStateException()

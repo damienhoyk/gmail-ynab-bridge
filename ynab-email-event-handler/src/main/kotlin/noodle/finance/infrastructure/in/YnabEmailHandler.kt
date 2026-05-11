@@ -117,7 +117,20 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
         val destination = outbox["destination"]?.s
         val source = outbox["source"]?.s
 
-        val command = SyncYnabCommand(destination, source)
+        if (destination.isNullOrEmpty() || source.isNullOrEmpty()) {
+            log.error("Invalid outbox record: destination={}, source={}", destination, source)
+            return
+        }
+
+        val mailId = source.substringBefore(":")
+        val mailAddress = source.substringAfter(":")
+
+        if (mailId.isEmpty() || mailAddress.isEmpty()) {
+            log.error("Invalid source format: {}", source)
+            return
+        }
+
+        val command = SyncYnabCommand(destination, mailId, mailAddress, source)
         service.execute(command)
     }
 }

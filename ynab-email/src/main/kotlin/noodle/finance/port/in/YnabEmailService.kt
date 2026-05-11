@@ -3,7 +3,6 @@ package noodle.finance.port.`in`
 import noodle.email.domain.GmailMessageRequest
 import noodle.email.domain.GmailMessageRequest.Format
 import noodle.finance.domain.SyncYnabCommand
-import noodle.finance.domain.YnabTransactionsRequest
 import noodle.finance.port.out.BridgeRepository
 import noodle.finance.port.out.GmailClientFactory
 import noodle.finance.port.out.MatcherRepository
@@ -21,38 +20,26 @@ class YnabEmailService(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
+    companion object {
+        private val TTL_SUCCESS = 24.hours
+        private val TTL_NOT_FOUND = 1.hours
+        private val TTL_ERROR = 120.hours
+        private val TTL_NO_MATCH = 1.hours
+    }
+
     suspend fun execute(command: SyncYnabCommand) {
         val destination = command.destination
         val mailAddress = command.mailAddress
         val mailId = command.mailId
         val source = command.source
 
-        if (destination.isNullOrEmpty()) {
-            log.error("Invalid destination")
-            return
-        }
-
         if (!destination.endsWith("@app.ynab.com", ignoreCase = true)) {
             log.info("Filter destination [{}]", destination)
             return
         }
 
-        if (source.isNullOrEmpty()) {
-            log.error("Invalid source")
-            return
-        }
-
-        if (mailId.isNullOrEmpty()) {
-            log.error("Invalid mailId")
-            return
-        }
-
-        if (mailAddress.isNullOrEmpty()) {
-            log.error("Invalid mailAddress")
-            return
-        }
-
         val ynabClientFactory = ynabClientFactory()
+        val outboxRepository = outboxRepository()
 
         val message =
             when {
@@ -65,16 +52,30 @@ class YnabEmailService(
                 else -> throw IllegalStateException("unknown mail provider")
             }
 
-        when (message.status) {
-            200 -> outboxRepository().updateTtl(destination, source, 24.hours)
-            404 -> outboxRepository().updateTtl(destination, source, 1.hours)
-            else -> outboxRepository().updateTtl(destination, source, 120.hours)
-        }
+        val ttl =
+            when (message.status) {
+                200 -> TTL_SUCCESS
+                404 -> TTL_NOT_FOUND
+                else -> TTL_ERROR
+            }
+        outboxRepository.updateTtl(destination, source, ttl)
 
-        if (message.status?.equals(200) == false) {
-            log.error("Failed to get message [{}]", source)
+        if (message.status != 200) {
+            log.error("Failed to get message [{}] status=[{}]", source, message.status)
             return
         }
+
+        val senderEmail =
+            message.senderEmail ?: run {
+                log.error("Message [{}] has no sender email", source)
+                return
+            }
+
+        val text =
+            message.text ?: run {
+                log.error("Message [{}] has no text", source)
+                return
+            }
 
         log.info("Getting bridge for [{}|{}] ...", mailAddress, destination)
 
@@ -86,38 +87,39 @@ class YnabEmailService(
 
         log.info("Bridge has [{}] accounts", accounts.size)
 
-        log.info("Getting matchers for [{}] ...", message.senderEmail)
+        log.info("Getting matchers for [{}] ...", senderEmail)
 
         val matcherRepository = matcherRepository()
-        val matchers = matcherRepository.queryMatcher(message.senderEmail!!)
+        val matchers = matcherRepository.queryMatcher(senderEmail)
 
         log.info("Got [{}] matchers", matchers.count())
 
-        val transaction = matchers.firstNotNullOfOrNull { it.parse(message.text!!) }
+        val transaction = matchers.firstNotNullOfOrNull { it.parse(text) }
 
         if (transaction == null) {
             log.warn(
                 "⚠️ Did not extract any transaction from message [{}|{} ...]",
                 mailId,
-                message.text?.take(50),
+                text.take(50),
             )
-            outboxRepository().updateTtl(destination, source, 1.hours)
+            outboxRepository.updateTtl(destination, source, TTL_NO_MATCH)
             return
         }
 
-        val ynabTransaction =
-            YnabTransactionsRequest.YnabTransaction(
-                id = transaction.id,
-                accountId = accounts[transaction.accountId],
-                amount = transaction.amount,
-                date = transaction.date,
-                payeeName = transaction.payeeName,
-            )
+        val accountId =
+            accounts[transaction.accountId]
+                ?: run {
+                    log.error("No account mapping for [{}]", transaction.accountId)
+                    outboxRepository.updateTtl(destination, source, TTL_ERROR)
+                    return
+                }
+
+        val ynabTransaction = transaction.copy(accountId = accountId)
 
         log.info("Sending request to [{}]", destination)
 
         client.postTransactions(transactions = listOf(ynabTransaction))
 
-        outboxRepository().updateTtl(destination, source, 24.hours)
+        outboxRepository.updateTtl(destination, source, TTL_SUCCESS)
     }
 }
