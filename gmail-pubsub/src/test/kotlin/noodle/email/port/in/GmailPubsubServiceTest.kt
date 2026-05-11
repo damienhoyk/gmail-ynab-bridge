@@ -43,21 +43,10 @@ class GmailPubsubServiceTest {
 
     private val gmailClient =
         object : GmailClient {
-            override suspend fun getHistory(request: GmailHistoryRequest) =
-                when (request.startHistoryId) {
-                    state ->
-                        GmailHistory(
-                            history =
-                                listOf(
-                                    GmailHistory.Change(
-                                        messagesAdded =
-                                            listOf(
-                                                GmailHistory.Message(GmailMessage(id = "msg1")),
-                                            ),
-                                    ),
-                                ),
-                        )
-                    else -> GmailHistory()
+            override suspend fun getAddedMessageIds(sinceHistoryId: Long) =
+                when (sinceHistoryId) {
+                    state -> listOf("msg1")
+                    else -> emptyList()
                 }
         }
 

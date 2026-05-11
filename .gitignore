@@ -43,3 +43,6 @@ bin/
 
 ### Spring ###
 spring-shell.log
+
+### Agent ###
+.claude/settings.local.json

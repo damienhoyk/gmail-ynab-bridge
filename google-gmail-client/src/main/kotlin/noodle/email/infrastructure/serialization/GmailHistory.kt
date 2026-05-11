@@ -10,7 +10,7 @@ data class GmailHistory(
 ) {
     @Serializable
     data class Change(
-        val messagesAdded: List<Message>,
+        val messagesAdded: List<Message> = emptyList(),
     )
 
     @Serializable

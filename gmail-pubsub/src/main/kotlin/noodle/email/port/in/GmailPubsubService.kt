@@ -2,9 +2,7 @@ package noodle.email.port.`in`
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import noodle.email.domain.GmailHistoryRequest
 import noodle.email.domain.Outbox
 import noodle.email.domain.SyncMailboxCommand
 import noodle.email.port.out.BridgeRepository
@@ -22,33 +20,25 @@ class GmailPubsubService(
     private val outboxRepository: suspend () -> OutboxRepository,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
-    private val historyType = "messageAdded"
 
     suspend fun execute(command: SyncMailboxCommand) =
         coroutineScope {
-            if (command.email.isNullOrEmpty()) {
-                return@coroutineScope 400
-            }
-
-            if (command.state == null) {
-                return@coroutineScope 400
-            }
+            if (command.email.isNullOrEmpty()) return@coroutineScope 400
+            if (command.state == null) return@coroutineScope 400
 
             log.info("📨 Got message from [{}]", command.email)
 
-            if (command.authorization.isNullOrEmpty()) {
-                return@coroutineScope 403
-            }
-
-            if (command.bearerToken.isEmpty()) {
-                return@coroutineScope 400
-            }
+            if (command.authorization.isNullOrEmpty()) return@coroutineScope 403
+            if (command.bearerToken.isEmpty()) return@coroutineScope 400
 
             val googleAuthClient = googleAuthClient()
             val tokenInfoAsync = async { googleAuthClient.getTokenInfo(command.bearerToken) }
 
             val mailboxRepository = mailboxRepository()
             val mailboxAsync = async { mailboxRepository.getMailbox(command.email) }
+
+            val bridgeRepository = bridgeRepository()
+            val destinationsAsync = async { bridgeRepository.queryBridge(command.email).map { it.destination } }
 
             val gmailClientFactory = gmailClientFactory()
             val googleGmailClient = gmailClientFactory.create(command.email)
@@ -61,37 +51,23 @@ class GmailPubsubService(
                 return@coroutineScope 500
             }
 
-            val historyRequest = GmailHistoryRequest(mailboxState, listOf(historyType))
-            val history = googleGmailClient.getHistory(request = historyRequest)
+            val messageIdsAsync = async { googleGmailClient.getAddedMessageIds(mailboxState) }
 
             val tokenInfo = tokenInfoAsync.await()
+            if (tokenInfo.email.isNullOrEmpty()) return@coroutineScope 403
 
-            if (tokenInfo.email.isNullOrEmpty()) {
-                return@coroutineScope 403
-            }
-
-            mailboxRepository.putMailbox(mailbox.copy(state = command.state))
-
-            val bridgeRepository = bridgeRepository()
-            val bridges = bridgeRepository.queryBridge(command.email)
-
-            val destinations = bridges.map { it.destination }
+            val messageIds = messageIdsAsync.await()
 
             val outboxRepository = outboxRepository()
-            history.messagesAdded
-                .flatMap {
-                    destinations.map { destination ->
-                        val outbox =
-                            Outbox(
-                                destination = destination,
-                                sourceAddress = command.email,
-                                messageId = it.message.id,
-                            )
-                        launch { outboxRepository.putOutbox(outbox) }
-                    }
-                }
-                .joinAll()
+            val destinations = destinationsAsync.await()
 
-            return@coroutineScope 201
+            launch { mailboxRepository.putMailbox(mailbox.copy(state = command.state)) }
+            messageIds.forEach { messageId ->
+                destinations.forEach { destination ->
+                    launch { outboxRepository.putOutbox(Outbox(destination = destination, sourceAddress = command.email, messageId = messageId)) }
+                }
+            }
+
+            201
         }
 }
