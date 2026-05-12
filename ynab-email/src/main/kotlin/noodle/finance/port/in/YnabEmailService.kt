@@ -33,11 +33,6 @@ class YnabEmailService(
         val mailId = command.mailId
         val source = command.source
 
-        if (!destination.endsWith("@app.ynab.com", ignoreCase = true)) {
-            log.info("Filter destination [{}]", destination)
-            return
-        }
-
         val ynabClientFactory = ynabClientFactory()
         val outboxRepository = outboxRepository()
 

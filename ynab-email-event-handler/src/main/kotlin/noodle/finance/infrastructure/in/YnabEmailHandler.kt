@@ -117,8 +117,18 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
         val destination = outbox["destination"]?.s
         val source = outbox["source"]?.s
 
-        if (destination.isNullOrEmpty() || source.isNullOrEmpty()) {
-            log.error("Invalid outbox record: destination={}, source={}", destination, source)
+        if (destination.isNullOrEmpty()) {
+            log.error("Outbox record has empty destination [{}]", destination)
+            return
+        }
+
+        if (source.isNullOrEmpty()) {
+            log.error("Outbox record has empty source [{}]", source)
+            return
+        }
+
+        if (!destination.endsWith("@app.ynab.com", ignoreCase = true)) {
+            log.debug("Filter destination [{}]", destination)
             return
         }
 
@@ -126,7 +136,7 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
         val mailAddress = source.substringAfter(":")
 
         if (mailId.isEmpty() || mailAddress.isEmpty()) {
-            log.error("Invalid source format: {}", source)
+            log.error("Invalid source format [{}]", source)
             return
         }
 
