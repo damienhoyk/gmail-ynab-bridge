@@ -1,0 +1,1 @@
+- [User Role and Style](user_role.md) — Kotlin/hexagonal-arch developer, prefers concise file-specific review feedback
