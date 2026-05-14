@@ -1,0 +1,8 @@
+{
+  "resources": {
+    "includes": [
+      {"pattern": "com/amazonaws/lambda/thirdparty/org/joda/time/tz/data/.*"}
+    ]
+  },
+  "bundles": []
+}

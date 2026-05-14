@@ -1,6 +1,17 @@
 plugins {
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-jvm")
+    id("kotlin-native-test")
+}
+
+graalvmNative {
+    binaries {
+        named("test") {
+            configurationFileDirectories.from(
+                rootProject.file("META-INF/native-image/com.bitwarden/sdk-secrets"),
+            )
+        }
+    }
 }
 
 group = "noodle.security"

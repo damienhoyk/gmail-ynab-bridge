@@ -36,12 +36,6 @@
     "allDeclaredConstructors": true
   },
   {
-    "name": "com.bitwarden.sdk.schema.APIKeyLoginResponse",
-    "allDeclaredFields": true,
-    "allDeclaredMethods": true,
-    "allDeclaredConstructors": true
-  },
-  {
     "name": "com.bitwarden.sdk.schema.SecretsCommand",
     "allDeclaredFields": true,
     "allDeclaredMethods": true,
