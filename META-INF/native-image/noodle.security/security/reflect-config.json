@@ -12,24 +12,24 @@
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   },
   {
-  "name": "noodle.security.infrastructure.serialization.TokenInfoResponse",
-  "fields": [
-    {
-      "name": "Companion"
-    }
-  ]
-},
+    "name": "noodle.security.infrastructure.serialization.TokenInfoResponse",
+    "fields": [
+      {
+        "name": "Companion"
+      }
+    ]
+  },
   {
     "name": "noodle.security.infrastructure.serialization.TokenInfoResponse$Companion",
     "methods": [
       {
         "name": "serializer",
-        "parameterTypes": [ ]
+        "parameterTypes": []
       }
     ]
   }

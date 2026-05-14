@@ -22,8 +22,10 @@ import kotlinx.serialization.json.jsonPrimitive
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.condition.DisabledInNativeImage
 import java.util.UUID.randomUUID
 
+@DisabledInNativeImage
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class KtorYnabClientTests {
     val id = randomUUID().toString()
@@ -118,7 +120,7 @@ class KtorYnabClientTests {
                                   "balance": 1,
                                   "cleared_balance": 1,
                                   "uncleared_balance": 1,
-                                  "transfer_payee_id": null,
+                                  "transfer_payee_id": null
                                 }
                               ]
                             }

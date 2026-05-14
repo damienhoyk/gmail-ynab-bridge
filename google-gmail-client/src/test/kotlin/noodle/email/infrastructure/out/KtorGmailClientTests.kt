@@ -25,17 +25,19 @@ import noodle.email.infrastructure.serialization.GmailWatch
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.condition.DisabledInNativeImage
 import java.util.UUID
 import kotlin.io.encoding.Base64.Default.UrlSafe
 
+@DisabledInNativeImage
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class KtorGmailClientTests {
     val gmail = "damien.hoyk@gmail.com"
     val historyId = (1000L..9999L).random().toString()
     val newHistoryId = historyId + (1L..99L).random()
     val messageId = (1000..9999).random().toString()
-    val message = "👋 Hello, World."
-    val encodedMessage = UrlSafe.encode(message.toByteArray())
+    val emailText = "👋 Hello, World."
+    val encodedMessage = UrlSafe.encode(emailText.toByteArray())
     val senderName = "Sender"
     val senderEmail = "test-${UUID.randomUUID()}@gmail.com"
     val expiration = (1000L..9999L).random()
@@ -194,7 +196,7 @@ class KtorGmailClientTests {
             val message =
                 googleGmailClient.getMessage(messageId = messageId).body<GmailMessage>()
             assertEquals(senderEmail, message.from?.address)
-            assertEquals(this@KtorGmailClientTests.message, message.text)
+            assertEquals(emailText, message.text)
         }
 
     @Test

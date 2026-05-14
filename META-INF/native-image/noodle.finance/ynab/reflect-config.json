@@ -151,11 +151,5 @@
         "parameterTypes": []
       }
     ]
-  },
-  {
-    "name": "java.util.LinkedHashSet",
-    "allDeclaredConstructors": true,
-    "allDeclaredFields": true,
-    "allPublicMethods": true
   }
 ]
