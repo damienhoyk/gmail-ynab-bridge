@@ -3,6 +3,10 @@ package noodle.security
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
+import noodle.security.core.apiKey
+import noodle.security.core.clientId
+import noodle.security.core.clientSecret
+import noodle.security.core.jsonObject
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 
 class Bitwarden(private val secretsManagerClient: SecretsManagerClient) {
