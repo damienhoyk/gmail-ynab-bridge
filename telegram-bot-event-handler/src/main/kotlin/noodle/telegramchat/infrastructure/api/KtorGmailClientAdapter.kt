@@ -14,6 +14,7 @@ import noodle.gmailsync.infrastructure.api.KtorGmailClient
 import noodle.gmailsync.infrastructure.serialization.GmailLabel
 import noodle.gmailsync.infrastructure.serialization.GmailProfile
 import noodle.gmailsync.infrastructure.serialization.GmailWatch
+import noodle.telegramchat.core.domain.WatchMailboxRequest
 import noodle.telegramchat.core.port.GmailClient
 import noodle.telegramchat.infrastructure.toChatDomain
 
@@ -26,16 +27,22 @@ class KtorGmailClientAdapter(httpClient: HttpClient, block: HttpClientConfig<*>.
             .firstOrNull { it.name.equals(labelName, ignoreCase = true) }
             ?.id
 
-    override suspend fun postWatch(request: GmailWatchRequest): noodle.telegramchat.core.domain.GmailWatch =
-        postWatch {
+    override suspend fun postWatch(request: WatchMailboxRequest): noodle.telegramchat.core.domain.GmailWatch {
+        val gmailWatchRequest =
+            GmailWatchRequest(
+                topicName = request.topicName,
+                labelIds = request.labelIds,
+            )
+        return postWatch {
             setBody<JsonObject>(
                 buildJsonObject {
-                    put("topicName", request.topicName)
-                    put("labelFilterBehaviour", request.labelFilterBehaviour.value)
+                    put("topicName", gmailWatchRequest.topicName)
+                    put("labelFilterBehaviour", gmailWatchRequest.labelFilterBehaviour.value)
                     putJsonArray("labelIds") {
-                        request.labelIds.forEach { add(it) }
+                        gmailWatchRequest.labelIds.forEach { add(it) }
                     }
                 },
             )
         }.body<GmailWatch>().toChatDomain()
+    }
 }
