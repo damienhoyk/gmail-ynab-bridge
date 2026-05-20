@@ -1,6 +1,6 @@
 package noodle.security
 
-import noodle.security.infrastructure.`in`.YnabOAuthHandler
+import noodle.security.infrastructure.handler.YnabOAuthHandler
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test

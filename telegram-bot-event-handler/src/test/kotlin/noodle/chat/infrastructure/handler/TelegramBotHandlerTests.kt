@@ -1,18 +1,14 @@
-package noodle.security
+package noodle.chat.infrastructure.handler
 
-import noodle.security.infrastructure.handler.GoogleOAuthHandler
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import kotlin.system.measureTimeMillis
 
-class GoogleOAuthHandlerTests {
+class TelegramBotHandlerTests {
     @Test
     fun initTime() {
-        val timeInMillis =
-            measureTimeMillis {
-                GoogleOAuthHandler()
-            }
+        val timeInMillis = measureTimeMillis { TelegramBotHandler() }
 
         println("Init time: $timeInMillis ms")
         Assertions.assertTrue(timeInMillis < 5000) { "Init took too long: $timeInMillis ms" }
@@ -21,7 +17,7 @@ class GoogleOAuthHandlerTests {
     @Disabled
     @Test
     fun handleRequest() {
-        val handler = GoogleOAuthHandler()
+        val handler = TelegramBotHandler()
         TODO("Not yet implemented")
     }
 }

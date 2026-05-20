@@ -1,17 +1,16 @@
-package noodle.security
+package noodle.finance.infrastructure.handler
 
-import noodle.security.infrastructure.handler.GoogleOAuthHandler
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import kotlin.system.measureTimeMillis
 
-class GoogleOAuthHandlerTests {
+class YnabEmailHandlerTests {
     @Test
     fun initTime() {
         val timeInMillis =
             measureTimeMillis {
-                GoogleOAuthHandler()
+                YnabEmailHandler()
             }
 
         println("Init time: $timeInMillis ms")
@@ -21,7 +20,7 @@ class GoogleOAuthHandlerTests {
     @Disabled
     @Test
     fun handleRequest() {
-        val handler = GoogleOAuthHandler()
+        val handler = YnabEmailHandler()
         TODO("Not yet implemented")
     }
 }

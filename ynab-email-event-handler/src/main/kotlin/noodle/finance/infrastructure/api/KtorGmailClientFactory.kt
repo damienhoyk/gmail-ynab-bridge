@@ -1,19 +1,18 @@
-package noodle.finance.infrastructure
+package noodle.finance.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.auth.Auth
-import noodle.finance.core.port.YnabClientFactory
-import noodle.finance.infrastructure.api.KtorYnabClientAdapter
+import noodle.finance.core.port.GmailClientFactory
 import noodle.security.core.service.AuthTokenService
 import noodle.security.infrastructure.bearer
 
-class KtorYnabClientFactory(
+class KtorGmailClientFactory(
     private val service: AuthTokenService,
     private val engine: HttpClientEngine,
-) : YnabClientFactory {
+) : GmailClientFactory {
     override suspend fun create(loginId: String) =
-        KtorYnabClientAdapter(HttpClient(engine)) {
+        KtorGmailClientAdapter(HttpClient(engine)) {
             install(Auth) { bearer(service, loginId) }
         }
 }
