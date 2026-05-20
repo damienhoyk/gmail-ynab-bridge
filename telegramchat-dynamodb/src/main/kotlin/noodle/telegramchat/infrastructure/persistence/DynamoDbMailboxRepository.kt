@@ -1,8 +1,8 @@
-package noodle.gmailsync.infrastructure.persistence
+package noodle.telegramchat.infrastructure.persistence
 
 import noodle.database.DynamoDbRepository
-import noodle.gmailsync.core.domain.Mailbox
-import noodle.gmailsync.core.port.MailboxRepository
+import noodle.telegramchat.core.domain.Mailbox
+import noodle.telegramchat.core.port.MailboxRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 
@@ -15,16 +15,9 @@ class DynamoDbMailboxRepository(
 
     override val partitionKey = "address"
 
-    override suspend fun putMailbox(mailbox: Mailbox) {
-        put(mailbox.address) {
+    override suspend fun updateMailbox(mailbox: Mailbox) {
+        update(mailbox.address) {
             put("state", fromN(mailbox.state?.toString()))
         }
-    }
-
-    override suspend fun getMailbox(address: String): Mailbox {
-        val item = get(address).item()
-        val address = item["address"]?.s()!!
-        val state = item["state"]?.n()?.toLong()
-        return Mailbox(address, state)
     }
 }

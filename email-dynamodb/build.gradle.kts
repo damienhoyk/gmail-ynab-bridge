@@ -9,7 +9,6 @@ dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(project(":ynabsync"))
     implementation(project(":gmailsync"))
-    implementation(project(":telegramchat"))
     implementation(project(":dynamodb"))
     implementation("software.amazon.awssdk:dynamodb")
     implementation(libs.kotlinx.coroutines)

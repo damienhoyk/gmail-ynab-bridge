@@ -1,8 +1,8 @@
-package noodle.user.infrastructure.persistence
+package noodle.telegramchat.infrastructure.persistence
 
 import noodle.database.DynamoDbSortRepository
-import noodle.security.core.domain.User
-import noodle.security.core.port.UserRepository
+import noodle.telegramchat.core.domain.User
+import noodle.telegramchat.core.port.UserRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
 class DynamoDbUserRepository(
@@ -19,12 +19,10 @@ class DynamoDbUserRepository(
         put(user.id, user.loginId)
     }
 
-    suspend fun getUser(
-        id: String,
-        loginId: String,
-    ) = get(id, loginId).item().let {
-        val id = it["id"]?.s()!!
-        val loginId = it["loginId"]?.s()!!
-        User(id, loginId)
-    }
+    override suspend fun queryUser(id: String) =
+        query(id).items().map {
+            val id = it["id"]?.s()!!
+            val loginId = it["loginId"]?.s()!!
+            User(id, loginId)
+        }
 }
