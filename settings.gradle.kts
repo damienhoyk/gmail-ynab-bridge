@@ -27,8 +27,10 @@ include(":user-dynamodb")
 include(":ynab-auth-client")
 include(":ynab-client")
 
+// Infrastructure Adapters (continued)
+include(":security-bitwarden")
+
 // Common Libraries
-include(":bitwarden")
 include(":dynamodb")
 
 // Event Handlers
