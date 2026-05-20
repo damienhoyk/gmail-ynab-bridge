@@ -12,9 +12,8 @@ plugins {
 // Core Modules
 include(":google-gmail")
 include(":security")
-include(":ynab")
 include(":gmail-pubsub")
-include(":ynab-email")
+include(":ynabsync")
 include(":telegram-bot")
 
 // Infrastructure Adapters
