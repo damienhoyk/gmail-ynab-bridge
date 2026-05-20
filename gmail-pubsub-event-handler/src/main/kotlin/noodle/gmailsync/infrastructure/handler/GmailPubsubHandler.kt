@@ -15,6 +15,7 @@ import kotlinx.serialization.json.put
 import noodle.bridge.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.service.GmailPubsubService
+import noodle.gmailsync.infrastructure.api.GmailTokenClientAdapter
 import noodle.gmailsync.infrastructure.api.KtorGmailClientFactory
 import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
@@ -92,7 +93,7 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val service =
         GmailPubsubService(
             gmailClientFactory = { gmailClientFactory.await() },
-            googleAuthClient = { googleAuthClientAsync.await() },
+            googleTokenClient = { GmailTokenClientAdapter(googleAuthClientAsync.await()) },
             mailboxRepository = { mailboxRepositoryAsync.await() },
             bridgeRepository = { bridgeRepositoryAsync.await() },
             outboxRepository = { outboxRepositoryAsync.await() },
