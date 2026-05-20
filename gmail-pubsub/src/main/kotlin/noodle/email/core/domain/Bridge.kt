@@ -1,4 +1,4 @@
-package noodle.email.domain
+package noodle.email.core.domain
 
 data class Bridge(
     val source: String,

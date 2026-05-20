@@ -1,8 +1,8 @@
-package noodle.email.port.`in`
+package noodle.email.core.service
 
 import kotlinx.coroutines.runBlocking
-import noodle.email.domain.*
-import noodle.email.port.out.*
+import noodle.email.core.domain.*
+import noodle.email.core.port.*
 import noodle.security.domain.TokenInfoResponse
 import noodle.security.port.out.GoogleAuthClient
 import org.junit.jupiter.api.Assertions.assertEquals

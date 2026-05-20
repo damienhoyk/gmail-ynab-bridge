@@ -1,6 +1,6 @@
-package noodle.email.port.out
+package noodle.email.core.port
 
-import noodle.email.domain.Mailbox
+import noodle.email.core.domain.Mailbox
 
 interface MailboxRepository {
     suspend fun getMailbox(address: String): Mailbox

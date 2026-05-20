@@ -1,14 +1,14 @@
-package noodle.email.port.`in`
+package noodle.email.core.service
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import noodle.email.domain.Outbox
-import noodle.email.domain.SyncMailboxCommand
-import noodle.email.port.out.BridgeRepository
-import noodle.email.port.out.GmailClientFactory
-import noodle.email.port.out.MailboxRepository
-import noodle.email.port.out.OutboxRepository
+import noodle.email.core.domain.Outbox
+import noodle.email.core.domain.SyncMailboxCommand
+import noodle.email.core.port.BridgeRepository
+import noodle.email.core.port.GmailClientFactory
+import noodle.email.core.port.MailboxRepository
+import noodle.email.core.port.OutboxRepository
 import noodle.security.port.out.GoogleAuthClient
 import org.slf4j.LoggerFactory
 
