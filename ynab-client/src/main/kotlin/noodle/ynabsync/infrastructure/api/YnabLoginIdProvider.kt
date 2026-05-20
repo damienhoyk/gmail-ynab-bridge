@@ -1,4 +1,4 @@
-package noodle.security.infrastructure.api
+package noodle.ynabsync.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -10,9 +10,8 @@ import kotlinx.serialization.json.jsonPrimitive
 import noodle.security.core.domain.TokenResponse
 import noodle.security.core.port.LoginIdProvider
 import noodle.security.infrastructure.bearer
-import noodle.ynabsync.infrastructure.api.KtorYnabClient
 
-class KtorYnabClientAdapter(
+class YnabLoginIdProvider(
     private val httpClient: HttpClient,
     private val block: HttpClientConfig<*>.() -> Unit = {},
 ) : LoginIdProvider {
