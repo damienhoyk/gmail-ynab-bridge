@@ -2,7 +2,7 @@ package noodle.security.infrastructure.serialization
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import noodle.security.domain.TokenResponse
+import noodle.security.core.domain.TokenResponse
 
 @Serializable
 data class TokenResponse(

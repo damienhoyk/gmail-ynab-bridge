@@ -13,7 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
 import kotlinx.serialization.json.Json
-import noodle.security.port.out.YnabAuthClient
+import noodle.security.core.port.YnabAuthClient
 
 class KtorYnabAuthClient(
     httpClient: HttpClient,

@@ -1,16 +1,16 @@
-package noodle.security.port.`in`
+package noodle.security.core.service
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import noodle.security.domain.AuthorizeCommand
-import noodle.security.domain.Login
-import noodle.security.domain.OAuth2TokenRequest
-import noodle.security.domain.User
-import noodle.security.port.out.LoginIdProvider
-import noodle.security.port.out.LoginRepository
-import noodle.security.port.out.OAuth2TokenProvider
-import noodle.security.port.out.TokenRepository
-import noodle.security.port.out.UserRepository
+import noodle.security.core.domain.AuthorizeCommand
+import noodle.security.core.domain.Login
+import noodle.security.core.domain.OAuth2TokenRequest
+import noodle.security.core.domain.User
+import noodle.security.core.port.LoginIdProvider
+import noodle.security.core.port.LoginRepository
+import noodle.security.core.port.OAuth2TokenProvider
+import noodle.security.core.port.TokenRepository
+import noodle.security.core.port.UserRepository
 import org.slf4j.LoggerFactory
 
 class OAuth2Service(

@@ -8,9 +8,9 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import noodle.finance.infrastructure.out.KtorYnabClient
-import noodle.security.domain.TokenResponse
+import noodle.security.core.domain.TokenResponse
 import noodle.security.infrastructure.bearer
-import noodle.security.port.out.LoginIdProvider
+import noodle.security.core.port.LoginIdProvider
 
 class KtorYnabClientAdapter(
     private val httpClient: HttpClient,

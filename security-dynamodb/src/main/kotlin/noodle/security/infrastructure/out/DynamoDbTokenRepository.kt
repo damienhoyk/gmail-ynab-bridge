@@ -1,8 +1,8 @@
 package noodle.security.infrastructure.out
 
 import noodle.database.DynamoDbSortRepository
-import noodle.security.domain.Token
-import noodle.security.port.out.TokenRepository
+import noodle.security.core.domain.Token
+import noodle.security.core.port.TokenRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS

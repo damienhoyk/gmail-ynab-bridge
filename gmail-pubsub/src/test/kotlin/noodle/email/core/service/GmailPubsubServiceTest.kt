@@ -3,8 +3,8 @@ package noodle.email.core.service
 import kotlinx.coroutines.runBlocking
 import noodle.email.core.domain.*
 import noodle.email.core.port.*
-import noodle.security.domain.TokenInfoResponse
-import noodle.security.port.out.GoogleAuthClient
+import noodle.security.core.domain.TokenInfoResponse
+import noodle.security.core.port.GoogleAuthClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -18,7 +18,7 @@ class GmailPubsubServiceTest {
 
     private val googleAuthClient =
         object : GoogleAuthClient {
-            override suspend fun getToken(request: noodle.security.domain.OAuth2TokenRequest) = TODO()
+            override suspend fun getToken(request: noodle.security.core.domain.OAuth2TokenRequest) = TODO()
 
             override suspend fun getTokenInfo(token: String) =
                 when (token) {

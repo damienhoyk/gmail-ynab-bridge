@@ -5,7 +5,7 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.auth.Auth
 import noodle.finance.port.out.GmailClientFactory
 import noodle.security.infrastructure.bearer
-import noodle.security.port.`in`.AuthTokenService
+import noodle.security.core.service.AuthTokenService
 
 class KtorGmailClientFactory(
     private val service: AuthTokenService,

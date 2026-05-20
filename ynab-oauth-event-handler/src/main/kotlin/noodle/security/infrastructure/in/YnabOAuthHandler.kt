@@ -15,12 +15,12 @@ import noodle.security.infrastructure.out.KtorYnabClientAdapter
 import noodle.security.Bitwarden
 import noodle.security.clientId
 import noodle.security.clientSecret
-import noodle.security.domain.AuthorizeCommand
+import noodle.security.core.domain.AuthorizeCommand
 import noodle.security.infrastructure.out.DynamoDbLoginRepository
 import noodle.security.infrastructure.out.DynamoDbTokenRepository
 import noodle.security.infrastructure.out.KtorYnabAuthClient
 import noodle.security.jsonObject
-import noodle.security.port.`in`.OAuth2Service
+import noodle.security.core.service.OAuth2Service
 import noodle.user.infrastructure.out.DynamoDbUserRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider

@@ -25,7 +25,7 @@ import noodle.security.infrastructure.out.DynamoDbTokenRepository
 import noodle.security.infrastructure.out.KtorGoogleAuthClient
 import noodle.security.infrastructure.out.KtorYnabAuthClient
 import noodle.security.jsonObject
-import noodle.security.port.`in`.AuthTokenService
+import noodle.security.core.service.AuthTokenService
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient

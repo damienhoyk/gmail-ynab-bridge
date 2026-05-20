@@ -9,7 +9,7 @@ import noodle.email.core.port.BridgeRepository
 import noodle.email.core.port.GmailClientFactory
 import noodle.email.core.port.MailboxRepository
 import noodle.email.core.port.OutboxRepository
-import noodle.security.port.out.GoogleAuthClient
+import noodle.security.core.port.GoogleAuthClient
 import org.slf4j.LoggerFactory
 
 class GmailPubsubService(

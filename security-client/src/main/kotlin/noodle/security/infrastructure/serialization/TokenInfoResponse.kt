@@ -1,7 +1,7 @@
 package noodle.security.infrastructure.serialization
 
 import kotlinx.serialization.Serializable
-import noodle.security.domain.TokenInfoResponse
+import noodle.security.core.domain.TokenInfoResponse
 
 @Serializable
 data class TokenInfoResponse(val email: String? = null) {
