@@ -1,7 +1,7 @@
 package noodle.email.infrastructure.out
 
 import kotlinx.coroutines.runBlocking
-import noodle.email.domain.Outbox
+import noodle.email.core.domain.Outbox
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation

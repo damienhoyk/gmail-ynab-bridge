@@ -2,7 +2,7 @@ package noodle.email.infrastructure.serialization
 
 import jakarta.mail.internet.InternetAddress
 import kotlinx.serialization.Serializable
-import noodle.finance.domain.stripHtml
+import noodle.finance.core.domain.stripHtml
 import kotlin.io.encoding.Base64
 
 @Serializable

@@ -1,25 +1,26 @@
 package noodle.security.infrastructure.serialization
 
-import kotlin.reflect.typeOf
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import kotlin.reflect.typeOf
 
 private val json = Json { ignoreUnknownKeys = true }
 
 class TokenSerializationTests {
     @Test
     fun tokenResponse() {
-        val raw = """
+        val raw =
+            """
             {
               "access_token": "abc",
               "id_token": "xyz",
               "refresh_token": "rfr",
               "expires_in": 3600
             }
-        """.trimIndent()
+            """.trimIndent()
         val result = json.decodeFromString(serializer(typeOf<TokenResponse>()), raw) as TokenResponse
         assertEquals("abc", result.accessToken)
         assertEquals("xyz", result.idToken)

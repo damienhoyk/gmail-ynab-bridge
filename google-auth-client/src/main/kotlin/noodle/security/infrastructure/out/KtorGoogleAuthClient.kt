@@ -10,9 +10,9 @@ import io.ktor.client.request.setBody
 import io.ktor.http.Parameters
 import noodle.security.core.domain.OAuth2TokenRequest
 import noodle.security.core.domain.TokenResponse
-import noodle.security.infrastructure.serialization.TokenInfoResponse
 import noodle.security.core.port.GoogleAuthClient
 import noodle.security.core.port.LoginIdProvider
+import noodle.security.infrastructure.serialization.TokenInfoResponse
 
 class KtorGoogleAuthClient(httpClient: HttpClient, block: HttpClientConfig<*>.() -> Unit = {}) :
     KtorOidcClient(

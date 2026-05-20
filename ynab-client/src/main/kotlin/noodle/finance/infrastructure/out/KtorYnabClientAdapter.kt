@@ -3,10 +3,10 @@ package noodle.finance.infrastructure.out
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.request.setBody
-import noodle.finance.domain.YnabTransaction
+import noodle.finance.core.domain.YnabTransaction
+import noodle.finance.core.port.YnabClient
 import noodle.finance.domain.YnabTransactionsRequest
 import noodle.finance.infrastructure.toYnabData
-import noodle.finance.port.out.YnabClient
 
 class KtorYnabClientAdapter(
     httpClient: HttpClient,

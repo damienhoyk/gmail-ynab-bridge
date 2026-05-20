@@ -1,13 +1,13 @@
 package noodle.email.infrastructure.out
 
 import noodle.database.DynamoDbSortRepository
-import noodle.email.domain.Outbox
+import noodle.email.core.domain.Outbox
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 import kotlin.time.Clock.System.now
 import kotlin.time.Duration
-import noodle.email.port.out.OutboxRepository as EmailOutbox
-import noodle.finance.port.out.OutboxRepository as FinanceOutbox
+import noodle.email.core.port.OutboxRepository as EmailOutbox
+import noodle.finance.core.port.OutboxRepository as FinanceOutbox
 
 class DynamoDbOutboxRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),

@@ -1,11 +1,11 @@
 package noodle.email.infrastructure.serialization
 
-import kotlin.reflect.typeOf
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import kotlin.reflect.typeOf
 
 private val json = Json { ignoreUnknownKeys = true }
 
@@ -20,13 +20,14 @@ class GmailSerializationTests {
 
     @Test
     fun gmailHistory() {
-        val raw = """
+        val raw =
+            """
             {
               "history": [{"messagesAdded": [{"message": {"id": "m1", "threadId": "t1"}}]}],
               "historyId": 99,
               "nextPageToken": "tok"
             }
-        """.trimIndent()
+            """.trimIndent()
         val result = json.decodeFromString(serializer(typeOf<GmailHistory>()), raw) as GmailHistory
         assertEquals(99L, result.historyId)
         assertEquals("tok", result.nextPageToken)

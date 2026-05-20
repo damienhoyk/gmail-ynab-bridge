@@ -1,9 +1,9 @@
 package noodle.bridge.infrastructure.out
 
 import noodle.database.DynamoDbSortRepository
-import noodle.finance.domain.TransactionMatcher
-import noodle.finance.domain.TransactionMatcher.RegexGroup
-import noodle.finance.port.out.MatcherRepository
+import noodle.finance.core.domain.TransactionMatcher
+import noodle.finance.core.domain.TransactionMatcher.RegexGroup
+import noodle.finance.core.port.MatcherRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 

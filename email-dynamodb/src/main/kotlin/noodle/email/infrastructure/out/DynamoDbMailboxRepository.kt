@@ -1,8 +1,8 @@
 package noodle.email.infrastructure.out
 
 import noodle.database.DynamoDbRepository
-import noodle.email.domain.Mailbox
-import noodle.email.port.out.MailboxRepository
+import noodle.email.core.domain.Mailbox
+import noodle.email.core.port.MailboxRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 

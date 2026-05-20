@@ -8,8 +8,8 @@ import io.ktor.client.request.setBody
 import io.ktor.http.Parameters
 import kotlinx.coroutines.Deferred
 import noodle.security.core.domain.OAuth2TokenRequest
-import noodle.security.infrastructure.serialization.TokenResponse
 import noodle.security.core.port.OAuth2TokenProvider
+import noodle.security.infrastructure.serialization.TokenResponse
 
 abstract class KtorOAuth2TokenProvider : OAuth2TokenProvider {
     abstract val httpClient: HttpClient

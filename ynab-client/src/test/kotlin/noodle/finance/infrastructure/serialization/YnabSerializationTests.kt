@@ -1,11 +1,11 @@
 package noodle.finance.infrastructure.serialization
 
-import kotlin.reflect.typeOf
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import kotlin.reflect.typeOf
 
 private val json = Json { ignoreUnknownKeys = true }
 

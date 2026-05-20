@@ -6,10 +6,10 @@ import com.bitwarden.sdk.schema.SecretResponse
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 // Guards reflect-config entries for com.bitwarden.sdk.schema.* classes.
 // The Bitwarden SDK uses Jackson (via sdk-secrets transitive dependency) to
