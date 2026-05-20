@@ -1,6 +1,6 @@
-package noodle.chat.port.out
+package noodle.chat.core.port
 
-import noodle.chat.domain.StateToken
+import noodle.chat.core.domain.StateToken
 
 interface TokenRepository {
     suspend fun putToken(token: StateToken)

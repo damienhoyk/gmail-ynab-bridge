@@ -11,7 +11,7 @@ import kotlin.time.Clock.System.now
 class DynamoDbTokenRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
-) : DynamoDbSortRepository(), TokenRepository, noodle.chat.port.out.TokenRepository {
+) : DynamoDbSortRepository(), TokenRepository, noodle.chat.core.port.TokenRepository {
     override val name = "token"
     override val table = environment?.let { "$name-$it" } ?: name
 
@@ -39,7 +39,7 @@ class DynamoDbTokenRepository(
         return Token(id, type, value)
     }
 
-    override suspend fun putToken(token: noodle.chat.domain.StateToken) {
+    override suspend fun putToken(token: noodle.chat.core.domain.StateToken) {
         val ttl = (now() + token.duration).epochSeconds
         put(token.id, "state") {
             put("value", fromS(token.userId))

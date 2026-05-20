@@ -4,20 +4,20 @@ import noodle.email.infrastructure.serialization.GmailProfile
 import noodle.email.infrastructure.serialization.GmailWatch
 
 fun GmailProfile.toChatDomain() =
-    noodle.chat.domain.GmailProfile(
+    noodle.chat.core.domain.GmailProfile(
         emailAddress = emailAddress,
         historyId = historyId,
     )
 
 fun GmailWatch.toChatDomain() =
-    noodle.chat.domain.GmailWatch(
+    noodle.chat.core.domain.GmailWatch(
         historyId = historyId,
         expiration = expiration,
         error = error?.toChatDomain(),
     )
 
 fun GmailWatch.Error.toChatDomain() =
-    noodle.chat.domain.GmailWatch.Error(
+    noodle.chat.core.domain.GmailWatch.Error(
         code = code,
         message = message,
     )

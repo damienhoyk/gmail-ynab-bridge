@@ -1,4 +1,4 @@
-package noodle.chat.port.out
+package noodle.chat.core.port
 
 interface TelegramBotClient {
     suspend fun sendChatAction(

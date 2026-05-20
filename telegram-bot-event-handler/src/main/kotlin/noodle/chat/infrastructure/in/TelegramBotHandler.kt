@@ -17,11 +17,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
-import noodle.chat.domain.RespondChatCommand
+import noodle.chat.core.domain.RespondChatCommand
+import noodle.chat.core.service.TelegramBotService
 import noodle.chat.infrastructure.out.KtorGmailClientFactory
 import noodle.chat.infrastructure.out.KtorTelegramBotClient
 import noodle.chat.infrastructure.serialization.TelegramWebhookEvent
-import noodle.chat.port.`in`.TelegramBotService
 import noodle.email.infrastructure.out.DynamoDbMailboxRepository
 import noodle.security.Bitwarden
 import noodle.security.apiKey

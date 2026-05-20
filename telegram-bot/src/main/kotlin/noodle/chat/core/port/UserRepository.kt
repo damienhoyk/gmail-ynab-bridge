@@ -1,6 +1,6 @@
-package noodle.chat.port.out
+package noodle.chat.core.port
 
-import noodle.chat.domain.User
+import noodle.chat.core.domain.User
 
 interface UserRepository {
     suspend fun putUser(user: User)

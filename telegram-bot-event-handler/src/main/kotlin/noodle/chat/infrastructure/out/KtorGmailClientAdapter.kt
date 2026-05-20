@@ -9,8 +9,8 @@ import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
+import noodle.chat.core.port.GmailClient
 import noodle.chat.infrastructure.toChatDomain
-import noodle.chat.port.out.GmailClient
 import noodle.email.domain.GmailWatchRequest
 import noodle.email.infrastructure.out.KtorGmailClient
 import noodle.email.infrastructure.serialization.GmailLabel
@@ -26,7 +26,7 @@ class KtorGmailClientAdapter(httpClient: HttpClient, block: HttpClientConfig<*>.
             .firstOrNull { it.name.equals(labelName, ignoreCase = true) }
             ?.id
 
-    override suspend fun postWatch(request: GmailWatchRequest): noodle.chat.domain.GmailWatch =
+    override suspend fun postWatch(request: GmailWatchRequest): noodle.chat.core.domain.GmailWatch =
         postWatch {
             setBody<JsonObject>(
                 buildJsonObject {

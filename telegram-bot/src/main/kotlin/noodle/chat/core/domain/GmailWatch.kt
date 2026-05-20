@@ -1,4 +1,4 @@
-package noodle.chat.domain
+package noodle.chat.core.domain
 
 data class GmailWatch(
     val historyId: Long?,

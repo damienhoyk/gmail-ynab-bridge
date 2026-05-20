@@ -9,7 +9,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 class DynamoDbMailboxRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
-) : DynamoDbRepository(), MailboxRepository, noodle.chat.port.out.MailboxRepository {
+) : DynamoDbRepository(), MailboxRepository, noodle.chat.core.port.MailboxRepository {
     override val name = "mailbox"
     override val table = environment?.let { "$name-$it" } ?: name
 
@@ -28,7 +28,7 @@ class DynamoDbMailboxRepository(
         return Mailbox(address, state)
     }
 
-    override suspend fun updateMailbox(mailbox: noodle.chat.domain.Mailbox) {
+    override suspend fun updateMailbox(mailbox: noodle.chat.core.domain.Mailbox) {
         update(mailbox.address) {
             put("state", fromN(mailbox.state?.toString()))
         }

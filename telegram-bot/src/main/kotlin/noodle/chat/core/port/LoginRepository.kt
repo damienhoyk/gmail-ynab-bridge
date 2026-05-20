@@ -1,6 +1,6 @@
-package noodle.chat.port.out
+package noodle.chat.core.port
 
-import noodle.chat.domain.Login
+import noodle.chat.core.domain.Login
 
 interface LoginRepository {
     suspend fun putLogin(login: Login)
