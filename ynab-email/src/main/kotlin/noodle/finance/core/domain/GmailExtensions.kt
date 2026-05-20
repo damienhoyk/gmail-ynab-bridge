@@ -1,4 +1,4 @@
-package noodle.finance.domain
+package noodle.finance.core.domain
 
 private val HTML_TAG_REGEX = "<[^>]*>".toRegex()
 private val NON_BREAKING_SPACE_REGEX = "\\u00A0|&nbsp;".toRegex()

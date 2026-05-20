@@ -1,4 +1,4 @@
-package noodle.finance.domain
+package noodle.finance.core.domain
 
 data class GmailMessage(
     val id: String? = null,

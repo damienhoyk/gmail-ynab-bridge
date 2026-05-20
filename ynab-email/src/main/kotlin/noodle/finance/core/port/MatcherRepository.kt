@@ -1,6 +1,6 @@
-package noodle.finance.port.out
+package noodle.finance.core.port
 
-import noodle.finance.domain.TransactionMatcher
+import noodle.finance.core.domain.TransactionMatcher
 
 interface MatcherRepository {
     suspend fun queryMatcher(source: String): List<TransactionMatcher>

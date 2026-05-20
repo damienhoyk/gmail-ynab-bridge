@@ -1,4 +1,4 @@
-package noodle.finance.port.out
+package noodle.finance.core.port
 
 import kotlin.time.Duration
 

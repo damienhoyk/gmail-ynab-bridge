@@ -1,4 +1,4 @@
-package noodle.finance.domain
+package noodle.finance.core.domain
 
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.databind.ObjectMapper

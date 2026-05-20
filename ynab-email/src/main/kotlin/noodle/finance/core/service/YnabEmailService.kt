@@ -1,13 +1,13 @@
-package noodle.finance.port.`in`
+package noodle.finance.core.service
 
 import noodle.email.domain.GmailMessageRequest
 import noodle.email.domain.GmailMessageRequest.Format
-import noodle.finance.domain.SyncYnabCommand
-import noodle.finance.port.out.BridgeRepository
-import noodle.finance.port.out.GmailClientFactory
-import noodle.finance.port.out.MatcherRepository
-import noodle.finance.port.out.OutboxRepository
-import noodle.finance.port.out.YnabClientFactory
+import noodle.finance.core.domain.SyncYnabCommand
+import noodle.finance.core.port.BridgeRepository
+import noodle.finance.core.port.GmailClientFactory
+import noodle.finance.core.port.MatcherRepository
+import noodle.finance.core.port.OutboxRepository
+import noodle.finance.core.port.YnabClientFactory
 import org.slf4j.LoggerFactory
 import kotlin.time.Duration.Companion.hours
 

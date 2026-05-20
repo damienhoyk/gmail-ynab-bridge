@@ -1,6 +1,6 @@
-package noodle.finance.port.out
+package noodle.finance.core.port
 
-import noodle.finance.domain.YnabTransaction
+import noodle.finance.core.domain.YnabTransaction
 
 interface YnabClient {
     suspend fun postTransactions(

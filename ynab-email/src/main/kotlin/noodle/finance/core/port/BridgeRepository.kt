@@ -1,6 +1,6 @@
-package noodle.finance.port.out
+package noodle.finance.core.port
 
-import noodle.finance.domain.Bridge
+import noodle.finance.core.domain.Bridge
 
 interface BridgeRepository {
     suspend fun getBridge(

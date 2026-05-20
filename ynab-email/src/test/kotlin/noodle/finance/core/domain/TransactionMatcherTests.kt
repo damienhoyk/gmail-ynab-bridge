@@ -1,4 +1,4 @@
-package noodle.finance.domain
+package noodle.finance.core.domain
 
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest

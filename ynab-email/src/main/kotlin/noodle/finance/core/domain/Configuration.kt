@@ -1,4 +1,4 @@
-package noodle.finance.domain
+package noodle.finance.core.domain
 
 import kotlin.time.Duration.Companion.hours
 
