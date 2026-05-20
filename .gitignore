@@ -46,3 +46,4 @@ spring-shell.log
 
 ### Agent ###
 .claude/settings.local.json
+.claude/worktrees
