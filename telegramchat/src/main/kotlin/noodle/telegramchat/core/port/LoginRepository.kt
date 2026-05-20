@@ -1,6 +1,6 @@
-package noodle.chat.core.port
+package noodle.telegramchat.core.port
 
-import noodle.chat.core.domain.Login
+import noodle.telegramchat.core.domain.Login
 
 interface LoginRepository {
     suspend fun putLogin(login: Login)

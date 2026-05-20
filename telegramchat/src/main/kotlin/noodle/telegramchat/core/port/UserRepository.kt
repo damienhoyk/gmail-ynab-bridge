@@ -1,6 +1,6 @@
-package noodle.chat.core.port
+package noodle.telegramchat.core.port
 
-import noodle.chat.core.domain.User
+import noodle.telegramchat.core.domain.User
 
 interface UserRepository {
     suspend fun putUser(user: User)

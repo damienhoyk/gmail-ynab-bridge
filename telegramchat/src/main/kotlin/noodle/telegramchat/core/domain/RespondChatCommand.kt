@@ -1,4 +1,4 @@
-package noodle.chat.core.domain
+package noodle.telegramchat.core.domain
 
 data class RespondChatCommand(
     val telegramUserId: String?,

@@ -13,7 +13,7 @@ plugins {
 include(":security")
 include(":gmailsync")
 include(":ynabsync")
-include(":telegram-bot")
+include(":telegramchat")
 
 // Infrastructure Adapters
 include(":bridge-dynamodb")

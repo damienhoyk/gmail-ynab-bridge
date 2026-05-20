@@ -1,7 +1,7 @@
-package noodle.chat.core.port
+package noodle.telegramchat.core.port
 
-import noodle.chat.core.domain.GmailProfile
-import noodle.chat.core.domain.GmailWatch
+import noodle.telegramchat.core.domain.GmailProfile
+import noodle.telegramchat.core.domain.GmailWatch
 import noodle.email.domain.GmailWatchRequest
 
 interface GmailClient {
