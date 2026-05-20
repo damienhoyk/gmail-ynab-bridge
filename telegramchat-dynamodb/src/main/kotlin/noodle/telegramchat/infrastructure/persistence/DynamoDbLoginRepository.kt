@@ -1,8 +1,8 @@
-package noodle.security.infrastructure.persistence
+package noodle.telegramchat.infrastructure.persistence
 
 import noodle.database.DynamoDbRepository
-import noodle.security.core.domain.Login
-import noodle.security.core.port.LoginRepository
+import noodle.telegramchat.core.domain.Login
+import noodle.telegramchat.core.port.LoginRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 
@@ -18,4 +18,12 @@ class DynamoDbLoginRepository(
     override suspend fun putLogin(login: Login) {
         put(login.id) { put("userId", fromS(login.userId)) }
     }
+
+    override suspend fun getLogin(id: String): Login? =
+        get(id)?.let {
+            val item = it.item()
+            val id = item["id"]?.s()!!
+            val userId = item["userId"]?.s()
+            Login(id, userId)
+        }
 }

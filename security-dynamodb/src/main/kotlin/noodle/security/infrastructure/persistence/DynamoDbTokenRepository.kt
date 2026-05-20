@@ -4,14 +4,12 @@ import noodle.database.DynamoDbSortRepository
 import noodle.security.core.domain.Token
 import noodle.security.core.port.TokenRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
-import kotlin.time.Clock.System.now
 
 class DynamoDbTokenRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
-) : DynamoDbSortRepository(), TokenRepository, noodle.telegramchat.core.port.TokenRepository {
+) : DynamoDbSortRepository(), TokenRepository {
     override val name = "token"
     override val table = environment?.let { "$name-$it" } ?: name
 
@@ -37,13 +35,5 @@ class DynamoDbTokenRepository(
         val type = item["type"]?.s()!!
         val value = item["value"]?.s()!!
         return Token(id, type, value)
-    }
-
-    override suspend fun putToken(token: noodle.telegramchat.core.domain.StateToken) {
-        val ttl = (now() + token.duration).epochSeconds
-        put(token.id, "state") {
-            put("value", fromS(token.userId))
-            put("ttl", fromN(ttl.toString()))
-        }
     }
 }

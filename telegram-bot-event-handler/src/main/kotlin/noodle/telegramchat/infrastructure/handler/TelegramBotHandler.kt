@@ -17,7 +17,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
-import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.security.Bitwarden
 import noodle.security.core.apiKey
 import noodle.security.core.clientId
@@ -25,19 +24,21 @@ import noodle.security.core.clientSecret
 import noodle.security.core.jsonObject
 import noodle.security.core.service.AuthTokenService
 import noodle.security.infrastructure.api.KtorGoogleAuthClient
-import noodle.security.infrastructure.persistence.DynamoDbLoginRepository
-import noodle.security.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.telegramchat.core.domain.RespondChatCommand
 import noodle.telegramchat.core.service.TelegramBotService
 import noodle.telegramchat.infrastructure.api.KtorGmailClientFactory
 import noodle.telegramchat.infrastructure.api.KtorTelegramBotClient
+import noodle.telegramchat.infrastructure.persistence.DynamoDbLoginRepository
+import noodle.telegramchat.infrastructure.persistence.DynamoDbMailboxRepository
+import noodle.telegramchat.infrastructure.persistence.DynamoDbUserRepository
 import noodle.telegramchat.infrastructure.serialization.TelegramWebhookEvent
-import noodle.user.infrastructure.persistence.DynamoDbUserRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
+import noodle.security.infrastructure.persistence.DynamoDbTokenRepository as SecurityTokenRepository
+import noodle.telegramchat.infrastructure.persistence.DynamoDbTokenRepository as TelegramTokenRepository
 
 class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -80,7 +81,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             AuthTokenService(
                 clientId = secret.clientId!!,
                 clientSecret = secret.clientSecret!!,
-                tokenRepository = tokenRepository.await(),
+                tokenRepository = securityTokenRepository.await(),
                 authClient = googleAuthClientAsync.await(),
             )
         }
@@ -126,13 +127,15 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             }
         }
 
-    private val userRepository =
+    private val securityTokenRepository =
+        initScope.async { SecurityTokenRepository(client = dynamoDbClientAsync.await()) }
+    private val telegramUserRepository =
         initScope.async { DynamoDbUserRepository(client = dynamoDbClientAsync.await()) }
-    private val tokenRepository =
-        initScope.async { DynamoDbTokenRepository(client = dynamoDbClientAsync.await()) }
-    private val loginRepository =
+    private val telegramTokenRepository =
+        initScope.async { TelegramTokenRepository(client = dynamoDbClientAsync.await()) }
+    private val telegramLoginRepository =
         initScope.async { DynamoDbLoginRepository(client = dynamoDbClientAsync.await()) }
-    private val mailboxRepository =
+    private val telegramMailboxRepository =
         initScope.async { DynamoDbMailboxRepository(client = dynamoDbClientAsync.await()) }
 
     private val service =
@@ -144,10 +147,10 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                 System.getenv("GMAIL_PUBSUB_TOPIC_NAME")?.trim()
                     ?: "projects/lexical-cider-458409-d5/topics/gmail",
             labelName = System.getenv("GMAIL_WATCH_LABEL_NAME")?.trim() ?: "money",
-            mailboxRepository = { mailboxRepository.await() },
-            loginRepository = { loginRepository.await() },
-            tokenRepository = { tokenRepository.await() },
-            userRepository = { userRepository.await() },
+            mailboxRepository = { telegramMailboxRepository.await() },
+            loginRepository = { telegramLoginRepository.await() },
+            tokenRepository = { telegramTokenRepository.await() },
+            userRepository = { telegramUserRepository.await() },
             gmailClientFactory = { gmailClientFactory.await() },
         )
 
