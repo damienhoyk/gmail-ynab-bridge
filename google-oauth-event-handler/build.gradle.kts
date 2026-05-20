@@ -10,7 +10,7 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":bitwarden"))
+    implementation(project(":security-bitwarden"))
     implementation(project(":google-auth-client"))
     implementation(project(":security"))
     implementation(project(":security-client"))
