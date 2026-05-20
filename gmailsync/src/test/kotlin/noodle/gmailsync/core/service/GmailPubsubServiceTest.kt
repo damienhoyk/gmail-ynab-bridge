@@ -3,8 +3,6 @@ package noodle.gmailsync.core.service
 import kotlinx.coroutines.runBlocking
 import noodle.gmailsync.core.domain.*
 import noodle.gmailsync.core.port.*
-import noodle.security.core.domain.TokenInfoResponse
-import noodle.security.core.port.GoogleAuthClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -16,10 +14,8 @@ class GmailPubsubServiceTest {
     private val savedMailboxes = mutableListOf<Mailbox>()
     private val savedOutboxes = mutableListOf<Outbox>()
 
-    private val googleAuthClient =
-        object : GoogleAuthClient {
-            override suspend fun getToken(request: noodle.security.core.domain.OAuth2TokenRequest) = TODO()
-
+    private val googleTokenClient =
+        object : GoogleTokenClient {
             override suspend fun getTokenInfo(token: String) =
                 when (token) {
                     "valid-token" -> TokenInfoResponse(email = email)
@@ -74,7 +70,7 @@ class GmailPubsubServiceTest {
     private val service =
         GmailPubsubService(
             gmailClientFactory = { gmailClientFactory },
-            googleAuthClient = { googleAuthClient },
+            googleTokenClient = { googleTokenClient },
             bridgeRepository = { bridgeRepository },
             mailboxRepository = { mailboxRepository },
             outboxRepository = { outboxRepository },

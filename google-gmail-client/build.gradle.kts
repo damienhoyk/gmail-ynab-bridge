@@ -12,6 +12,7 @@ dependencies {
     implementation(project(":gmailsync"))
     implementation(project(":security"))
     implementation(project(":security-client"))
+    implementation(project(":google-auth-client"))
     implementation(libs.bundles.ktor.client)
     implementation(libs.jakarta.mail)
     implementation("io.ktor:ktor-client-auth")
