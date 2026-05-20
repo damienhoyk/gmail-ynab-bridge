@@ -1,7 +1,7 @@
 package noodle.ynabsync.core.service
 
-import noodle.gmailsync.core.domain.GmailMessageRequest
-import noodle.gmailsync.core.domain.GmailMessageRequest.Format
+import noodle.ynabsync.core.domain.MailMessageRequest
+import noodle.ynabsync.core.domain.MailMessageRequest.Format
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.port.BridgeRepository
 import noodle.ynabsync.core.port.GmailClientFactory
@@ -41,7 +41,7 @@ class YnabEmailService(
                 mailAddress.endsWith("@gmail.com", ignoreCase = true) -> {
                     val gmailClientFactory = gmailClientFactory()
                     val client = gmailClientFactory.create(mailAddress)
-                    val request = GmailMessageRequest(mailId, Format.FULL)
+                    val request = MailMessageRequest(mailId, Format.FULL)
                     client.getMessage(request)
                 }
                 else -> throw IllegalStateException("unknown mail provider")
