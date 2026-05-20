@@ -3,12 +3,12 @@ package noodle.telegramchat.core.service
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.supervisorScope
-import noodle.gmailsync.core.domain.GmailWatchRequest
 import noodle.telegramchat.core.domain.Login
 import noodle.telegramchat.core.domain.Mailbox
 import noodle.telegramchat.core.domain.RespondChatCommand
 import noodle.telegramchat.core.domain.StateToken
 import noodle.telegramchat.core.domain.User
+import noodle.telegramchat.core.domain.WatchMailboxRequest
 import noodle.telegramchat.core.port.GmailClientFactory
 import noodle.telegramchat.core.port.LoginRepository
 import noodle.telegramchat.core.port.MailboxRepository
@@ -115,7 +115,7 @@ class TelegramBotService(
                             val labelIds = listOfNotNull(labelId)
 
                             mailboxRepository.updateMailbox(Mailbox(gmail, state))
-                            gmailClient.postWatch(GmailWatchRequest(topicName, labelIds))
+                            gmailClient.postWatch(WatchMailboxRequest(topicName, labelIds))
                             gmail
                         }.runCatching { await() }
                     }.map { result ->
