@@ -15,7 +15,7 @@ include(":security")
 include(":ynab")
 include(":gmail-pubsub")
 include(":ynab-email")
-include(":telegram-bot")
+include(":telegramchat")
 
 // Infrastructure Adapters
 include(":bridge-dynamodb")

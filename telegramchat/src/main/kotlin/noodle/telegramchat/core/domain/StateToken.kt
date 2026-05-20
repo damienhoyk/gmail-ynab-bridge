@@ -1,4 +1,4 @@
-package noodle.chat.core.domain
+package noodle.telegramchat.core.domain
 
 import kotlin.time.Duration
 
