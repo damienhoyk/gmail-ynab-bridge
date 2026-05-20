@@ -9,7 +9,7 @@ dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(project(":dynamodb"))
     implementation(project(":security"))
-    implementation(project(":telegram-bot"))
+    implementation(project(":telegramchat"))
     implementation(libs.kotlinx.coroutines)
     implementation("software.amazon.awssdk:dynamodb")
     runtimeOnly(libs.logback)

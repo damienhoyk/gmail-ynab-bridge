@@ -1,4 +1,4 @@
-package noodle.finance.infrastructure.serialization
+package noodle.ynabsync.infrastructure.serialization
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer

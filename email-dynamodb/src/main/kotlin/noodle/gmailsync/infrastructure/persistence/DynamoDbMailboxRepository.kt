@@ -1,15 +1,15 @@
-package noodle.email.infrastructure.persistence
+package noodle.gmailsync.infrastructure.persistence
 
 import noodle.database.DynamoDbRepository
-import noodle.email.core.domain.Mailbox
-import noodle.email.core.port.MailboxRepository
+import noodle.gmailsync.core.domain.Mailbox
+import noodle.gmailsync.core.port.MailboxRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 
 class DynamoDbMailboxRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
-) : DynamoDbRepository(), MailboxRepository, noodle.chat.core.port.MailboxRepository {
+) : DynamoDbRepository(), MailboxRepository, noodle.telegramchat.core.port.MailboxRepository {
     override val name = "mailbox"
     override val table = environment?.let { "$name-$it" } ?: name
 
@@ -28,7 +28,7 @@ class DynamoDbMailboxRepository(
         return Mailbox(address, state)
     }
 
-    override suspend fun updateMailbox(mailbox: noodle.chat.core.domain.Mailbox) {
+    override suspend fun updateMailbox(mailbox: noodle.telegramchat.core.domain.Mailbox) {
         update(mailbox.address) {
             put("state", fromN(mailbox.state?.toString()))
         }

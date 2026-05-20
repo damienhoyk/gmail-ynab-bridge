@@ -1,4 +1,4 @@
-package noodle.email.infrastructure.handler
+package noodle.gmailsync.infrastructure.handler
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled

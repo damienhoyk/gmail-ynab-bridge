@@ -1,9 +1,9 @@
-package noodle.email.infrastructure.api
+package noodle.gmailsync.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.auth.Auth
-import noodle.email.core.port.GmailClientFactory
+import noodle.gmailsync.core.port.GmailClientFactory
 import noodle.security.core.service.AuthTokenService
 import noodle.security.infrastructure.bearer
 

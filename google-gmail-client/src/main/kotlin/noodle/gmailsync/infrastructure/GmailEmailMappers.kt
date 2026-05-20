@@ -1,6 +1,6 @@
-package noodle.email.infrastructure
+package noodle.gmailsync.infrastructure
 
-import noodle.email.infrastructure.serialization.GmailHistory
+import noodle.gmailsync.infrastructure.serialization.GmailHistory
 
 fun GmailHistory.toAddedMessageIds(): List<String> =
     history.flatMap { it.messagesAdded }.mapNotNull { it.message.id }

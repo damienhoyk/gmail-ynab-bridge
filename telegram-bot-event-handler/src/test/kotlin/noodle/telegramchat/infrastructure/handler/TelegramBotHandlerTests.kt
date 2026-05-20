@@ -1,4 +1,4 @@
-package noodle.chat.infrastructure.handler
+package noodle.telegramchat.infrastructure.handler
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled

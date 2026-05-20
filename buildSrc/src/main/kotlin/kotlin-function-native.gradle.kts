@@ -20,8 +20,8 @@ graalvmNative {
                     file("../META-INF/native-image/com.bitwarden/sdk-secrets"),
                     file("../META-INF/native-image/io.ktor/ktor-client-content-negotiation"),
                     file("../META-INF/native-image/io.ktor/ktor-client-core"),
-                    file("../META-INF/native-image/noodle.email/google-gmail"),
-                    file("../META-INF/native-image/noodle.finance/ynab"),
+                    file("../META-INF/native-image/noodle.gmailsync/gmailsync"),
+                    file("../META-INF/native-image/noodle.ynabsync/ynabsync"),
                     file("../META-INF/native-image/noodle.security/security"),
                     file("../META-INF/native-image/org.joda/joda-time")
             )

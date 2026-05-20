@@ -1,4 +1,4 @@
-package noodle.finance.infrastructure.handler
+package noodle.ynabsync.infrastructure.handler
 
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent
 import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers

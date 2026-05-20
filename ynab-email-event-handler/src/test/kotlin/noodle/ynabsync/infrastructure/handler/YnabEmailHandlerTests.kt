@@ -1,4 +1,4 @@
-package noodle.finance.infrastructure.handler
+package noodle.ynabsync.infrastructure.handler
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled

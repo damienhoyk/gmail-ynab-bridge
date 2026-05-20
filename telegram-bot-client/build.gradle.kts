@@ -2,12 +2,12 @@ plugins {
     id("kotlin-jvm")
 }
 
-group = "noodle.chat"
+group = "noodle.telegramchat"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":telegram-bot"))
+    implementation(project(":telegramchat"))
     implementation(libs.bundles.ktor.client)
     implementation(libs.kotlinx.coroutines)
     testImplementation("io.ktor:ktor-client-mock")

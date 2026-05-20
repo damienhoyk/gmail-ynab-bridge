@@ -4,15 +4,14 @@ plugins {
     id("kotlin-native-test")
 }
 
-group = "noodle.finance"
+group = "noodle.ynabsync"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation(platform(libs.ktor.dependencies))
     implementation(project(":security"))
     implementation(project(":security-client"))
-    implementation(project(":ynab"))
-    implementation(project(":ynab-email"))
+    implementation(project(":ynabsync"))
     implementation(libs.bundles.ktor.client)
     implementation("io.ktor:ktor-client-auth")
     testImplementation("io.ktor:ktor-client-mock")
@@ -24,7 +23,7 @@ graalvmNative {
     binaries {
         named("test") {
             configurationFileDirectories.from(
-                rootProject.file("META-INF/native-image/noodle.finance/ynab"),
+                rootProject.file("META-INF/native-image/noodle.ynabsync/ynabsync"),
             )
         }
     }

@@ -1,23 +1,23 @@
-package noodle.chat.infrastructure
+package noodle.telegramchat.infrastructure
 
-import noodle.email.infrastructure.serialization.GmailProfile
-import noodle.email.infrastructure.serialization.GmailWatch
+import noodle.gmailsync.infrastructure.serialization.GmailProfile
+import noodle.gmailsync.infrastructure.serialization.GmailWatch
 
 fun GmailProfile.toChatDomain() =
-    noodle.chat.core.domain.GmailProfile(
+    noodle.telegramchat.core.domain.GmailProfile(
         emailAddress = emailAddress,
         historyId = historyId,
     )
 
 fun GmailWatch.toChatDomain() =
-    noodle.chat.core.domain.GmailWatch(
+    noodle.telegramchat.core.domain.GmailWatch(
         historyId = historyId,
         expiration = expiration,
         error = error?.toChatDomain(),
     )
 
 fun GmailWatch.Error.toChatDomain() =
-    noodle.chat.core.domain.GmailWatch.Error(
+    noodle.telegramchat.core.domain.GmailWatch.Error(
         code = code,
         message = message,
     )

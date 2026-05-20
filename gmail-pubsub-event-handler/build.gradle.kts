@@ -4,7 +4,7 @@ plugins {
     id("kotlin-function-native")
 }
 
-group = "noodle.email"
+group = "noodle.gmailsync"
 version = "0.0.1-SNAPSHOT"
 
 graalvmNative {
@@ -28,8 +28,8 @@ dependencies {
     implementation(project(":bridge-dynamodb"))
     implementation(project(":dynamodb"))
     implementation(project(":email-dynamodb"))
-    implementation(project(":gmail-pubsub"))
-    implementation(project(":google-gmail"))
+    implementation(project(":gmailsync"))
+    implementation(project(":gmailsync"))
     implementation(project(":google-gmail-client"))
     implementation(project(":google-auth-client"))
     implementation(project(":security"))

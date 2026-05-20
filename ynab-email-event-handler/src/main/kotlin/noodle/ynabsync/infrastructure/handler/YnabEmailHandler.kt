@@ -1,4 +1,4 @@
-package noodle.finance.infrastructure.handler
+package noodle.ynabsync.infrastructure.handler
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
@@ -13,11 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import noodle.bridge.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.bridge.infrastructure.persistence.DynamoDbMatcherRepository
-import noodle.email.infrastructure.persistence.DynamoDbOutboxRepository
-import noodle.finance.core.domain.SyncYnabCommand
-import noodle.finance.core.service.YnabEmailService
-import noodle.finance.infrastructure.KtorYnabClientFactory
-import noodle.finance.infrastructure.api.KtorGmailClientFactory
+import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
 import noodle.security.Bitwarden
 import noodle.security.core.clientId
 import noodle.security.core.clientSecret
@@ -26,6 +22,10 @@ import noodle.security.core.service.AuthTokenService
 import noodle.security.infrastructure.api.KtorGoogleAuthClient
 import noodle.security.infrastructure.api.KtorYnabAuthClient
 import noodle.security.infrastructure.persistence.DynamoDbTokenRepository
+import noodle.ynabsync.core.domain.SyncYnabCommand
+import noodle.ynabsync.core.service.YnabEmailService
+import noodle.ynabsync.infrastructure.KtorYnabClientFactory
+import noodle.ynabsync.infrastructure.api.KtorGmailClientFactory
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient

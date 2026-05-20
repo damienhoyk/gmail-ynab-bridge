@@ -1,7 +1,7 @@
 package noodle.ynabsync.core.service
 
-import noodle.email.domain.GmailMessageRequest
-import noodle.email.domain.GmailMessageRequest.Format
+import noodle.gmailsync.core.domain.GmailMessageRequest
+import noodle.gmailsync.core.domain.GmailMessageRequest.Format
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.port.BridgeRepository
 import noodle.ynabsync.core.port.GmailClientFactory

@@ -1,11 +1,11 @@
-package noodle.chat.infrastructure.api
+package noodle.telegramchat.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.auth.Auth
-import noodle.chat.core.port.GmailClientFactory
 import noodle.security.core.service.AuthTokenService
 import noodle.security.infrastructure.bearer
+import noodle.telegramchat.core.port.GmailClientFactory
 
 class KtorGmailClientFactory(
     private val service: AuthTokenService,

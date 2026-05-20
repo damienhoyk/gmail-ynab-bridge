@@ -6,7 +6,7 @@ group = "noodle.ynabsync"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
-    implementation(project(":google-gmail"))
+    implementation(project(":gmailsync"))
     implementation(project(":security"))
     implementation(libs.jackson.kotlin)
     implementation(libs.jackson.yaml)

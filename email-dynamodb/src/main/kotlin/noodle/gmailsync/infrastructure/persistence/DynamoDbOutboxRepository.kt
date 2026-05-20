@@ -1,13 +1,13 @@
-package noodle.email.infrastructure.persistence
+package noodle.gmailsync.infrastructure.persistence
 
 import noodle.database.DynamoDbSortRepository
-import noodle.email.core.domain.Outbox
+import noodle.gmailsync.core.domain.Outbox
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 import kotlin.time.Clock.System.now
 import kotlin.time.Duration
-import noodle.email.core.port.OutboxRepository as EmailOutbox
-import noodle.finance.core.port.OutboxRepository as FinanceOutbox
+import noodle.gmailsync.core.port.OutboxRepository as EmailOutbox
+import noodle.ynabsync.core.port.OutboxRepository as FinanceOutbox
 
 class DynamoDbOutboxRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),

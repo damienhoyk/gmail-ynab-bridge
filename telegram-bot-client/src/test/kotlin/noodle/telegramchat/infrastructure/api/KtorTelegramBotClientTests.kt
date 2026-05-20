@@ -17,7 +17,7 @@ import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
-import noodle.chat.infrastructure.api.KtorTelegramBotClient
+import noodle.telegramchat.infrastructure.api.KtorTelegramBotClient
 import org.junit.jupiter.api.Test
 import java.util.UUID.randomUUID
 

@@ -1,4 +1,4 @@
-package noodle.chat.infrastructure.handler
+package noodle.telegramchat.infrastructure.handler
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
@@ -17,12 +17,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
-import noodle.chat.core.domain.RespondChatCommand
-import noodle.chat.core.service.TelegramBotService
-import noodle.chat.infrastructure.api.KtorGmailClientFactory
-import noodle.chat.infrastructure.api.KtorTelegramBotClient
-import noodle.chat.infrastructure.serialization.TelegramWebhookEvent
-import noodle.email.infrastructure.persistence.DynamoDbMailboxRepository
+import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.security.Bitwarden
 import noodle.security.core.apiKey
 import noodle.security.core.clientId
@@ -32,6 +27,11 @@ import noodle.security.core.service.AuthTokenService
 import noodle.security.infrastructure.api.KtorGoogleAuthClient
 import noodle.security.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.security.infrastructure.persistence.DynamoDbTokenRepository
+import noodle.telegramchat.core.domain.RespondChatCommand
+import noodle.telegramchat.core.service.TelegramBotService
+import noodle.telegramchat.infrastructure.api.KtorGmailClientFactory
+import noodle.telegramchat.infrastructure.api.KtorTelegramBotClient
+import noodle.telegramchat.infrastructure.serialization.TelegramWebhookEvent
 import noodle.user.infrastructure.persistence.DynamoDbUserRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider

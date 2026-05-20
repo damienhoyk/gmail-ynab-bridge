@@ -7,10 +7,10 @@ import io.ktor.client.plugins.auth.Auth
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import noodle.finance.infrastructure.api.KtorYnabClient
 import noodle.security.core.domain.TokenResponse
 import noodle.security.core.port.LoginIdProvider
 import noodle.security.infrastructure.bearer
+import noodle.ynabsync.infrastructure.api.KtorYnabClient
 
 class KtorYnabClientAdapter(
     private val httpClient: HttpClient,

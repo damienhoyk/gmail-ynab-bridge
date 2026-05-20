@@ -1,4 +1,4 @@
-package noodle.email.infrastructure.handler
+package noodle.gmailsync.infrastructure.handler
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.amazonaws.services.lambda.runtime.serialization.events.LambdaEventSerializers

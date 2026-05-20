@@ -1,8 +1,8 @@
 package noodle.telegramchat.core.port
 
+import noodle.gmailsync.core.domain.GmailWatchRequest
 import noodle.telegramchat.core.domain.GmailProfile
 import noodle.telegramchat.core.domain.GmailWatch
-import noodle.email.domain.GmailWatchRequest
 
 interface GmailClient {
     suspend fun getProfile(): GmailProfile?

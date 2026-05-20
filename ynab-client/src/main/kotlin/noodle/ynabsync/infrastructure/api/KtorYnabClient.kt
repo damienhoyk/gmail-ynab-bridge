@@ -1,4 +1,4 @@
-package noodle.finance.infrastructure.api
+package noodle.ynabsync.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -17,9 +17,9 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import noodle.finance.infrastructure.serialization.YnabAccount
-import noodle.finance.infrastructure.serialization.YnabBudget
-import noodle.finance.infrastructure.toFinanceDomain
+import noodle.ynabsync.infrastructure.serialization.YnabAccount
+import noodle.ynabsync.infrastructure.serialization.YnabBudget
+import noodle.ynabsync.infrastructure.toFinanceDomain
 
 open class KtorYnabClient(
     httpClient: HttpClient,

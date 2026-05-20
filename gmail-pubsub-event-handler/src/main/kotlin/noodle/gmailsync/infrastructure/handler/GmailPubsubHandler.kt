@@ -1,4 +1,4 @@
-package noodle.email.infrastructure.handler
+package noodle.gmailsync.infrastructure.handler
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
@@ -13,13 +13,13 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bridge.infrastructure.persistence.DynamoDbBridgeRepository
-import noodle.email.core.domain.SyncMailboxCommand
-import noodle.email.core.service.GmailPubsubService
-import noodle.email.infrastructure.api.KtorGmailClientFactory
-import noodle.email.infrastructure.persistence.DynamoDbMailboxRepository
-import noodle.email.infrastructure.persistence.DynamoDbOutboxRepository
-import noodle.email.infrastructure.serialization.GmailEvent
-import noodle.email.infrastructure.serialization.PubsubNotification
+import noodle.gmailsync.core.domain.SyncMailboxCommand
+import noodle.gmailsync.core.service.GmailPubsubService
+import noodle.gmailsync.infrastructure.api.KtorGmailClientFactory
+import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
+import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
+import noodle.gmailsync.infrastructure.serialization.GmailEvent
+import noodle.gmailsync.infrastructure.serialization.PubsubNotification
 import noodle.security.Bitwarden
 import noodle.security.core.clientId
 import noodle.security.core.clientSecret

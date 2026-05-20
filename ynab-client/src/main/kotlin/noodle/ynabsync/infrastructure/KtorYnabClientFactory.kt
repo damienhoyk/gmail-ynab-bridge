@@ -1,12 +1,12 @@
-package noodle.finance.infrastructure
+package noodle.ynabsync.infrastructure
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.auth.Auth
-import noodle.finance.core.port.YnabClientFactory
-import noodle.finance.infrastructure.api.KtorYnabClientAdapter
 import noodle.security.core.service.AuthTokenService
 import noodle.security.infrastructure.bearer
+import noodle.ynabsync.core.port.YnabClientFactory
+import noodle.ynabsync.infrastructure.api.KtorYnabClientAdapter
 
 class KtorYnabClientFactory(
     private val service: AuthTokenService,

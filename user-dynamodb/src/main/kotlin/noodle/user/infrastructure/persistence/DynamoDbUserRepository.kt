@@ -8,7 +8,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 class DynamoDbUserRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
-) : DynamoDbSortRepository(), UserRepository, noodle.chat.core.port.UserRepository {
+) : DynamoDbSortRepository(), UserRepository, noodle.telegramchat.core.port.UserRepository {
     override val name = "user"
     override val table = environment?.let { "$name-$it" } ?: name
 
@@ -19,7 +19,7 @@ class DynamoDbUserRepository(
         put(user.id, user.loginId)
     }
 
-    override suspend fun putUser(user: noodle.chat.core.domain.User) {
+    override suspend fun putUser(user: noodle.telegramchat.core.domain.User) {
         put(user.id, user.loginId)
     }
 
@@ -36,6 +36,6 @@ class DynamoDbUserRepository(
         query(id).items().map {
             val id = it["id"]?.s()!!
             val loginId = it["loginId"]?.s()!!
-            noodle.chat.core.domain.User(id, loginId)
+            noodle.telegramchat.core.domain.User(id, loginId)
         }
 }

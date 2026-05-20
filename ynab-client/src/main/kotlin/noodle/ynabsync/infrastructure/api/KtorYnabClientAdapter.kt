@@ -1,12 +1,12 @@
-package noodle.finance.infrastructure.api
+package noodle.ynabsync.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.request.setBody
-import noodle.finance.core.domain.YnabTransaction
-import noodle.finance.core.port.YnabClient
-import noodle.finance.domain.YnabTransactionsRequest
-import noodle.finance.infrastructure.toYnabData
+import noodle.ynabsync.core.domain.YnabTransaction
+import noodle.ynabsync.core.domain.YnabTransactionsRequest
+import noodle.ynabsync.core.port.YnabClient
+import noodle.ynabsync.infrastructure.toYnabData
 
 class KtorYnabClientAdapter(
     httpClient: HttpClient,
@@ -27,7 +27,7 @@ class KtorYnabClientAdapter(
                 ).toYnabData()
             }
         val body =
-            noodle.finance.infrastructure.serialization.YnabTransaction.Body(
+            noodle.ynabsync.infrastructure.serialization.YnabTransaction.Body(
                 transactions = transactionData,
             )
         postTransactions(budgetId) { setBody(body) }

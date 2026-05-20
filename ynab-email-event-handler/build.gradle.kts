@@ -4,7 +4,7 @@ plugins {
     id("kotlin-function-native")
 }
 
-group = "noodle.finance"
+group = "noodle.ynabsync"
 version = "0.0.1-SNAPSHOT"
 
 graalvmNative {
@@ -31,14 +31,14 @@ dependencies {
     implementation(project(":email-dynamodb"))
     implementation(project(":ynab-client"))
     implementation(project(":google-auth-client"))
-    implementation(project(":google-gmail"))
+    implementation(project(":gmailsync"))
     implementation(project(":google-gmail-client"))
     implementation(project(":security"))
     implementation(project(":security-client"))
     implementation(project(":security-dynamodb"))
-    implementation(project(":ynab"))
+    implementation(project(":ynabsync"))
     implementation(project(":ynab-auth-client"))
-    implementation(project(":ynab-email"))
+    implementation(project(":ynabsync"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
     implementation(libs.bitwarden.secrets)

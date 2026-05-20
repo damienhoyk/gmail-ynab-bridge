@@ -1,4 +1,4 @@
-package noodle.chat.infrastructure.serialization
+package noodle.telegramchat.infrastructure.serialization
 
 import kotlinx.serialization.Serializable
 

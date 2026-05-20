@@ -1,10 +1,10 @@
 package noodle.bridge.infrastructure.persistence
 
 import noodle.database.DynamoDbSortRepository
-import noodle.email.core.domain.Bridge
+import noodle.gmailsync.core.domain.Bridge
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import noodle.email.core.port.BridgeRepository as EmailBridgeRepository
-import noodle.finance.core.port.BridgeRepository as FinanceBridgeRepository
+import noodle.gmailsync.core.port.BridgeRepository as EmailBridgeRepository
+import noodle.ynabsync.core.port.BridgeRepository as FinanceBridgeRepository
 
 class DynamoDbBridgeRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
@@ -27,11 +27,11 @@ class DynamoDbBridgeRepository(
     override suspend fun getBridge(
         source: String,
         destination: String,
-    ): noodle.finance.core.domain.Bridge {
+    ): noodle.ynabsync.core.domain.Bridge {
         val item = get(source, destination).item()
         val source = item["source"]?.s()!!
         val destination = item["destination"]?.s()!!
         val accounts = item["accounts"]?.m()?.mapValues { it.value.s() } ?: emptyMap()
-        return noodle.finance.core.domain.Bridge(source, destination, accounts)
+        return noodle.ynabsync.core.domain.Bridge(source, destination, accounts)
     }
 }

@@ -3,6 +3,7 @@ package noodle.telegramchat.core.service
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.supervisorScope
+import noodle.gmailsync.core.domain.GmailWatchRequest
 import noodle.telegramchat.core.domain.Login
 import noodle.telegramchat.core.domain.Mailbox
 import noodle.telegramchat.core.domain.RespondChatCommand
@@ -14,7 +15,6 @@ import noodle.telegramchat.core.port.MailboxRepository
 import noodle.telegramchat.core.port.TelegramBotClient
 import noodle.telegramchat.core.port.TokenRepository
 import noodle.telegramchat.core.port.UserRepository
-import noodle.email.domain.GmailWatchRequest
 import org.slf4j.LoggerFactory
 import java.util.UUID
 import kotlin.time.Duration.Companion.minutes

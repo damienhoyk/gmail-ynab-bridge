@@ -1,4 +1,4 @@
-package noodle.chat.infrastructure.api
+package noodle.telegramchat.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -11,7 +11,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.http.HttpHeaders
-import noodle.chat.core.port.TelegramBotClient
+import noodle.telegramchat.core.port.TelegramBotClient
 
 class KtorTelegramBotClient(httpClient: HttpClient, block: HttpClientConfig<*>.() -> Unit = {}) :
     TelegramBotClient {

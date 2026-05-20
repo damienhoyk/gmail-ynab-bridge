@@ -8,8 +8,8 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(project(":dynamodb"))
-    implementation(project(":gmail-pubsub"))
-    implementation(project(":ynab-email"))
+    implementation(project(":gmailsync"))
+    implementation(project(":ynabsync"))
     implementation(libs.kotlinx.coroutines)
     implementation("software.amazon.awssdk:dynamodb")
     runtimeOnly(libs.logback)

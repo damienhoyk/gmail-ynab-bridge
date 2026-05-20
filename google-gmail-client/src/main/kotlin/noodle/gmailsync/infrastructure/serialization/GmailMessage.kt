@@ -1,8 +1,8 @@
-package noodle.email.infrastructure.serialization
+package noodle.gmailsync.infrastructure.serialization
 
 import jakarta.mail.internet.InternetAddress
 import kotlinx.serialization.Serializable
-import noodle.finance.core.domain.stripHtml
+import noodle.ynabsync.core.domain.stripHtml
 import kotlin.io.encoding.Base64
 
 @Serializable

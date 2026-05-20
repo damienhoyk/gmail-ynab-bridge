@@ -1,7 +1,7 @@
-package noodle.email.infrastructure.persistence
+package noodle.gmailsync.infrastructure.persistence
 
 import kotlinx.coroutines.runBlocking
-import noodle.email.core.domain.Mailbox
+import noodle.gmailsync.core.domain.Mailbox
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation

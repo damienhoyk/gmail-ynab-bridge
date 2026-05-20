@@ -1,4 +1,4 @@
-package noodle.email.infrastructure.serialization
+package noodle.gmailsync.infrastructure.serialization
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test

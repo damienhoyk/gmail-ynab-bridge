@@ -1,4 +1,4 @@
-package noodle.finance.infrastructure.api
+package noodle.ynabsync.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
