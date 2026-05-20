@@ -10,10 +10,9 @@ plugins {
 }
 
 // Core Modules
-include(":google-gmail")
 include(":security")
 include(":ynab")
-include(":gmail-pubsub")
+include(":gmailsync")
 include(":ynab-email")
 include(":telegram-bot")
 
