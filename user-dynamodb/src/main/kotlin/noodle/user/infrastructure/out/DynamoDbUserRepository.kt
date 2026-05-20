@@ -1,8 +1,8 @@
 package noodle.user.infrastructure.out
 
 import noodle.database.DynamoDbSortRepository
-import noodle.security.domain.User
-import noodle.security.port.out.UserRepository
+import noodle.security.core.domain.User
+import noodle.security.core.port.UserRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
 class DynamoDbUserRepository(

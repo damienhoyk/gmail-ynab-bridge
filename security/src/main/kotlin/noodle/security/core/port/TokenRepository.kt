@@ -1,6 +1,6 @@
-package noodle.security.port.out
+package noodle.security.core.port
 
-import noodle.security.domain.Token
+import noodle.security.core.domain.Token
 
 interface TokenRepository {
     suspend fun getToken(

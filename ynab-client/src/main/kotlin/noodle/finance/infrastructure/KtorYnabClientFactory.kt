@@ -6,7 +6,7 @@ import io.ktor.client.plugins.auth.Auth
 import noodle.finance.infrastructure.out.KtorYnabClientAdapter
 import noodle.finance.port.out.YnabClientFactory
 import noodle.security.infrastructure.bearer
-import noodle.security.port.`in`.AuthTokenService
+import noodle.security.core.service.AuthTokenService
 
 class KtorYnabClientFactory(
     private val service: AuthTokenService,

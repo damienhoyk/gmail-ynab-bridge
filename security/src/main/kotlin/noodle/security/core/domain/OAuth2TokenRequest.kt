@@ -1,4 +1,4 @@
-package noodle.security.domain
+package noodle.security.core.domain
 
 data class OAuth2TokenRequest(
     val code: String? = null,

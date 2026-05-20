@@ -1,8 +1,8 @@
 package noodle.security.infrastructure.out
 
 import noodle.database.DynamoDbRepository
-import noodle.security.domain.Login
-import noodle.security.port.out.LoginRepository
+import noodle.security.core.domain.Login
+import noodle.security.core.port.LoginRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 
