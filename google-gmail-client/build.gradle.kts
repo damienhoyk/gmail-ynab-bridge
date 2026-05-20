@@ -10,11 +10,8 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(platform(libs.ktor.dependencies))
     implementation(project(":gmailsync"))
-    implementation(project(":gmailsync"))
     implementation(project(":security"))
     implementation(project(":security-client"))
-    implementation(project(":telegramchat"))
-    implementation(project(":ynabsync"))
     implementation(libs.bundles.ktor.client)
     implementation(libs.jakarta.mail)
     implementation("io.ktor:ktor-client-auth")

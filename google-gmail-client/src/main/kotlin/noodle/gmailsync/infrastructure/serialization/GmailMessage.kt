@@ -2,8 +2,16 @@ package noodle.gmailsync.infrastructure.serialization
 
 import jakarta.mail.internet.InternetAddress
 import kotlinx.serialization.Serializable
-import noodle.ynabsync.core.domain.stripHtml
 import kotlin.io.encoding.Base64
+
+private val HTML_TAG_REGEX = "<[^>]*>".toRegex()
+private val NON_BREAKING_SPACE_REGEX = "\\u00A0|&nbsp;".toRegex()
+private val WHITESPACE_REGEX = "\\s+".toRegex()
+
+private fun String.stripHtml() =
+    replace(HTML_TAG_REGEX, "")
+        .replace(NON_BREAKING_SPACE_REGEX, " ")
+        .replace(WHITESPACE_REGEX, " ")
 
 @Serializable
 data class GmailMessage(
