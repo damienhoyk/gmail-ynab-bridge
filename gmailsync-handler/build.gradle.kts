@@ -34,7 +34,7 @@ dependencies {
     implementation(project(":google-auth-api"))
     implementation(project(":oauth"))
     implementation(project(":oauth-api"))
-    implementation(project(":oauth-dynamodb"))
+    implementation(project(":oauth-persistence"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
     implementation(libs.bitwarden.secrets)

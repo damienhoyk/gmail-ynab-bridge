@@ -35,7 +35,7 @@ dependencies {
     implementation(project(":google-gmail-api"))
     implementation(project(":oauth"))
     implementation(project(":oauth-api"))
-    implementation(project(":oauth-dynamodb"))
+    implementation(project(":oauth-persistence"))
     implementation(project(":ynabsync"))
     implementation(project(":ynab-auth-api"))
     implementation(project(":ynabsync"))
