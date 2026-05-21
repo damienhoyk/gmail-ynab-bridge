@@ -1,4 +1,4 @@
-package noodle.security.infrastructure.api
+package noodle.ynab.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
 import kotlinx.serialization.json.Json
 import noodle.security.core.port.YnabAuthClient
+import noodle.security.infrastructure.api.KtorOAuth2TokenProvider
 
 class KtorYnabAuthClient(
     httpClient: HttpClient,

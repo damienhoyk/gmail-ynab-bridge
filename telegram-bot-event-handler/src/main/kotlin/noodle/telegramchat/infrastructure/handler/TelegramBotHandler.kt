@@ -17,13 +17,13 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
+import noodle.google.infrastructure.api.KtorGoogleAuthClient
 import noodle.security.Bitwarden
 import noodle.security.core.apiKey
 import noodle.security.core.clientId
 import noodle.security.core.clientSecret
 import noodle.security.core.jsonObject
 import noodle.security.core.service.AuthTokenService
-import noodle.security.infrastructure.api.KtorGoogleAuthClient
 import noodle.telegramchat.core.domain.RespondChatCommand
 import noodle.telegramchat.core.service.TelegramBotService
 import noodle.telegramchat.infrastructure.api.KtorGmailClientFactory

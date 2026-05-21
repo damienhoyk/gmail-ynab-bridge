@@ -11,7 +11,7 @@ dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
     implementation(project(":security-bitwarden"))
-    implementation(project(":google-auth-client"))
+    implementation(project(":google-auth-api"))
     implementation(project(":security"))
     implementation(project(":security-client"))
     implementation(project(":security-dynamodb"))

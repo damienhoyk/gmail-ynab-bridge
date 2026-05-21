@@ -1,4 +1,4 @@
-package noodle.security.infrastructure.api
+package noodle.google.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -12,6 +12,7 @@ import noodle.security.core.domain.OAuth2TokenRequest
 import noodle.security.core.domain.TokenResponse
 import noodle.security.core.port.GoogleAuthClient
 import noodle.security.core.port.LoginIdProvider
+import noodle.security.infrastructure.api.KtorOidcClient
 import noodle.security.infrastructure.serialization.TokenInfoResponse
 
 class KtorGoogleAuthClient(httpClient: HttpClient, block: HttpClientConfig<*>.() -> Unit = {}) :

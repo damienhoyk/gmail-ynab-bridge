@@ -17,10 +17,10 @@ import noodle.security.core.clientSecret
 import noodle.security.core.domain.AuthorizeCommand
 import noodle.security.core.jsonObject
 import noodle.security.core.service.OAuth2Service
-import noodle.security.infrastructure.api.KtorYnabAuthClient
 import noodle.security.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.security.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.user.infrastructure.persistence.DynamoDbUserRepository
+import noodle.ynab.infrastructure.api.KtorYnabAuthClient
 import noodle.ynabsync.infrastructure.api.YnabLoginIdProvider
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider

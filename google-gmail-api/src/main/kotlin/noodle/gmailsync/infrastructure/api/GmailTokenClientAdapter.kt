@@ -2,7 +2,7 @@ package noodle.gmailsync.infrastructure.api
 
 import noodle.gmailsync.core.domain.TokenInfoResponse
 import noodle.gmailsync.core.port.GoogleTokenClient
-import noodle.security.infrastructure.api.KtorGoogleAuthClient
+import noodle.google.infrastructure.api.KtorGoogleAuthClient
 
 class GmailTokenClientAdapter(private val googleAuthClient: KtorGoogleAuthClient) :
     GoogleTokenClient {

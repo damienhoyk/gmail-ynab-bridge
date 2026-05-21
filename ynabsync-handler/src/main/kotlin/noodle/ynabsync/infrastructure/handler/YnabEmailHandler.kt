@@ -14,14 +14,14 @@ import kotlinx.coroutines.runBlocking
 import noodle.bridge.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.bridge.infrastructure.persistence.DynamoDbMatcherRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
+import noodle.google.infrastructure.api.KtorGoogleAuthClient
 import noodle.security.Bitwarden
 import noodle.security.core.clientId
 import noodle.security.core.clientSecret
 import noodle.security.core.jsonObject
 import noodle.security.core.service.AuthTokenService
-import noodle.security.infrastructure.api.KtorGoogleAuthClient
-import noodle.security.infrastructure.api.KtorYnabAuthClient
 import noodle.security.infrastructure.persistence.DynamoDbTokenRepository
+import noodle.ynab.infrastructure.api.KtorYnabAuthClient
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.service.YnabEmailService
 import noodle.ynabsync.infrastructure.KtorYnabClientFactory

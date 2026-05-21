@@ -12,7 +12,7 @@ dependencies {
     implementation(platform(libs.ktor.dependencies))
     implementation(project(":security-bitwarden"))
     implementation(project(":dynamodb"))
-    implementation(project(":google-auth-client"))
+    implementation(project(":google-auth-api"))
     implementation(project(":gmailsync"))
     implementation(project(":google-gmail-api"))
     implementation(project(":security"))

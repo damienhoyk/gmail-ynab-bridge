@@ -31,7 +31,7 @@ dependencies {
     implementation(project(":gmailsync"))
     implementation(project(":gmailsync"))
     implementation(project(":google-gmail-api"))
-    implementation(project(":google-auth-client"))
+    implementation(project(":google-auth-api"))
     implementation(project(":security"))
     implementation(project(":security-client"))
     implementation(project(":security-dynamodb"))
