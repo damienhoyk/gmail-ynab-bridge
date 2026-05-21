@@ -1,4 +1,4 @@
-package noodle.database
+package noodle.dynamodb
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 

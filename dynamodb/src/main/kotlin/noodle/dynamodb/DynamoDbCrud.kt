@@ -1,4 +1,4 @@
-package noodle.database
+package noodle.dynamodb
 
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext

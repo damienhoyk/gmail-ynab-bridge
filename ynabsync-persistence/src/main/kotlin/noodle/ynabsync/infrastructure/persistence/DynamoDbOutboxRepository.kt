@@ -1,6 +1,6 @@
 package noodle.ynabsync.infrastructure.persistence
 
-import noodle.database.DynamoDbSortRepository
+import noodle.dynamodb.DynamoDbSortRepository
 import noodle.ynabsync.core.port.OutboxRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN

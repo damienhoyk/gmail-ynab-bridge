@@ -1,6 +1,6 @@
 package noodle.oauth.infrastructure.persistence
 
-import noodle.database.DynamoDbSortRepository
+import noodle.dynamodb.DynamoDbSortRepository
 import noodle.oauth.core.domain.Token
 import noodle.oauth.core.port.TokenRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient

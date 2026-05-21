@@ -1,6 +1,6 @@
 package noodle.gmailsync.infrastructure.persistence
 
-import noodle.database.DynamoDbRepository
+import noodle.dynamodb.DynamoDbRepository
 import noodle.gmailsync.core.domain.Mailbox
 import noodle.gmailsync.core.port.MailboxRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient

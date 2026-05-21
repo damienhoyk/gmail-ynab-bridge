@@ -1,6 +1,6 @@
 package noodle.ynabsync.infrastructure.persistence
 
-import noodle.database.DynamoDbSortRepository
+import noodle.dynamodb.DynamoDbSortRepository
 import noodle.ynabsync.core.domain.Bridge
 import noodle.ynabsync.core.port.BridgeRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient

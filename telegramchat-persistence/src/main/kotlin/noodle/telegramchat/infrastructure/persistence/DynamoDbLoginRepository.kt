@@ -1,6 +1,6 @@
 package noodle.telegramchat.infrastructure.persistence
 
-import noodle.database.DynamoDbRepository
+import noodle.dynamodb.DynamoDbRepository
 import noodle.telegramchat.core.domain.Login
 import noodle.telegramchat.core.port.LoginRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
