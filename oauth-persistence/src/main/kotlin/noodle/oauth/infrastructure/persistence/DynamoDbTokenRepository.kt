@@ -15,14 +15,16 @@ class DynamoDbTokenRepository(
     override val partitionKey = "id"
     override val sortKey = "type"
 
-    override suspend fun getToken(
-        id: String,
-        type: String,
-    ): Token {
-        val item = get(id, type).item()
-        val value = item["value"]?.s()!!
-        return Token(id, type, value)
+    override suspend fun getUserId(state: String): String? {
+        val sort = "state"
+        val item = get(state, sort).item()
+        val value = item["value"]?.s()
+        return value
     }
+
+    override suspend fun getAccessToken(id: String): String? = get(id, "access").item()["value"]?.s()
+
+    override suspend fun getRefreshToken(id: String): String? = get(id, "refresh").item()["value"]?.s()
 
     override suspend fun updateTokenValue(
         id: String,

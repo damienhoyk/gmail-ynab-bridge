@@ -49,20 +49,18 @@ class OAuth2Service(
                 )
 
             val authClient = authClient()
-            val response = authClient.getToken(request)
+            val oAuthToken = authClient.getToken(request)
 
             val loginIdProvider = loginIdProvider()
-            val authority = loginIdProvider.getLoginId(response)
+            val loginId = loginIdProvider.getLoginId(oAuthToken)
 
-            if (authority.isNullOrBlank()) {
-                log.error("🐳 authority is null")
+            if (loginId.isNullOrBlank()) {
+                log.error("🐳 loginId is null")
                 return@runBlocking 500
             }
 
             val tokenRepository = tokenRepository()
-            val token = tokenRepository.getToken(state, "state")
-
-            val userId = token?.value
+            val userId = tokenRepository.getUserId(state)
 
             if (userId.isNullOrEmpty()) {
                 log.error("🐳 user id is null")
@@ -72,19 +70,19 @@ class OAuth2Service(
             log.info("🪪 Updating user login mapping for [{}] ...", userId)
 
             val loginRepository = loginRepository()
-            loginRepository.putLogin(Login(authority, userId))
+            loginRepository.putLogin(Login(loginId, userId))
 
             val userRepository = userRepository()
-            userRepository.putUser(User(userId, authority))
+            userRepository.putUser(User(userId, loginId))
 
-            log.info("🎫 Storing tokens for authorization [{}] ...", authority)
+            log.info("🎫 Storing tokens for authorization [{}] ...", loginId)
 
             launch {
-                tokenRepository.updateTokenValue(authority, "access", response.accessToken!!)
+                tokenRepository.updateTokenValue(loginId, "access", oAuthToken.accessToken!!)
             }
 
             launch {
-                tokenRepository.updateTokenValue(authority, "refresh", response.refreshToken!!)
+                tokenRepository.updateTokenValue(loginId, "refresh", oAuthToken.refreshToken!!)
             }
 
             return@runBlocking 200

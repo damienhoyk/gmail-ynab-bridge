@@ -17,16 +17,11 @@ class AuthTokenService(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    suspend fun execute(command: LoadTokensCommand): String {
-        val token = tokenRepository.getToken(command.loginId, "access")
-        val value = token?.value!!
-        return value
-    }
+    suspend fun execute(command: LoadTokensCommand): String = tokenRepository.getAccessToken(command.loginId)!!
 
     suspend fun execute(command: RefreshTokensCommand): String {
         val loginId = command.loginId
-        val token = tokenRepository.getToken(loginId, "refresh")
-        val value = token?.value!!
+        val value = tokenRepository.getRefreshToken(loginId)!!
 
         val authRequest =
             OAuth2TokenRequest(

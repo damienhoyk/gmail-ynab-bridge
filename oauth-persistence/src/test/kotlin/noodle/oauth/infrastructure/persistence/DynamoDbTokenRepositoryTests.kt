@@ -17,40 +17,47 @@ import java.util.UUID
 class DynamoDbTokenRepositoryTests {
     private val repository = DynamoDbTokenRepository(environment = "test")
     private val id = UUID.randomUUID().toString()
-    private val type = listOf("state", "access", "refresh").random()
-    private val value = UUID.randomUUID().toString()
+    private val accessToken = UUID.randomUUID().toString()
+    private val refreshToken = UUID.randomUUID().toString()
 
     @Order(1)
     @Test
     fun put(): Unit =
         runBlocking {
-            repository.put(id, type) { put("value", fromS(value)) }
+            repository.put(id, "access") { put("value", fromS(accessToken)) }
+            repository.put(id, "refresh") { put("value", fromS(refreshToken)) }
         }
 
     @Order(2)
     @Test
-    fun getToken(): Unit =
+    fun getAccessToken(): Unit =
         runBlocking {
-            val token = repository.getToken(id, type)
-            assertEquals(id, token.id)
-            assertEquals(type, token.type)
-            assertEquals(value, token.value)
+            val value = repository.getAccessToken(id)
+            assertEquals(accessToken, value)
         }
 
     @Order(3)
     @Test
-    fun updateTokenValue(): Unit =
+    fun getRefreshToken(): Unit =
         runBlocking {
-            val newValue = UUID.randomUUID().toString()
-            val token = repository.updateTokenValue(id, type, newValue)
-            assertEquals(newValue, token.value)
+            val value = repository.getRefreshToken(id)
+            assertEquals(refreshToken, value)
         }
 
     @Order(4)
     @Test
+    fun updateTokenValue(): Unit =
+        runBlocking {
+            val newValue = UUID.randomUUID().toString()
+            val token = repository.updateTokenValue(id, "access", newValue)
+            assertEquals(newValue, token.value)
+        }
+
+    @Order(5)
+    @Test
     fun get(): Unit =
         runBlocking {
-            val result = repository.get(id, type)
+            val result = repository.get(id, "access")
             val item = result.item()
             assertEquals(id, item["id"]?.s())
         }
@@ -58,6 +65,7 @@ class DynamoDbTokenRepositoryTests {
     @AfterAll
     fun tearDown(): Unit =
         runBlocking {
-            repository.delete(id, type)
+            repository.delete(id, "access")
+            repository.delete(id, "refresh")
         }
 }
