@@ -37,7 +37,7 @@ include(":dynamodb")
 // Event Handlers
 include(":gmailsync-handler")
 include(":oauth-google-handler")
-include(":telegram-bot-event-handler")
+include(":telegramchat-handler")
 include(":ynabsync-handler")
 include(":oauth-ynab-handler")
 
