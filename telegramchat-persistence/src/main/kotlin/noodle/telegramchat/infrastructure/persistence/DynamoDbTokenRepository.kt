@@ -11,9 +11,8 @@ import kotlin.time.Clock.System.now
 class DynamoDbTokenRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
-) : DynamoDbSortRepository(), TokenRepository {
+) : DynamoDbSortRepository(environment), TokenRepository {
     override val name = "token"
-    override val table = environment?.let { "$name-$it" } ?: name
 
     override val partitionKey = "id"
     override val sortKey = "type"
