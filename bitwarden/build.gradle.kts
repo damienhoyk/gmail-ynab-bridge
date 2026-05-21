@@ -14,17 +14,15 @@ graalvmNative {
     }
 }
 
-group = "noodle.security"
+group = "noodle.bitwarden"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":oauth"))
-    implementation(libs.bundles.ktor.client)
+    implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.bitwarden.secrets)
     implementation(libs.kotlinx.coroutines)
-    implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:secretsmanager")
     testImplementation("software.amazon.awssdk:signin")
 }

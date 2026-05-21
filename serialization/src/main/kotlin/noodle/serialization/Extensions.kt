@@ -1,4 +1,4 @@
-package noodle.oauth.core
+package noodle.serialization
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement

@@ -11,6 +11,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines)
     implementation(libs.slf4j.api)
     testImplementation("io.ktor:ktor-client-mock")
-    testImplementation(project(":security-bitwarden"))
+    testImplementation(project(":bitwarden"))
     testImplementation(libs.slf4j.simple)
 }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import noodle.bitwarden.Bitwarden
 import noodle.bridge.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.service.GmailPubsubService
@@ -22,12 +23,11 @@ import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
 import noodle.gmailsync.infrastructure.serialization.GmailEvent
 import noodle.gmailsync.infrastructure.serialization.PubsubNotification
 import noodle.google.infrastructure.api.KtorGoogleAuthClient
-import noodle.oauth.core.clientId
-import noodle.oauth.core.clientSecret
-import noodle.oauth.core.jsonObject
 import noodle.oauth.core.service.AuthTokenService
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
-import noodle.security.Bitwarden
+import noodle.serialization.clientId
+import noodle.serialization.clientSecret
+import noodle.serialization.jsonObject
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient

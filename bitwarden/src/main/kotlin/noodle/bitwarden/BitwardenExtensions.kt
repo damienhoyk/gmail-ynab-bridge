@@ -1,4 +1,4 @@
-package noodle.security
+package noodle.bitwarden
 
 import com.bitwarden.sdk.AuthClient
 import com.bitwarden.sdk.BitwardenClient
@@ -7,10 +7,6 @@ import com.bitwarden.sdk.SecretsClient
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
-import noodle.oauth.core.apiKey
-import noodle.oauth.core.clientId
-import noodle.oauth.core.clientSecret
-import noodle.oauth.core.jsonObject
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import java.util.UUID.fromString
 
@@ -29,21 +25,6 @@ suspend fun SecretsClient.getSecret(
 
     secretValue
 }
-
-suspend fun SecretsClient.getApiKey(
-    organizationId: String,
-    name: String,
-) = getSecret(organizationId, name)?.jsonObject()?.apiKey
-
-suspend fun SecretsClient.getClientId(
-    organizationId: String,
-    name: String,
-) = getSecret(organizationId, name)?.jsonObject()?.clientId
-
-suspend fun SecretsClient.getClientSecret(
-    organizationId: String,
-    name: String,
-) = getSecret(organizationId, name)?.jsonObject()?.clientSecret
 
 suspend fun AuthClient.authorize(
     apiKey: String,

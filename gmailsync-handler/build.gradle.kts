@@ -24,7 +24,8 @@ graalvmNative {
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":security-bitwarden"))
+    implementation(project(":bitwarden"))
+    implementation(project(":serialization"))
     implementation(project(":bridge-dynamodb"))
     implementation(project(":dynamodb"))
     implementation(project(":email-dynamodb"))

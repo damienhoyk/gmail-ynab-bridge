@@ -10,7 +10,7 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":security-bitwarden"))
+    implementation(project(":bitwarden"))
     implementation(project(":oauth"))
     implementation("io.ktor:ktor-client-auth")
     implementation("software.amazon.awssdk:secretsmanager")

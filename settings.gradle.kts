@@ -28,11 +28,10 @@ include(":user-dynamodb")
 include(":ynab-auth-api")
 include(":ynab-api")
 
-// Infrastructure Adapters (continued)
-include(":security-bitwarden")
-
 // Common Libraries
+include(":bitwarden")
 include(":dynamodb")
+include(":serialization")
 
 // Event Handlers
 include(":gmailsync-handler")
