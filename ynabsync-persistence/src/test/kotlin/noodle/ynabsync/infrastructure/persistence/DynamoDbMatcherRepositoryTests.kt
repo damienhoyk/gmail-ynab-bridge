@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.TestMethodOrder
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromL
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 import java.util.UUID
 
@@ -25,22 +27,16 @@ class DynamoDbMatcherRepositoryTests {
         runBlocking {
             repository.put(source, mode) {
                 put("pattern", fromS("some-pattern"))
+                put("datePattern", fromS("dd/MM/yyyy"))
+                put("order", fromL(listOf(AttributeValue.fromS("ACCOUNT"))))
             }
         }
 
     @Test
-    fun get(): Unit =
+    fun queryMatcher(): Unit =
         runBlocking {
-            val result = repository.get(source, mode)
-            val item = result.item()
-            assertEquals(source, item["source"]?.s())
-        }
-
-    @Test
-    fun query(): Unit =
-        runBlocking {
-            val results = repository.query(source)
-            assertEquals(1, results.count())
+            val results = repository.queryMatcher(source)
+            assertEquals(1, results.size)
         }
 
     @AfterAll
