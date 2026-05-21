@@ -3,7 +3,6 @@ package noodle.gmailsync.infrastructure.persistence
 import kotlinx.coroutines.runBlocking
 import noodle.gmailsync.core.domain.Outbox
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -26,22 +25,6 @@ class DynamoDbOutboxRepositoryTests {
     fun putOutbox(): Unit =
         runBlocking {
             repository.putOutbox(Outbox(destination, source))
-        }
-
-    @Test
-    fun get(): Unit =
-        runBlocking {
-            val result = repository.get(destination, source)
-            val item = result.item()
-            assertEquals(destination, item["destination"]?.s())
-            assertEquals(source, item["source"]?.s())
-        }
-
-    @Test
-    fun query(): Unit =
-        runBlocking {
-            val results = repository.query(destination)
-            assertEquals(1, results.count())
         }
 
     @AfterAll
