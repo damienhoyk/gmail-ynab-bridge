@@ -42,7 +42,6 @@ dependencies {
     implementation(project(":ynabsync"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
-    implementation(libs.bitwarden.secrets)
     implementation(libs.jakarta.mail)
     implementation(libs.kotlinx.coroutines)
     implementation("io.ktor:ktor-client-auth")
