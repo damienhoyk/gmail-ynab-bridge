@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-jvm")
     id("kotlin-function-native")
+    id("kotlin-native-test")
 }
 
 group = "noodle.telegramchat"

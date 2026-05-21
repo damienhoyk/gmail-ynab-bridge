@@ -22,7 +22,7 @@ graalvmNative {
                     file("../META-INF/native-image/io.ktor/ktor-client-core"),
                     file("../META-INF/native-image/noodle.gmailsync/gmailsync"),
                     file("../META-INF/native-image/noodle.ynabsync/ynabsync"),
-                    file("../META-INF/native-image/noodle.security/security"),
+                    file("../META-INF/native-image/noodle.oauth/oauth"),
                     file("../META-INF/native-image/org.joda/joda-time")
             )
 

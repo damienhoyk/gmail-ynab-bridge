@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabBudget",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabBudget",
     "fields": [
       {
         "name": "Companion"
@@ -8,7 +8,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabBudget$Body",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabBudget$Body",
     "fields": [
       {
         "name": "Companion"
@@ -16,7 +16,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabBudget$Body$Companion",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabBudget$Body$Companion",
     "methods": [
       {
         "name": "serializer",
@@ -25,7 +25,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabBudget$Companion",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabBudget$Companion",
     "methods": [
       {
         "name": "serializer",
@@ -34,7 +34,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabBudget$Data",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabBudget$Data",
     "fields": [
       {
         "name": "Companion"
@@ -42,7 +42,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabBudget$Data$Companion",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabBudget$Data$Companion",
     "methods": [
       {
         "name": "serializer",
@@ -51,7 +51,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabTransaction",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabTransaction",
     "fields": [
       {
         "name": "Companion"
@@ -59,7 +59,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabTransaction$Companion",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabTransaction$Companion",
     "methods": [
       {
         "name": "serializer",
@@ -68,7 +68,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabTransaction$Body",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabTransaction$Body",
     "fields": [
       {
         "name": "Companion"
@@ -76,7 +76,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabTransaction$Body$Companion",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabTransaction$Body$Companion",
     "methods": [
       {
         "name": "serializer",
@@ -85,7 +85,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabTransaction$Data",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabTransaction$Data",
     "fields": [
       {
         "name": "Companion"
@@ -93,7 +93,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabTransaction$Data$Companion",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabTransaction$Data$Companion",
     "methods": [
       {
         "name": "serializer",
@@ -102,7 +102,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabAccount",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabAccount",
     "fields": [
       {
         "name": "Companion"
@@ -110,7 +110,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabAccount$Companion",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabAccount$Companion",
     "methods": [
       {
         "name": "serializer",
@@ -119,7 +119,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabAccount$Body",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabAccount$Body",
     "fields": [
       {
         "name": "Companion"
@@ -127,7 +127,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabAccount$Body$Companion",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabAccount$Body$Companion",
     "methods": [
       {
         "name": "serializer",
@@ -136,7 +136,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabAccount$Data",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabAccount$Data",
     "fields": [
       {
         "name": "Companion"
@@ -144,7 +144,7 @@
     ]
   },
   {
-    "name": "noodle.finance.infrastructure.serialization.YnabAccount$Data$Companion",
+    "name": "noodle.ynabsync.infrastructure.serialization.YnabAccount$Data$Companion",
     "methods": [
       {
         "name": "serializer",

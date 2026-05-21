@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.security.infrastructure.serialization.TokenResponse",
+    "name": "noodle.oauth.infrastructure.serialization.TokenResponse",
     "fields": [
       {
         "name": "Companion"
@@ -8,7 +8,7 @@
     ]
   },
   {
-    "name": "noodle.security.infrastructure.serialization.TokenResponse$Companion",
+    "name": "noodle.oauth.infrastructure.serialization.TokenResponse$Companion",
     "methods": [
       {
         "name": "serializer",
@@ -17,7 +17,7 @@
     ]
   },
   {
-    "name": "noodle.security.infrastructure.serialization.TokenInfoResponse",
+    "name": "noodle.oauth.infrastructure.serialization.TokenInfoResponse",
     "fields": [
       {
         "name": "Companion"
@@ -25,7 +25,7 @@
     ]
   },
   {
-    "name": "noodle.security.infrastructure.serialization.TokenInfoResponse$Companion",
+    "name": "noodle.oauth.infrastructure.serialization.TokenInfoResponse$Companion",
     "methods": [
       {
         "name": "serializer",

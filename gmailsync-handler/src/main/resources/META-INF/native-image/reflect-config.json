@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.email.infrastructure.in.GmailPubsubHandler",
+    "name": "noodle.gmailsync.infrastructure.handler.GmailPubsubHandler",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,

@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.chat.infrastructure.in.TelegramBotHandler",
+    "name": "noodle.telegramchat.infrastructure.handler.TelegramBotHandler",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,
