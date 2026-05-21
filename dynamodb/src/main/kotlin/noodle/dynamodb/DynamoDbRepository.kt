@@ -2,9 +2,12 @@ package noodle.dynamodb
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 
-abstract class DynamoDbRepository : DynamoDbCrud() {
+abstract class DynamoDbRepository(
+    private val environment: String? = null,
+) : DynamoDbCrud() {
     abstract val name: String
     abstract val partitionKey: String
+    override val table: String get() = environment?.let { "$name-$it" } ?: name
 
     suspend fun put(
         partition: String,

@@ -4,11 +4,14 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 
-abstract class DynamoDbSortRepository : DynamoDbCrud() {
+abstract class DynamoDbSortRepository(
+    private val environment: String? = null,
+) : DynamoDbCrud() {
     abstract val name: String
 
     abstract val partitionKey: String
     abstract val sortKey: String
+    override val table: String get() = environment?.let { "$name-$it" } ?: name
 
     suspend fun put(
         partition: String,
