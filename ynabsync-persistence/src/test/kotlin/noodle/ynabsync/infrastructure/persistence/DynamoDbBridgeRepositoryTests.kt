@@ -26,14 +26,6 @@ class DynamoDbBridgeRepositoryTests {
         }
 
     @Test
-    fun get(): Unit =
-        runBlocking {
-            val result = repository.get(source, destination)
-            val item = result.item()
-            assertEquals(source, item["source"]?.s())
-        }
-
-    @Test
     fun getBridge(): Unit =
         runBlocking {
             val result = repository.getBridge(source, destination)
