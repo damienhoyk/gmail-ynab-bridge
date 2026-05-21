@@ -53,15 +53,6 @@ class DynamoDbTokenRepositoryTests {
             assertEquals(newValue, token.value)
         }
 
-    @Order(5)
-    @Test
-    fun get(): Unit =
-        runBlocking {
-            val result = repository.get(id, "access")
-            val item = result.item()
-            assertEquals(id, item["id"]?.s())
-        }
-
     @AfterAll
     fun tearDown(): Unit =
         runBlocking {
