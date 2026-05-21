@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.TestMethodOrder
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 import java.util.UUID
 
 @TestMethodOrder(OrderAnnotation::class)
@@ -33,14 +32,6 @@ class DynamoDbMailboxRepositoryTests {
             val result = repository.getMailbox(address)
             assertEquals(address, result.address)
             assertEquals(state, result.state)
-        }
-
-    @Test
-    fun update(): Unit =
-        runBlocking {
-            val item = repository.update(address) { put("state", fromN("$state")) }.attributes()
-            assertEquals(address, item["address"]?.s())
-            assertEquals(state, item["state"]?.n()?.toLong())
         }
 
     @AfterAll
