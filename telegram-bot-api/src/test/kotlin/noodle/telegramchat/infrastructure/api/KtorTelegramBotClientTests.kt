@@ -1,4 +1,4 @@
-package noodle.chat
+package noodle.telegramchat.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -17,7 +17,6 @@ import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
-import noodle.telegramchat.infrastructure.api.KtorTelegramBotClient
 import org.junit.jupiter.api.Test
 import java.util.UUID.randomUUID
 

@@ -17,7 +17,7 @@ dependencies {
     implementation(project(":security-dynamodb"))
     implementation(project(":user-dynamodb"))
     implementation(project(":ynabsync"))
-    implementation(project(":ynab-client"))
+    implementation(project(":ynab-api"))
     implementation(project(":ynab-auth-client"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
