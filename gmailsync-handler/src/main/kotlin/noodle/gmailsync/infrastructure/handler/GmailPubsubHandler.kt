@@ -22,12 +22,12 @@ import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
 import noodle.gmailsync.infrastructure.serialization.GmailEvent
 import noodle.gmailsync.infrastructure.serialization.PubsubNotification
 import noodle.google.infrastructure.api.KtorGoogleAuthClient
+import noodle.oauth.core.clientId
+import noodle.oauth.core.clientSecret
+import noodle.oauth.core.jsonObject
+import noodle.oauth.core.service.AuthTokenService
+import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.security.Bitwarden
-import noodle.security.core.clientId
-import noodle.security.core.clientSecret
-import noodle.security.core.jsonObject
-import noodle.security.core.service.AuthTokenService
-import noodle.security.infrastructure.persistence.DynamoDbTokenRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient

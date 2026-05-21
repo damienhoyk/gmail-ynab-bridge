@@ -15,12 +15,12 @@ import noodle.bridge.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.bridge.infrastructure.persistence.DynamoDbMatcherRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
 import noodle.google.infrastructure.api.KtorGoogleAuthClient
+import noodle.oauth.core.clientId
+import noodle.oauth.core.clientSecret
+import noodle.oauth.core.jsonObject
+import noodle.oauth.core.service.AuthTokenService
+import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.security.Bitwarden
-import noodle.security.core.clientId
-import noodle.security.core.clientSecret
-import noodle.security.core.jsonObject
-import noodle.security.core.service.AuthTokenService
-import noodle.security.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.ynab.infrastructure.api.KtorYnabAuthClient
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.service.YnabEmailService

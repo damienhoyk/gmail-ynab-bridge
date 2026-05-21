@@ -3,8 +3,8 @@ package noodle.telegramchat.infrastructure.api
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.auth.Auth
-import noodle.security.core.service.AuthTokenService
-import noodle.security.infrastructure.bearer
+import noodle.oauth.core.service.AuthTokenService
+import noodle.oauth.infrastructure.bearer
 import noodle.telegramchat.core.port.GmailClientFactory
 
 class KtorGmailClientFactory(

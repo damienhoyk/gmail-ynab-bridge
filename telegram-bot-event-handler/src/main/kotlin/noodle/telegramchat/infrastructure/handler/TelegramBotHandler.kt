@@ -18,12 +18,12 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import noodle.google.infrastructure.api.KtorGoogleAuthClient
+import noodle.oauth.core.apiKey
+import noodle.oauth.core.clientId
+import noodle.oauth.core.clientSecret
+import noodle.oauth.core.jsonObject
+import noodle.oauth.core.service.AuthTokenService
 import noodle.security.Bitwarden
-import noodle.security.core.apiKey
-import noodle.security.core.clientId
-import noodle.security.core.clientSecret
-import noodle.security.core.jsonObject
-import noodle.security.core.service.AuthTokenService
 import noodle.telegramchat.core.domain.RespondChatCommand
 import noodle.telegramchat.core.service.TelegramBotService
 import noodle.telegramchat.infrastructure.api.KtorGmailClientFactory
@@ -37,7 +37,7 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
-import noodle.security.infrastructure.persistence.DynamoDbTokenRepository as SecurityTokenRepository
+import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository as SecurityTokenRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbTokenRepository as TelegramTokenRepository
 
 class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {

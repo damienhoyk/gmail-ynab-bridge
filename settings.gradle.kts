@@ -10,7 +10,7 @@ plugins {
 }
 
 // Core Modules
-include(":security")
+include(":oauth")
 include(":gmailsync")
 include(":ynabsync")
 include(":telegramchat")
@@ -20,8 +20,8 @@ include(":bridge-dynamodb")
 include(":email-dynamodb")
 include(":google-auth-api")
 include(":google-gmail-api")
-include(":security-client")
-include(":security-dynamodb")
+include(":oauth-api")
+include(":oauth-dynamodb")
 include(":telegram-bot-api")
 include(":telegramchat-dynamodb")
 include(":user-dynamodb")
@@ -36,9 +36,9 @@ include(":dynamodb")
 
 // Event Handlers
 include(":gmailsync-handler")
-include(":google-oauth-event-handler")
+include(":oauth-google-handler")
 include(":telegram-bot-event-handler")
 include(":ynabsync-handler")
-include(":ynab-oauth-event-handler")
+include(":oauth-ynab-handler")
 
 rootProject.name = "gmail-ynab-bridge"

@@ -7,8 +7,8 @@ version = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":security"))
-    implementation(project(":security-client"))
+    implementation(project(":oauth"))
+    implementation(project(":oauth-api"))
     implementation(libs.bundles.ktor.client)
     implementation("io.ktor:ktor-client-auth")
     testImplementation("io.ktor:ktor-client-mock")

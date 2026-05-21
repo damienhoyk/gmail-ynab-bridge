@@ -1,0 +1,33 @@
+plugins {
+    alias(libs.plugins.kotlin.serialization)
+    id("kotlin-jvm")
+    id("kotlin-function-native")
+}
+
+group = "noodle.oauth"
+version = "0.0.1-SNAPSHOT"
+
+dependencies {
+    implementation(platform(libs.aws.sdk.dependencies))
+    implementation(platform(libs.ktor.dependencies))
+    implementation(project(":security-bitwarden"))
+    implementation(project(":google-auth-api"))
+    implementation(project(":oauth"))
+    implementation(project(":oauth-api"))
+    implementation(project(":oauth-dynamodb"))
+    implementation(project(":user-dynamodb"))
+    implementation(project(":dynamodb"))
+    implementation(libs.bundles.aws.lambda)
+    implementation(libs.bundles.ktor.client)
+    implementation(libs.kotlinx.coroutines)
+    implementation("software.amazon.awssdk:dynamodb")
+    implementation("software.amazon.awssdk:secretsmanager")
+    implementation("software.amazon.awssdk:url-connection-client")
+    runtimeOnly(libs.logback)
+    testImplementation("software.amazon.awssdk:signin")
+}
+
+tasks.withType<Test>().configureEach {
+    environment("REDIRECT_URI", "http://localhost")
+    environment("SECRET_ID", "test")
+}

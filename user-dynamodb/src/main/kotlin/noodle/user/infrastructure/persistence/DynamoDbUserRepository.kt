@@ -1,8 +1,8 @@
 package noodle.user.infrastructure.persistence
 
 import noodle.database.DynamoDbSortRepository
-import noodle.security.core.domain.User
-import noodle.security.core.port.UserRepository
+import noodle.oauth.core.domain.User
+import noodle.oauth.core.port.UserRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
 class DynamoDbUserRepository(

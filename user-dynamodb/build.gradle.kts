@@ -8,7 +8,7 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(project(":dynamodb"))
-    implementation(project(":security"))
+    implementation(project(":oauth"))
     implementation(libs.kotlinx.coroutines)
     implementation("software.amazon.awssdk:dynamodb")
     runtimeOnly(libs.logback)

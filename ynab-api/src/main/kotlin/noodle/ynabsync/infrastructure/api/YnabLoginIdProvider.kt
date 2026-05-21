@@ -7,9 +7,9 @@ import io.ktor.client.plugins.auth.Auth
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import noodle.security.core.domain.TokenResponse
-import noodle.security.core.port.LoginIdProvider
-import noodle.security.infrastructure.bearer
+import noodle.oauth.core.domain.TokenResponse
+import noodle.oauth.core.port.LoginIdProvider
+import noodle.oauth.infrastructure.bearer
 
 class YnabLoginIdProvider(
     private val httpClient: HttpClient,
