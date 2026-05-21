@@ -12,9 +12,6 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import noodle.bitwarden.Bitwarden
-import noodle.bridge.infrastructure.persistence.DynamoDbBridgeRepository
-import noodle.bridge.infrastructure.persistence.DynamoDbMatcherRepository
-import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
 import noodle.google.infrastructure.api.KtorGoogleAuthClient
 import noodle.oauth.core.service.AuthTokenService
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
@@ -26,6 +23,9 @@ import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.service.YnabEmailService
 import noodle.ynabsync.infrastructure.KtorYnabClientFactory
 import noodle.ynabsync.infrastructure.api.KtorGmailClientFactory
+import noodle.ynabsync.infrastructure.persistence.DynamoDbBridgeRepository
+import noodle.ynabsync.infrastructure.persistence.DynamoDbMatcherRepository
+import noodle.ynabsync.infrastructure.persistence.DynamoDbOutboxRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient

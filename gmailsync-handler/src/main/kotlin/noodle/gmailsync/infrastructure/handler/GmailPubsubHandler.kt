@@ -13,11 +13,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.Bitwarden
-import noodle.bridge.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.service.GmailPubsubService
 import noodle.gmailsync.infrastructure.api.GmailTokenClientAdapter
 import noodle.gmailsync.infrastructure.api.KtorGmailClientFactory
+import noodle.gmailsync.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
 import noodle.gmailsync.infrastructure.serialization.GmailEvent

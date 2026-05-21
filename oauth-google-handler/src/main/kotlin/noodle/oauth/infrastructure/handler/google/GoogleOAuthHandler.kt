@@ -17,10 +17,10 @@ import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.OAuth2Service
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
+import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
 import noodle.serialization.clientId
 import noodle.serialization.clientSecret
 import noodle.serialization.jsonObject
-import noodle.user.infrastructure.persistence.DynamoDbUserRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
