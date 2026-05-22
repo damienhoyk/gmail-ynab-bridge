@@ -9,7 +9,8 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 class DynamoDbLoginRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
-) : DynamoDbRepository(environment), LoginRepository {
+) : DynamoDbRepository(environment),
+    LoginRepository {
     override val name = "login"
 
     override val partitionKey = "id"

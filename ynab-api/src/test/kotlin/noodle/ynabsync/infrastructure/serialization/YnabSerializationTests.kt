@@ -30,7 +30,12 @@ class YnabSerializationTests {
     fun ynabBudgetData() {
         val raw = """{"data": {"budgets": [{"id": "b2", "name": "Work"}]}}"""
         val result = json.decodeFromString(serializer(typeOf<YnabBudget.Data>()), raw) as YnabBudget.Data
-        assertEquals("b2", result.data.budgets.first().id)
+        assertEquals(
+            "b2",
+            result.data.budgets
+                .first()
+                .id,
+        )
     }
 
     @Test
@@ -87,6 +92,11 @@ class YnabSerializationTests {
     fun ynabAccountData() {
         val raw = """{"data": {"accounts": [{"id": "acc2", "name": "Savings"}]}}"""
         val result = json.decodeFromString(serializer(typeOf<YnabAccount.Data>()), raw) as YnabAccount.Data
-        assertEquals("acc2", result.data.accounts.first().id)
+        assertEquals(
+            "acc2",
+            result.data.accounts
+                .first()
+                .id,
+        )
     }
 }

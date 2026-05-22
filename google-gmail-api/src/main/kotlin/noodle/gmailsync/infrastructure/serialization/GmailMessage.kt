@@ -37,14 +37,17 @@ data class GmailMessage(
     }
 
     val from by lazy {
-        payload?.headers
+        payload
+            ?.headers
             ?.find { it["name"].equals("from", true) }
             ?.get("value")
             ?.let(::InternetAddress)
     }
 
     @Serializable
-    data class Data(val data: String? = null)
+    data class Data(
+        val data: String? = null,
+    )
 
     @Serializable
     data class List(

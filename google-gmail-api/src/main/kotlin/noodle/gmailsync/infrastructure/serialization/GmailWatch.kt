@@ -9,5 +9,8 @@ data class GmailWatch(
     val error: Error?,
 ) {
     @Serializable
-    data class Error(val code: Int, val message: String)
+    data class Error(
+        val code: Int,
+        val message: String,
+    )
 }

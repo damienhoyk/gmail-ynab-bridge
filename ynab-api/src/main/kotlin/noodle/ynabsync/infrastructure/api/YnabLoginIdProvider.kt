@@ -23,9 +23,13 @@ class YnabLoginIdProvider(
         val body = client?.getUser()?.body<JsonObject>()
         val id =
             body
-                ?.get("data")?.jsonObject
-                ?.get("user")?.jsonObject
-                ?.get("id")?.jsonPrimitive?.content
+                ?.get("data")
+                ?.jsonObject
+                ?.get("user")
+                ?.jsonObject
+                ?.get("id")
+                ?.jsonPrimitive
+                ?.content
         return id?.let { "$it@app.ynab.com" }
     }
 }

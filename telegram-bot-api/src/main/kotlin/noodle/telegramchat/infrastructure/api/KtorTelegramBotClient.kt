@@ -13,8 +13,10 @@ import io.ktor.client.request.post
 import io.ktor.http.HttpHeaders
 import noodle.telegramchat.core.port.TelegramBotClient
 
-class KtorTelegramBotClient(httpClient: HttpClient, block: HttpClientConfig<*>.() -> Unit = {}) :
-    TelegramBotClient {
+class KtorTelegramBotClient(
+    httpClient: HttpClient,
+    block: HttpClientConfig<*>.() -> Unit = {},
+) : TelegramBotClient {
     private val httpClient =
         httpClient.config {
             install(Logging) {

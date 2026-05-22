@@ -56,8 +56,7 @@ open class KtorYnabClient(
 
     suspend fun getAccounts(budgetId: String) = getAccounts(budgetId) {}.toFinanceDomain()
 
-    suspend fun getBudgets(block: HttpRequestBuilder.() -> Unit = {}) =
-        httpClient.get("budgets", block).body<YnabBudget.Data>()
+    suspend fun getBudgets(block: HttpRequestBuilder.() -> Unit = {}) = httpClient.get("budgets", block).body<YnabBudget.Data>()
 
     suspend fun getBudgets() = getBudgets {}.toFinanceDomain()
 

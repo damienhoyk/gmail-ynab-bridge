@@ -13,5 +13,7 @@ data class YnabTransaction(
         val transactions: List<YnabTransaction>? = emptyList(),
     )
 
-    data class Data(val data: Body)
+    data class Data(
+        val data: Body,
+    )
 }

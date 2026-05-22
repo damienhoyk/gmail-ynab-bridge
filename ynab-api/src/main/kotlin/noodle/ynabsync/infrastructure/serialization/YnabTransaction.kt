@@ -19,5 +19,7 @@ data class YnabTransaction(
     )
 
     @Serializable
-    data class Data(val data: Body)
+    data class Data(
+        val data: Body,
+    )
 }

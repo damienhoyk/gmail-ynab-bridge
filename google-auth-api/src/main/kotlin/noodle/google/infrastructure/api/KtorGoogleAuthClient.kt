@@ -15,8 +15,10 @@ import noodle.oauth.core.port.LoginIdProvider
 import noodle.oauth.infrastructure.api.KtorOidcClient
 import noodle.oauth.infrastructure.serialization.TokenInfoResponse
 
-class KtorGoogleAuthClient(httpClient: HttpClient, block: HttpClientConfig<*>.() -> Unit = {}) :
-    KtorOidcClient(
+class KtorGoogleAuthClient(
+    httpClient: HttpClient,
+    block: HttpClientConfig<*>.() -> Unit = {},
+) : KtorOidcClient(
         httpClient,
         "https://accounts.google.com/.well-known/openid-configuration",
         block,
@@ -27,16 +29,13 @@ class KtorGoogleAuthClient(httpClient: HttpClient, block: HttpClientConfig<*>.()
 
     override suspend fun getToken(request: OAuth2TokenRequest) = super.getToken(request)
 
-    suspend fun getTokenInfo(block: HttpRequestBuilder.() -> Unit) =
-        httpClient.post(tokenInfoEndpoint, block)
+    suspend fun getTokenInfo(block: HttpRequestBuilder.() -> Unit) = httpClient.post(tokenInfoEndpoint, block)
 
     override suspend fun getTokenInfo(token: String) =
         getTokenInfo {
             setBody(FormDataContent(Parameters.build { append("id_token", token) }))
-        }
-            .body<TokenInfoResponse>()
+        }.body<TokenInfoResponse>()
             .domain()
 
-    override suspend fun getLoginId(response: TokenResponse) =
-        response.idToken?.let { getTokenInfo(it).email }
+    override suspend fun getLoginId(response: TokenResponse) = response.idToken?.let { getTokenInfo(it).email }
 }

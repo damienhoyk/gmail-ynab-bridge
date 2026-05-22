@@ -185,7 +185,11 @@ class KtorGmailClientTests {
     fun getHistory() =
         runBlocking {
             val history = googleGmailClient.getHistory().body<GmailHistory>()
-            val message = history.history.first().messagesAdded.first()
+            val message =
+                history.history
+                    .first()
+                    .messagesAdded
+                    .first()
             assertEquals(newHistoryId, history.historyId.toString())
             assertEquals(messageId, message.message.id)
         }

@@ -10,7 +10,8 @@ import kotlin.time.Duration
 class DynamoDbOutboxRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
-) : DynamoDbSortRepository(environment), OutboxRepository {
+) : DynamoDbSortRepository(environment),
+    OutboxRepository {
     override val name = "outbox"
 
     override val partitionKey: String = "destination"

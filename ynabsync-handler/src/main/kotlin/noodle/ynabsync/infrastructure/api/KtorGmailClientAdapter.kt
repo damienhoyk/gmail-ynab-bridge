@@ -10,14 +10,20 @@ import noodle.ynabsync.core.domain.MailMessageRequest
 import noodle.ynabsync.core.port.GmailClient
 import noodle.ynabsync.infrastructure.toFinanceDomain
 
-class KtorGmailClientAdapter(httpClient: HttpClient, block: HttpClientConfig<*>.() -> Unit) : KtorGmailClient(httpClient, block), GmailClient {
+class KtorGmailClientAdapter(
+    httpClient: HttpClient,
+    block: HttpClientConfig<*>.() -> Unit,
+) : KtorGmailClient(httpClient, block),
+    GmailClient {
     override suspend fun getMessage(request: MailMessageRequest) =
         getMessage(messageId = request.messageId) {
             parameter("format", request.format.value)
         }.let {
             when (val status = it.status.value) {
                 200 -> it.body<GmailMessage>().toFinanceDomain().copy(status = status)
-                else -> noodle.ynabsync.core.domain.GmailMessage(status = status)
+                else ->
+                    noodle.ynabsync.core.domain
+                        .GmailMessage(status = status)
             }
         }
 }

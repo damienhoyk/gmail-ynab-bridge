@@ -9,7 +9,8 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 class DynamoDbTokenRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
-) : DynamoDbSortRepository(environment), TokenRepository {
+) : DynamoDbSortRepository(environment),
+    TokenRepository {
     override val name = "token"
 
     override val partitionKey = "id"

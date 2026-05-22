@@ -37,7 +37,8 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val dynamoDbClientAsync =
         initScope.async {
-            DynamoDbClient.builder()
+            DynamoDbClient
+                .builder()
                 .credentialsProvider(credentialsProviderAsync.await())
                 .httpClientBuilder(urlConnectionClient)
                 .build()
@@ -45,7 +46,8 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val secretsManagerClientAsync =
         initScope.async {
-            SecretsManagerClient.builder()
+            SecretsManagerClient
+                .builder()
                 .credentialsProvider(credentialsProviderAsync.await())
                 .httpClientBuilder(urlConnectionClient)
                 .build()

@@ -49,7 +49,8 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val dynamoDbClientAsync =
         initScope.async {
-            DynamoDbClient.builder()
+            DynamoDbClient
+                .builder()
                 .credentialsProvider(credentialsProviderAsync.await())
                 .httpClientBuilder(UrlConnectionHttpClient.builder())
                 .build()
@@ -57,7 +58,8 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val secretsManagerClientAsync =
         initScope.async {
-            SecretsManagerClient.builder()
+            SecretsManagerClient
+                .builder()
                 .credentialsProvider(credentialsProviderAsync.await())
                 .httpClientBuilder(UrlConnectionHttpClient.builder())
                 .build()
@@ -161,9 +163,17 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         val webhookEvent = mapper.decodeFromString<TelegramWebhookEvent>(event.body!!)
         val command =
             RespondChatCommand(
-                telegramUserId = webhookEvent.message?.from?.id?.toString(),
+                telegramUserId =
+                    webhookEvent.message
+                        ?.from
+                        ?.id
+                        ?.toString(),
                 text = webhookEvent.message?.text,
-                chatId = webhookEvent.message?.chat?.id?.toString(),
+                chatId =
+                    webhookEvent.message
+                        ?.chat
+                        ?.id
+                        ?.toString(),
             )
 
         val statusCode = service.execute(command)

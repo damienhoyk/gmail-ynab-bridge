@@ -107,25 +107,27 @@ class TelegramBotService(
                 val mailboxRepository = mailboxRepository()
 
                 supervisorScope {
-                    emails.map { gmail ->
-                        async {
-                            val gmailClient = gmailClientFactory.create(gmail)
-                            val state = gmailClient.getProfile()?.historyId
-                            val labelId = gmailClient.getLabelId(labelName)
-                            val labelIds = listOfNotNull(labelId)
+                    emails
+                        .map { gmail ->
+                            async {
+                                val gmailClient = gmailClientFactory.create(gmail)
+                                val state = gmailClient.getProfile()?.historyId
+                                val labelId = gmailClient.getLabelId(labelName)
+                                val labelIds = listOfNotNull(labelId)
 
-                            mailboxRepository.updateMailbox(Mailbox(gmail, state))
-                            gmailClient.postWatch(WatchMailboxRequest(topicName, labelIds))
-                            gmail
-                        }.runCatching { await() }
-                    }.map { result ->
-                        result.onFailure {
-                            it.printStackTrace()
-                            botClient.sendMessage(chatId, "🐳 ${it.message}")
-                        }.onSuccess {
-                            botClient.sendMessage(chatId, "🔭 I am now watching ${it.replace(".", "\\.")} label *$labelName*")
+                                mailboxRepository.updateMailbox(Mailbox(gmail, state))
+                                gmailClient.postWatch(WatchMailboxRequest(topicName, labelIds))
+                                gmail
+                            }.runCatching { await() }
+                        }.map { result ->
+                            result
+                                .onFailure {
+                                    it.printStackTrace()
+                                    botClient.sendMessage(chatId, "🐳 ${it.message}")
+                                }.onSuccess {
+                                    botClient.sendMessage(chatId, "🔭 I am now watching ${it.replace(".", "\\.")} label *$labelName*")
+                                }
                         }
-                    }
                 }
             }
 

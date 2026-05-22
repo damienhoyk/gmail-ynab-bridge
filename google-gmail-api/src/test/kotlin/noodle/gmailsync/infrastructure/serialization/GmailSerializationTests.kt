@@ -31,14 +31,26 @@ class GmailSerializationTests {
         val result = json.decodeFromString(serializer(typeOf<GmailHistory>()), raw) as GmailHistory
         assertEquals(99L, result.historyId)
         assertEquals("tok", result.nextPageToken)
-        assertEquals("m1", result.history.first().messagesAdded.first().message.id)
+        assertEquals(
+            "m1",
+            result.history
+                .first()
+                .messagesAdded
+                .first()
+                .message.id,
+        )
     }
 
     @Test
     fun gmailHistoryChange() {
         val raw = """{"messagesAdded": [{"message": {"id": "m2", "threadId": "t2"}}]}"""
         val result = json.decodeFromString(serializer(typeOf<GmailHistory.Change>()), raw) as GmailHistory.Change
-        assertEquals("m2", result.messagesAdded.first().message.id)
+        assertEquals(
+            "m2",
+            result.messagesAdded
+                .first()
+                .message.id,
+        )
     }
 
     @Test

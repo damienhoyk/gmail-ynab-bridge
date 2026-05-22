@@ -30,5 +30,6 @@ abstract class KtorOAuth2TokenProvider : OAuth2TokenProvider {
                         },
                     ),
                 )
-            }.body<TokenResponse>().domain()
+            }.body<TokenResponse>()
+            .domain()
 }

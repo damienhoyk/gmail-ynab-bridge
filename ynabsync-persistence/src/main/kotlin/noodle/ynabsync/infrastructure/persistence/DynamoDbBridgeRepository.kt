@@ -8,7 +8,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 class DynamoDbBridgeRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
-) : DynamoDbSortRepository(environment), BridgeRepository {
+) : DynamoDbSortRepository(environment),
+    BridgeRepository {
     override val name = "bridge"
 
     override val partitionKey = "source"

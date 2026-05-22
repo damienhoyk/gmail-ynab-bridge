@@ -17,7 +17,10 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-open class KtorGmailClient(httpClient: HttpClient, block: HttpClientConfig<*>.() -> Unit = {}) {
+open class KtorGmailClient(
+    httpClient: HttpClient,
+    block: HttpClientConfig<*>.() -> Unit = {},
+) {
     private val httpClient =
         httpClient.config {
             install(Logging) {

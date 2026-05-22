@@ -8,7 +8,11 @@ import noodle.gmailsync.core.port.GmailClient
 import noodle.gmailsync.infrastructure.serialization.GmailHistory
 import noodle.gmailsync.infrastructure.toAddedMessageIds
 
-class KtorGmailClientAdapter(httpClient: HttpClient, block: HttpClientConfig<*>.() -> Unit) : KtorGmailClient(httpClient, block), GmailClient {
+class KtorGmailClientAdapter(
+    httpClient: HttpClient,
+    block: HttpClientConfig<*>.() -> Unit,
+) : KtorGmailClient(httpClient, block),
+    GmailClient {
     override suspend fun getAddedMessageIds(sinceHistoryId: Long) =
         getHistory {
             parameter("startHistoryId", sinceHistoryId)

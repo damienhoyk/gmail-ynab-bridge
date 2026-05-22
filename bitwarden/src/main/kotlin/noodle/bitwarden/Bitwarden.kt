@@ -8,7 +8,9 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 
-class Bitwarden(private val secretsManagerClient: SecretsManagerClient) {
+class Bitwarden(
+    private val secretsManagerClient: SecretsManagerClient,
+) {
     private val initScope = CoroutineScope(Default)
 
     private val secret = initScope.async { secretsManagerClient.getSecret("bitwarden") }

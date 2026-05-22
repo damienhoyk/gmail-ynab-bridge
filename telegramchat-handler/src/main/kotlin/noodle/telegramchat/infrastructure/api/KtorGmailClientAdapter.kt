@@ -18,11 +18,16 @@ import noodle.telegramchat.core.domain.WatchMailboxRequest
 import noodle.telegramchat.core.port.GmailClient
 import noodle.telegramchat.infrastructure.toChatDomain
 
-class KtorGmailClientAdapter(httpClient: HttpClient, block: HttpClientConfig<*>.() -> Unit) : KtorGmailClient(httpClient, block), GmailClient {
+class KtorGmailClientAdapter(
+    httpClient: HttpClient,
+    block: HttpClientConfig<*>.() -> Unit,
+) : KtorGmailClient(httpClient, block),
+    GmailClient {
     override suspend fun getProfile() = getProfile {}.body<GmailProfile>().toChatDomain()
 
     override suspend fun getLabelId(labelName: String) =
-        getLabels {}.body<GmailLabel.List>()
+        getLabels {}
+            .body<GmailLabel.List>()
             .labels
             .firstOrNull { it.name.equals(labelName, ignoreCase = true) }
             ?.id

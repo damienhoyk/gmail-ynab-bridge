@@ -5,7 +5,9 @@ data class GmailWatchRequest(
     val labelIds: List<String> = emptyList(),
     val labelFilterBehaviour: LabelFilterBehaviour = LabelFilterBehaviour.INCLUDE,
 ) {
-    enum class LabelFilterBehaviour(val value: String) {
+    enum class LabelFilterBehaviour(
+        val value: String,
+    ) {
         INCLUDE("include"),
         EXCLUDE("exclude"),
     }

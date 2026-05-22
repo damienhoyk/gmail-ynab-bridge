@@ -8,7 +8,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 class DynamoDbUserRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
-) : DynamoDbSortRepository(environment), UserRepository {
+) : DynamoDbSortRepository(environment),
+    UserRepository {
     override val name = "user"
 
     override val partitionKey = "id"

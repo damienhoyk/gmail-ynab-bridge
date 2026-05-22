@@ -1,6 +1,8 @@
 package noodle.ynabsync.core.domain
 
-data class YnabTransactionsRequest(val body: Body) {
+data class YnabTransactionsRequest(
+    val body: Body,
+) {
     data class YnabTransaction(
         val id: String? = null,
         val accountId: String? = null,
@@ -15,5 +17,7 @@ data class YnabTransactionsRequest(val body: Body) {
         val transactions: List<YnabTransaction>? = emptyList(),
     )
 
-    data class Data(val data: Body)
+    data class Data(
+        val data: Body,
+    )
 }

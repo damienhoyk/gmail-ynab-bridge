@@ -53,7 +53,10 @@ class DynamodbEventDeserializationTests {
 
         val result = serializer.fromJson(raw)
 
-        val image = result.records.first().dynamodb.newImage
+        val image =
+            result.records
+                .first()
+                .dynamodb.newImage
         assertEquals("hello", image["strField"]?.s)
         assertEquals("42", image["numField"]?.n)
         assertNotNull(image["boolField"]?.getBOOL())

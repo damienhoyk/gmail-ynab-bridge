@@ -8,8 +8,12 @@ data class YnabBudget(
     val name: String,
 ) {
     @Serializable
-    data class Body(val budgets: List<YnabBudget>)
+    data class Body(
+        val budgets: List<YnabBudget>,
+    )
 
     @Serializable
-    data class Data(val data: Body)
+    data class Data(
+        val data: Body,
+    )
 }

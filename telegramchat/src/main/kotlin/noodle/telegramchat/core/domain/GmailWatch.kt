@@ -5,5 +5,8 @@ data class GmailWatch(
     val expiration: Long?,
     val error: Error?,
 ) {
-    data class Error(val code: Int, val message: String)
+    data class Error(
+        val code: Int,
+        val message: String,
+    )
 }

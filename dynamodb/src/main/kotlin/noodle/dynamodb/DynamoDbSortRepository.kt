@@ -27,7 +27,8 @@ abstract class DynamoDbSortRepository(
     suspend fun query(partition: String) =
         withContext(IO) {
             client.query {
-                it.tableName(table)
+                it
+                    .tableName(table)
                     .expressionAttributeNames(mapOf("#s" to partitionKey))
                     .expressionAttributeValues(mapOf(":s" to fromS(partition)))
                     .keyConditionExpression("#s = :s")

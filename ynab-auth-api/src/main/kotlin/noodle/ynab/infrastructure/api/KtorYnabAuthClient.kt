@@ -19,7 +19,8 @@ import noodle.oauth.infrastructure.api.KtorOAuth2TokenProvider
 class KtorYnabAuthClient(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
-) : KtorOAuth2TokenProvider(), YnabAuthClient {
+) : KtorOAuth2TokenProvider(),
+    YnabAuthClient {
     private val initScope = CoroutineScope(Default)
 
     override val tokenEndpoint = initScope.async { "https://app.ynab.com/oauth/token" }

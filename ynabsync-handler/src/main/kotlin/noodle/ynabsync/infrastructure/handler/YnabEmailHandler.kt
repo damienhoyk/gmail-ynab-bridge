@@ -41,7 +41,8 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
 
     private val dynamoDbClientAsync =
         initScope.async {
-            DynamoDbClient.builder()
+            DynamoDbClient
+                .builder()
                 .credentialsProvider(credentialsProviderAsync.await())
                 .httpClientBuilder(urlConnectionClient)
                 .build()
@@ -49,7 +50,8 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
 
     private val secretsManagerClientAsync =
         initScope.async {
-            SecretsManagerClient.builder()
+            SecretsManagerClient
+                .builder()
                 .credentialsProvider(credentialsProviderAsync.await())
                 .httpClientBuilder(urlConnectionClient)
                 .build()
@@ -108,7 +110,8 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     ) = runBlocking {
         request.records
             .filter { "insert".equals(it.eventName, ignoreCase = true) }
-            .map { launch { handle(it) } }.joinAll()
+            .map { launch { handle(it) } }
+            .joinAll()
         return@runBlocking "OK"
     }
 

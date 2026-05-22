@@ -14,8 +14,12 @@ data class TelegramWebhookEvent(
     )
 
     @Serializable
-    data class Chat(val id: Long? = null)
+    data class Chat(
+        val id: Long? = null,
+    )
 
     @Serializable
-    data class User(val id: Long? = null)
+    data class User(
+        val id: Long? = null,
+    )
 }

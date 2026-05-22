@@ -42,7 +42,9 @@ abstract class DynamoDbCrud {
         val expression = expressions.joinToString(", ") { (name, value) -> "$name = $value" }
 
         client.updateItem {
-            it.tableName(table).key(key)
+            it
+                .tableName(table)
+                .key(key)
                 .updateExpression("set $expression")
                 .expressionAttributeValues(values.toMap())
                 .expressionAttributeNames(names.toMap())
