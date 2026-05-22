@@ -1,4 +1,4 @@
-package noodle.ynabsync.infrastructure.handler
+package noodle.ynabsync.bootstrap
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler

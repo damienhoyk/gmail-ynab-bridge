@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.ynabsync.infrastructure.handler.YnabEmailHandler",
+    "name": "noodle.ynabsync.bootstrap.YnabEmailHandler",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,
