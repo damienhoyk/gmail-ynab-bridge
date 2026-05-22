@@ -32,11 +32,11 @@ include(":bitwarden")
 include(":dynamodb")
 include(":serialization")
 
-// Event Handlers
-include(":gmailsync-handler")
-include(":oauth-google-handler")
-include(":telegramchat-handler")
-include(":ynabsync-handler")
-include(":oauth-ynab-handler")
+// Bootstrap
+include(":gmailsync-bootstrap")
+include(":oauth-google-bootstrap")
+include(":telegramchat-bootstrap")
+include(":ynabsync-bootstrap")
+include(":oauth-ynab-bootstrap")
 
 rootProject.name = "gmail-ynab-bridge"
