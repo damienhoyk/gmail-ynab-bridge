@@ -1,4 +1,4 @@
-package noodle.gmailsync.infrastructure.handler
+package noodle.gmailsync.bootstrap
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled

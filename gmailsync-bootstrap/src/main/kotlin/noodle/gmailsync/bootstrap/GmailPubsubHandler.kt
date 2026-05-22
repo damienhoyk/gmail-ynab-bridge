@@ -1,4 +1,4 @@
-package noodle.gmailsync.infrastructure.handler
+package noodle.gmailsync.bootstrap
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
