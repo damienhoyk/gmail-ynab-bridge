@@ -1,6 +1,6 @@
-package noodle.oauth
+package noodle.oauth.bootstrap.ynab
 
-import noodle.oauth.infrastructure.handler.ynab.YnabOAuthHandler
+import noodle.oauth.bootstrap.ynab.YnabOAuthHandler
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test

@@ -1,4 +1,4 @@
-package noodle.oauth.infrastructure.handler.ynab
+package noodle.oauth.bootstrap.ynab
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
