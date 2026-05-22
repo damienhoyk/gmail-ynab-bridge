@@ -39,8 +39,8 @@ graalvmNative {
 }
 
 tasks.register<Zip>("packageFunction") {
+    archiveFileName = "${project.name}-$version-native.zip"
     into("/") {
-        archiveFileName = "${project.name}-$version-native.zip"
         from("../buildSrc/src/main/resources/bootstrap") { filePermissions { unix("777") } }
         from(tasks.named("nativeCompile"))
     }
