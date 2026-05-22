@@ -26,12 +26,10 @@ class DynamoDbBridgeRepositoryTests {
         }
 
     @Test
-    fun getBridge(): Unit =
+    fun getAccounts(): Unit =
         runBlocking {
-            val result = repository.getBridge(source, destination)
-            assertEquals(source, result.source)
-            assertEquals(destination, result.destination)
-            assertEquals(emptyMap<String, String>(), result.accounts)
+            val result = repository.getAccounts(source, destination)
+            assertEquals(emptyMap<String, String>(), result)
         }
 
     @AfterAll

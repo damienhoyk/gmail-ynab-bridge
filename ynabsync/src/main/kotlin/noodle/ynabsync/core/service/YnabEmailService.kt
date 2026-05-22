@@ -75,10 +75,8 @@ class YnabEmailService(
         log.info("Getting bridge for [{}|{}] ...", mailAddress, destination)
 
         val bridgeRepository = bridgeRepository()
-        val bridge = bridgeRepository.getBridge(mailAddress, destination)
-
         val client = ynabClientFactory.create(destination)
-        val accounts = bridge.accounts ?: emptyMap()
+        val accounts = bridgeRepository.getAccounts(source, destination)
 
         log.info("Bridge has [{}] accounts", accounts.size)
 

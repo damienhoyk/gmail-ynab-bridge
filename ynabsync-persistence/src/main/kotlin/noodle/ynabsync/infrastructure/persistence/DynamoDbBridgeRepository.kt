@@ -1,7 +1,6 @@
 package noodle.ynabsync.infrastructure.persistence
 
 import noodle.dynamodb.DynamoDbSortRepository
-import noodle.ynabsync.core.domain.Bridge
 import noodle.ynabsync.core.port.BridgeRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
@@ -15,14 +14,11 @@ class DynamoDbBridgeRepository(
     override val partitionKey = "source"
     override val sortKey = "destination"
 
-    override suspend fun getBridge(
+    override suspend fun getAccounts(
         source: String,
         destination: String,
-    ): Bridge {
+    ): Map<String, String> {
         val item = get(source, destination).item()
-        val source = item["source"]?.s()!!
-        val destination = item["destination"]?.s()!!
-        val accounts = item["accounts"]?.m()?.mapValues { it.value.s() } ?: emptyMap()
-        return Bridge(source, destination, accounts)
+        return item["accounts"]?.m()?.mapValues { it.value.s() } ?: emptyMap()
     }
 }
