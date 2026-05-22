@@ -5,10 +5,10 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import noodle.oauth.core.domain.LoadTokensCommand
 import noodle.oauth.core.domain.RefreshTokensCommand
-import noodle.oauth.core.service.AuthTokenService
+import noodle.oauth.core.service.TokenService
 
 fun AuthConfig.bearer(
-    service: AuthTokenService,
+    service: TokenService,
     loginId: String,
 ) = bearer {
     loadTokens {

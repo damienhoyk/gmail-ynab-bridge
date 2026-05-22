@@ -19,7 +19,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.Bitwarden
 import noodle.google.infrastructure.api.KtorGoogleAuthClient
-import noodle.oauth.core.service.AuthTokenService
+import noodle.oauth.core.service.TokenService
 import noodle.serialization.apiKey
 import noodle.serialization.clientId
 import noodle.serialization.clientSecret
@@ -80,7 +80,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
-            AuthTokenService(
+            TokenService(
                 clientId = secret.clientId!!,
                 clientSecret = secret.clientSecret!!,
                 tokenRepository = securityTokenRepository.await(),

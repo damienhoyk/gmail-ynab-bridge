@@ -14,7 +14,7 @@ import kotlinx.serialization.json.put
 import noodle.bitwarden.Bitwarden
 import noodle.google.infrastructure.api.KtorGoogleAuthClient
 import noodle.oauth.core.domain.AuthorizeCommand
-import noodle.oauth.core.service.OAuth2Service
+import noodle.oauth.core.service.AuthorizeService
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
@@ -71,7 +71,7 @@ class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     val loginRepository = initScope.async { DynamoDbLoginRepository(dynamoDbClientAsync.await()) }
 
     val service =
-        OAuth2Service(
+        AuthorizeService(
             clientId = runBlocking { secretAsync.await().clientId!! },
             clientSecret = runBlocking { secretAsync.await().clientSecret!! },
             redirectUri = redirectUri,

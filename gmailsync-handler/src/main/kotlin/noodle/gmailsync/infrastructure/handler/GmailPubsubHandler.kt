@@ -23,7 +23,7 @@ import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
 import noodle.gmailsync.infrastructure.serialization.GmailEvent
 import noodle.gmailsync.infrastructure.serialization.PubsubNotification
 import noodle.google.infrastructure.api.KtorGoogleAuthClient
-import noodle.oauth.core.service.AuthTokenService
+import noodle.oauth.core.service.TokenService
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.serialization.clientId
 import noodle.serialization.clientSecret
@@ -72,7 +72,7 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
-            AuthTokenService(
+            TokenService(
                 clientId = secret.clientId!!,
                 clientSecret = secret.clientSecret!!,
                 tokenRepository = tokenRepositoryAsync.await(),

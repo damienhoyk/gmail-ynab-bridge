@@ -1,5 +1,6 @@
 package noodle.oauth.core.service
 
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import noodle.oauth.core.domain.AuthorizeCommand
@@ -13,7 +14,7 @@ import noodle.oauth.core.port.TokenRepository
 import noodle.oauth.core.port.UserRepository
 import org.slf4j.LoggerFactory
 
-class OAuth2Service(
+class AuthorizeService(
     val clientId: String,
     val clientSecret: String,
     val redirectUri: String,
@@ -77,12 +78,13 @@ class OAuth2Service(
 
             log.info("🎫 Storing tokens for authorization [{}] ...", loginId)
 
-            launch {
-                tokenRepository.updateTokenValue(loginId, "access", oAuthToken.accessToken!!)
-            }
-
-            launch {
-                tokenRepository.updateTokenValue(loginId, "refresh", oAuthToken.refreshToken!!)
+            coroutineScope {
+                launch {
+                    oAuthToken.accessToken?.let { tokenRepository.updateTokenValue(loginId, "access", it) }
+                }
+                launch {
+                    oAuthToken.refreshToken?.let { tokenRepository.updateTokenValue(loginId, "refresh", it) }
+                }
             }
 
             return@runBlocking 200

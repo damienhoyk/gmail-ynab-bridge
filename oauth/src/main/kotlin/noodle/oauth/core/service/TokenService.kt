@@ -9,7 +9,7 @@ import noodle.oauth.core.port.OAuth2TokenProvider
 import noodle.oauth.core.port.TokenRepository
 import org.slf4j.LoggerFactory
 
-class AuthTokenService(
+class TokenService(
     private val clientId: String,
     private val clientSecret: String,
     private val tokenRepository: TokenRepository,
@@ -31,22 +31,22 @@ class AuthTokenService(
                 refreshToken = value,
             )
 
-        val response = authClient.getToken(authRequest)
+        val oAuthToken = authClient.getToken(authRequest)
 
-        if (response.accessToken.isNullOrBlank()) {
+        coroutineScope {
+            launch {
+                oAuthToken.accessToken?.let { tokenRepository.updateTokenValue(loginId, "access", it) }
+            }
+            launch {
+                oAuthToken.refreshToken?.let { tokenRepository.updateTokenValue(loginId, "refresh", it) }
+            }
+        }
+
+        if (oAuthToken.accessToken.isNullOrBlank()) {
             log.error("🐳 refresh token is invalid")
             throw IllegalStateException("$loginId refresh token is invalid")
         }
 
-        coroutineScope {
-            launch {
-                response.accessToken.let { tokenRepository.updateTokenValue(loginId, "access", it) }
-            }
-            launch {
-                response.refreshToken?.let { tokenRepository.updateTokenValue(loginId, "refresh", it) }
-            }
-        }
-
-        return response.accessToken
+        return oAuthToken.accessToken
     }
 }

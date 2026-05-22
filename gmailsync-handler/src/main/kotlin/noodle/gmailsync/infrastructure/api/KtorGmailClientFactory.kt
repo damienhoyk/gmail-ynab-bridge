@@ -4,11 +4,11 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.auth.Auth
 import noodle.gmailsync.core.port.GmailClientFactory
-import noodle.oauth.core.service.AuthTokenService
+import noodle.oauth.core.service.TokenService
 import noodle.oauth.infrastructure.bearer
 
 class KtorGmailClientFactory(
-    private val service: AuthTokenService,
+    private val service: TokenService,
     private val engine: HttpClientEngine,
 ) : GmailClientFactory {
     override suspend fun create(loginId: String) =
