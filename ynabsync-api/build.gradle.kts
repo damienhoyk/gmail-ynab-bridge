@@ -16,4 +16,5 @@ dependencies {
     implementation(libs.bundles.ktor.client)
     implementation("io.ktor:ktor-client-auth")
     implementation(libs.kotlinx.coroutines)
+    implementation(libs.jakarta.mail)
 }

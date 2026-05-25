@@ -16,6 +16,7 @@ include(":ynabsync")
 include(":telegramchat")
 
 // Infrastructure Adapters
+include(":gmailsync-api")
 include(":gmailsync-persistence")
 include(":ynabsync-persistence")
 include(":google-auth-api")
@@ -23,9 +24,11 @@ include(":google-gmail-api")
 include(":oauth-api")
 include(":oauth-persistence")
 include(":telegram-bot-api")
+include(":telegramchat-api")
 include(":telegramchat-persistence")
 include(":ynab-auth-api")
 include(":ynab-api")
+include(":ynabsync-api")
 
 // Common Libraries
 include(":bitwarden")
