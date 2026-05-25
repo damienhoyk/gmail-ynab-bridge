@@ -1,1 +1,2 @@
 - [User Role and Style](user_role.md) — Kotlin/hexagonal-arch developer, prefers concise file-specific review feedback
+- [Module Structure](project_module_structure.md) — *-bootstrap modules are composition roots; *Handler entry classes in noodle.<app>.bootstrap packages
