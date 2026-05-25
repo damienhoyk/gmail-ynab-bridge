@@ -16,4 +16,7 @@ dependencies {
     implementation("io.ktor:ktor-client-auth")
     implementation(libs.kotlinx.coroutines)
     implementation(libs.jakarta.mail)
+    testImplementation("io.ktor:ktor-client-mock")
+    testImplementation(libs.slf4j.simple)
+    testImplementation(libs.slf4j.api)
 }

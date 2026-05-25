@@ -28,7 +28,6 @@ dependencies {
     implementation(project(":bitwarden"))
     implementation(project(":serialization"))
     implementation(project(":dynamodb"))
-    implementation(project(":ynab-api"))
     implementation(project(":google-auth-api"))
     implementation(project(":oauth"))
     implementation(project(":oauth-api"))
