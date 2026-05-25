@@ -27,7 +27,6 @@ include(":telegram-bot-api")
 include(":telegramchat-api")
 include(":telegramchat-persistence")
 include(":ynab-auth-api")
-include(":ynab-api")
 include(":ynabsync-api")
 
 // Common Libraries
