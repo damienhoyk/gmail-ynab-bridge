@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":serialization"))
     implementation(project(":dynamodb"))
     implementation(project(":gmailsync"))
+    implementation(project(":gmailsync-api"))
     implementation(project(":gmailsync-persistence"))
     implementation(project(":google-gmail-api"))
     implementation(project(":google-auth-api"))
