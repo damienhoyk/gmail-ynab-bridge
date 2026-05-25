@@ -21,6 +21,7 @@ dependencies {
     implementation(project(":oauth-api"))
     implementation(project(":oauth-persistence"))
     implementation(project(":telegramchat"))
+    implementation(project(":telegramchat-api"))
     implementation(project(":telegramchat-persistence"))
     implementation(project(":telegram-bot-api"))
     implementation("io.ktor:ktor-client-auth")
