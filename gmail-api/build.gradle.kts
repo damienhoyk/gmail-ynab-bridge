@@ -4,15 +4,11 @@ plugins {
     id("kotlin-native-test")
 }
 
-group = "noodle.gmailsync"
+group = "noodle.gmail"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":gmailsync"))
-    implementation(project(":oauth"))
-    implementation(project(":oauth-api"))
-    implementation(project(":google-auth-api"))
     implementation(libs.bundles.ktor.client)
     implementation(libs.jakarta.mail)
     implementation("io.ktor:ktor-client-auth")
@@ -25,7 +21,7 @@ graalvmNative {
     binaries {
         named("test") {
             configurationFileDirectories.from(
-                rootProject.file("META-INF/native-image/noodle.gmailsync/gmailsync"),
+                rootProject.file("META-INF/native-image/noodle.gmail/gmail-api"),
             )
         }
     }

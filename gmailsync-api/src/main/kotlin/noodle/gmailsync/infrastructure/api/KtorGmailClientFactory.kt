@@ -12,7 +12,7 @@ class KtorGmailClientFactory(
     private val engine: HttpClientEngine,
 ) : GmailClientFactory {
     override suspend fun create(loginId: String) =
-        KtorGmailClientAdapter(HttpClient(engine)) {
+        KtorGmailClient(HttpClient(engine)) {
             install(Auth) { bearer(service, loginId) }
         }
 }

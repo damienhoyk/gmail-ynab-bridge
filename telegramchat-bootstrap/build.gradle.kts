@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":dynamodb"))
     implementation(project(":google-auth-api"))
     implementation(project(":oauth"))
+    implementation(project(":oauth-google-api"))
     implementation(project(":oauth-api"))
     implementation(project(":oauth-persistence"))
     implementation(project(":telegramchat"))

@@ -1,4 +1,4 @@
-package noodle.gmailsync.infrastructure.api
+package noodle.gmail.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
