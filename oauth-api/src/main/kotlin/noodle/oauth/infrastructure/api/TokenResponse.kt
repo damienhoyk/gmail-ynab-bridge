@@ -1,4 +1,4 @@
-package noodle.oauth.infrastructure.serialization
+package noodle.oauth.infrastructure.api
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

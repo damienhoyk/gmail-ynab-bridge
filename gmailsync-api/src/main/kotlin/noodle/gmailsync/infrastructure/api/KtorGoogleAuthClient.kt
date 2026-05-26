@@ -7,7 +7,7 @@ import io.ktor.http.Parameters
 import noodle.gmailsync.core.domain.TokenInfoResponse
 import noodle.gmailsync.core.port.GoogleTokenClient
 import noodle.google.auth.infrastructure.api.KtorGoogleAuthClient
-import noodle.oauth.infrastructure.serialization.TokenInfoResponse as OAuthTokenInfoResponse
+import noodle.oauth.infrastructure.api.TokenInfoResponse as OAuthTokenInfoResponse
 
 class KtorGoogleAuthClient(
     private val googleAuthClient: KtorGoogleAuthClient,

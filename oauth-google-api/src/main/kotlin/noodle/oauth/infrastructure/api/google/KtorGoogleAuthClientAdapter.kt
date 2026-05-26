@@ -13,7 +13,7 @@ import noodle.oauth.core.port.GoogleAuthClient
 import noodle.oauth.core.port.LoginIdProvider
 import noodle.oauth.core.port.OAuth2TokenProvider
 import noodle.oauth.infrastructure.api.KtorOidcClient
-import noodle.oauth.infrastructure.serialization.TokenInfoResponse
+import noodle.oauth.infrastructure.api.TokenInfoResponse
 
 class KtorGoogleAuthClientAdapter(
     httpClient: HttpClient,
