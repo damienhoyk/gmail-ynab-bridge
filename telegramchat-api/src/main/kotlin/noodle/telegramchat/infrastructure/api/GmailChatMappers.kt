@@ -1,4 +1,4 @@
-package noodle.telegramchat.infrastructure
+package noodle.telegramchat.infrastructure.api
 
 import noodle.gmailsync.infrastructure.serialization.GmailProfile
 import noodle.gmailsync.infrastructure.serialization.GmailWatch

@@ -16,7 +16,7 @@ import noodle.gmailsync.infrastructure.serialization.GmailProfile
 import noodle.gmailsync.infrastructure.serialization.GmailWatch
 import noodle.telegramchat.core.domain.WatchMailboxRequest
 import noodle.telegramchat.core.port.GmailClient
-import noodle.telegramchat.infrastructure.toChatDomain
+import noodle.telegramchat.infrastructure.api.toChatDomain
 
 class KtorGmailClientAdapter(
     httpClient: HttpClient,
