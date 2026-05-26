@@ -1,8 +1,7 @@
-package noodle.ynabsync.infrastructure.api
+package noodle.ynab.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
-import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.DEFAULT
@@ -17,9 +16,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import noodle.ynabsync.infrastructure.serialization.YnabAccount
-import noodle.ynabsync.infrastructure.serialization.YnabBudget
-import noodle.ynabsync.infrastructure.toFinanceDomain
 
 open class KtorYnabClient(
     httpClient: HttpClient,
@@ -52,13 +48,9 @@ open class KtorYnabClient(
     suspend fun getAccounts(
         budgetId: String = "default",
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.get("budgets/$budgetId/accounts", block).body<YnabAccount.Data>()
+    ) = httpClient.get("budgets/$budgetId/accounts", block)
 
-    suspend fun getAccounts(budgetId: String) = getAccounts(budgetId) {}.toFinanceDomain()
-
-    suspend fun getBudgets(block: HttpRequestBuilder.() -> Unit = {}) = httpClient.get("budgets", block).body<YnabBudget.Data>()
-
-    suspend fun getBudgets() = getBudgets {}.toFinanceDomain()
+    suspend fun getBudgets(block: HttpRequestBuilder.() -> Unit = {}) = httpClient.get("budgets", block)
 
     suspend fun postTransactions(
         budgetId: String = "default",

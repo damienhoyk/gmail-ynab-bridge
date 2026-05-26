@@ -1,15 +1,15 @@
-package noodle.ynabsync.infrastructure.serialization
+package noodle.ynab.infrastructure.api.model
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class YnabAccount(
+data class YnabBudget(
     val id: String,
     val name: String,
 ) {
     @Serializable
     data class Body(
-        val accounts: List<YnabAccount>,
+        val budgets: List<YnabBudget>,
     )
 
     @Serializable

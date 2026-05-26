@@ -1,4 +1,4 @@
-package noodle.ynab.infrastructure.api
+package noodle.ynab.auth.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -13,19 +13,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
 import kotlinx.serialization.json.Json
-import noodle.oauth.core.port.YnabAuthClient
-import noodle.oauth.infrastructure.api.KtorOAuth2TokenProvider
 
-class KtorYnabAuthClient(
+open class KtorYnabAuthClient(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
-) : KtorOAuth2TokenProvider(),
-    YnabAuthClient {
+) {
     private val initScope = CoroutineScope(Default)
 
-    override val tokenEndpoint = initScope.async { "https://app.ynab.com/oauth/token" }
+    val tokenEndpoint = initScope.async { "https://app.ynab.com/oauth/token" }
 
-    override val httpClient =
+    val httpClient =
         httpClient.config {
             install(Logging) {
                 logger = Logger.DEFAULT

@@ -2,6 +2,9 @@ package noodle.ynabsync.infrastructure.serialization
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import noodle.ynab.infrastructure.api.model.YnabAccount
+import noodle.ynab.infrastructure.api.model.YnabBudget
+import noodle.ynab.infrastructure.api.model.YnabTransaction
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test

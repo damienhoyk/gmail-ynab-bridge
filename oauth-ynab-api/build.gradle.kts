@@ -1,15 +1,16 @@
 plugins {
-    alias(libs.plugins.kotlin.serialization)
     id("kotlin-jvm")
     id("kotlin-native-test")
 }
 
-group = "noodle.ynab.auth"
+group = "noodle.oauth"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation(platform(libs.ktor.dependencies))
-    implementation("io.ktor:ktor-client-auth")
+    implementation(project(":oauth"))
+    implementation(project(":oauth-api"))
+    implementation(project(":ynab-auth-api"))
     implementation(libs.bundles.ktor.client)
     testImplementation("io.ktor:ktor-client-mock")
     testImplementation(libs.slf4j.simple)
@@ -20,7 +21,7 @@ graalvmNative {
     binaries {
         named("test") {
             configurationFileDirectories.from(
-                rootProject.file("META-INF/native-image/noodle.ynab.auth/ynab-auth-api"),
+                rootProject.file("META-INF/native-image/noodle.oauth/oauth-ynab-api"),
             )
         }
     }
