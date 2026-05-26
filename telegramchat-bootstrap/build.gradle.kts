@@ -22,7 +22,7 @@ dependencies {
     implementation(project(":telegramchat"))
     implementation(project(":telegramchat-api"))
     implementation(project(":telegramchat-persistence"))
-    implementation(project(":telegram-bot-api"))
+    implementation(project(":telegram-api"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
     implementation(libs.kotlinx.coroutines)

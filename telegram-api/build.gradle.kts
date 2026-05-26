@@ -2,7 +2,7 @@ plugins {
     id("kotlin-jvm")
 }
 
-group = "noodle.telegramchat"
+group = "noodle.telegram"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
