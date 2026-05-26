@@ -1,4 +1,4 @@
-package noodle.telegramchat.infrastructure.api
+package noodle.telegram.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine

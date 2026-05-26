@@ -27,11 +27,11 @@ import noodle.serialization.jsonObject
 import noodle.telegramchat.core.domain.RespondChatCommand
 import noodle.telegramchat.core.service.TelegramBotService
 import noodle.telegramchat.infrastructure.api.KtorGmailClientFactory
-import noodle.telegramchat.infrastructure.api.KtorTelegramBotClient
+import noodle.telegram.infrastructure.api.KtorTelegramBotClient
 import noodle.telegramchat.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbUserRepository
-import noodle.telegramchat.infrastructure.serialization.TelegramWebhookEvent
+import noodle.telegram.infrastructure.api.model.TelegramWebhookEvent
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
