@@ -5,7 +5,7 @@ import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.request.parameter
 import noodle.gmail.infrastructure.api.KtorGmailClient
-import noodle.gmailsync.infrastructure.serialization.GmailMessage
+import noodle.gmail.infrastructure.api.model.GmailMessage
 import noodle.ynabsync.core.domain.MailMessageRequest
 import noodle.ynabsync.core.port.GmailClient
 import noodle.ynabsync.infrastructure.api.toFinanceDomain

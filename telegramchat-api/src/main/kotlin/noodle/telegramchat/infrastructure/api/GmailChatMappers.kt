@@ -1,7 +1,7 @@
 package noodle.telegramchat.infrastructure.api
 
-import noodle.gmailsync.infrastructure.serialization.GmailProfile
-import noodle.gmailsync.infrastructure.serialization.GmailWatch
+import noodle.gmail.infrastructure.api.model.GmailProfile
+import noodle.gmail.infrastructure.api.model.GmailWatch
 
 fun GmailProfile.toChatDomain() =
     noodle.telegramchat.core.domain.GmailProfile(

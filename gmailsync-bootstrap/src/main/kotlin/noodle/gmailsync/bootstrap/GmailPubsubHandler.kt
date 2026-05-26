@@ -13,16 +13,15 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.Bitwarden
+import noodle.gmail.infrastructure.api.model.GmailEvent
+import noodle.gmail.infrastructure.api.model.pubsub.PubsubNotification
 import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.service.GmailPubsubService
-import noodle.gmailsync.infrastructure.api.KtorGoogleAuthClient
 import noodle.gmailsync.infrastructure.api.KtorGmailClientFactory
+import noodle.gmailsync.infrastructure.api.KtorGoogleAuthClient
 import noodle.gmailsync.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
-import noodle.gmailsync.infrastructure.serialization.GmailEvent
-import noodle.gmailsync.infrastructure.serialization.PubsubNotification
-import noodle.google.auth.infrastructure.api.KtorGoogleAuthClient
 import noodle.oauth.core.service.TokenService
 import noodle.oauth.infrastructure.api.google.KtorGoogleAuthClientAdapter
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
@@ -70,7 +69,11 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val googleSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
     private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClientAdapter(HttpClient(engineAsync.await())) }
-    private val googleAuthBaseClientAsync = initScope.async { noodle.google.auth.infrastructure.api.KtorGoogleAuthClient(HttpClient(engineAsync.await())) }
+    private val googleAuthBaseClientAsync =
+        initScope.async {
+            noodle.google.auth.infrastructure.api
+                .KtorGoogleAuthClient(HttpClient(engineAsync.await()))
+        }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()

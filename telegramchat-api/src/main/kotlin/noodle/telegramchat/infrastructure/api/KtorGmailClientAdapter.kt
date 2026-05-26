@@ -10,10 +10,10 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import noodle.gmail.infrastructure.api.KtorGmailClient
+import noodle.gmail.infrastructure.api.model.GmailLabel
+import noodle.gmail.infrastructure.api.model.GmailProfile
+import noodle.gmail.infrastructure.api.model.GmailWatch
 import noodle.gmailsync.core.domain.GmailWatchRequest
-import noodle.gmailsync.infrastructure.serialization.GmailLabel
-import noodle.gmailsync.infrastructure.serialization.GmailProfile
-import noodle.gmailsync.infrastructure.serialization.GmailWatch
 import noodle.telegramchat.core.domain.WatchMailboxRequest
 import noodle.telegramchat.core.port.GmailClient
 import noodle.telegramchat.infrastructure.api.toChatDomain
