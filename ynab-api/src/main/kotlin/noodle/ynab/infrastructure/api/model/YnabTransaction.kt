@@ -1,4 +1,4 @@
-package noodle.ynabsync.infrastructure.serialization
+package noodle.ynab.infrastructure.api.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,9 +1,9 @@
 package noodle.ynabsync.infrastructure
 
+import noodle.ynab.infrastructure.api.model.YnabAccount
+import noodle.ynab.infrastructure.api.model.YnabBudget
+import noodle.ynab.infrastructure.api.model.YnabTransaction
 import noodle.ynabsync.core.domain.YnabTransactionsRequest
-import noodle.ynabsync.infrastructure.serialization.YnabAccount
-import noodle.ynabsync.infrastructure.serialization.YnabBudget
-import noodle.ynabsync.infrastructure.serialization.YnabTransaction
 
 fun YnabAccount.toFinanceDomain() =
     noodle.ynabsync.core.domain

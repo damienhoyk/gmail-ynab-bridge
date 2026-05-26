@@ -14,13 +14,13 @@ import kotlinx.serialization.json.put
 import noodle.bitwarden.Bitwarden
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
+import noodle.oauth.infrastructure.api.ynab.KtorYnabAuthClientAdapter
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
 import noodle.serialization.clientId
 import noodle.serialization.clientSecret
 import noodle.serialization.jsonObject
-import noodle.ynab.infrastructure.api.KtorYnabAuthClient
 import noodle.ynabsync.infrastructure.api.YnabLoginIdProvider
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
@@ -55,7 +55,7 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val engineAsync = initScope.async { Java.create() }
 
-    val ynabAuthClient = initScope.async { KtorYnabAuthClient(HttpClient(engineAsync.await())) }
+    val ynabAuthClient = initScope.async { KtorYnabAuthClientAdapter(HttpClient(engineAsync.await())) }
     val ynabClient = initScope.async { YnabLoginIdProvider(HttpClient(engineAsync.await())) }
 
     val redirectUri = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
