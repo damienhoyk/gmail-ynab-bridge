@@ -17,11 +17,11 @@ import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.service.GmailPubsubService
 import noodle.gmailsync.infrastructure.api.KtorGoogleAuthClient
 import noodle.gmailsync.infrastructure.api.KtorGmailClientFactory
+import noodle.gmail.infrastructure.api.model.GmailEvent
+import noodle.gmail.infrastructure.api.model.pubsub.PubsubNotification
 import noodle.gmailsync.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
-import noodle.gmailsync.infrastructure.serialization.GmailEvent
-import noodle.gmailsync.infrastructure.serialization.PubsubNotification
 import noodle.google.auth.infrastructure.api.KtorGoogleAuthClient
 import noodle.oauth.core.service.TokenService
 import noodle.oauth.infrastructure.api.google.KtorGoogleAuthClientAdapter

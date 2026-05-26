@@ -1,4 +1,4 @@
-package noodle.gmailsync.infrastructure.serialization
+package noodle.gmail.infrastructure.api.model
 
 import jakarta.mail.internet.InternetAddress
 import kotlinx.serialization.Serializable

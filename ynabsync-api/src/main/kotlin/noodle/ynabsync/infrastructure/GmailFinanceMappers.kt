@@ -1,6 +1,6 @@
 package noodle.ynabsync.infrastructure
 
-import noodle.gmailsync.infrastructure.serialization.GmailMessage
+import noodle.gmail.infrastructure.api.model.GmailMessage
 
 fun GmailMessage.toFinanceDomain() =
     noodle.ynabsync.core.domain.GmailMessage(
