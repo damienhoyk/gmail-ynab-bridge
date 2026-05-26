@@ -12,8 +12,8 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import noodle.bitwarden.Bitwarden
-import noodle.google.infrastructure.api.KtorGoogleAuthClient
 import noodle.oauth.core.service.TokenService
+import noodle.oauth.infrastructure.api.google.KtorGoogleAuthClientAdapter
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.serialization.clientId
 import noodle.serialization.clientSecret
@@ -62,7 +62,7 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val engineAsync = initScope.async { Java.create() }
 
     private val googleSecretAsync = initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
-    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClient(HttpClient(engineAsync.await())) }
+    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClientAdapter(HttpClient(engineAsync.await())) }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()

@@ -9,8 +9,8 @@ import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
+import noodle.gmail.infrastructure.api.KtorGmailClient
 import noodle.gmailsync.core.domain.GmailWatchRequest
-import noodle.gmailsync.infrastructure.api.KtorGmailClient
 import noodle.gmailsync.infrastructure.serialization.GmailLabel
 import noodle.gmailsync.infrastructure.serialization.GmailProfile
 import noodle.gmailsync.infrastructure.serialization.GmailWatch

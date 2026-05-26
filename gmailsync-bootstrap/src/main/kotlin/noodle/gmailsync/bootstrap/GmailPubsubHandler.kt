@@ -22,8 +22,9 @@ import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
 import noodle.gmailsync.infrastructure.serialization.GmailEvent
 import noodle.gmailsync.infrastructure.serialization.PubsubNotification
-import noodle.google.infrastructure.api.KtorGoogleAuthClient
+import noodle.google.auth.infrastructure.api.KtorGoogleAuthClient
 import noodle.oauth.core.service.TokenService
+import noodle.oauth.infrastructure.api.google.KtorGoogleAuthClientAdapter
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.serialization.clientId
 import noodle.serialization.clientSecret
@@ -68,7 +69,8 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val googleSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
-    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClient(HttpClient(engineAsync.await())) }
+    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClientAdapter(HttpClient(engineAsync.await())) }
+    private val googleAuthBaseClientAsync = initScope.async { KtorGoogleAuthClient(HttpClient(engineAsync.await())) }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
@@ -95,7 +97,7 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val service =
         GmailPubsubService(
             gmailClientFactory = { gmailClientFactory.await() },
-            googleTokenClient = { GmailTokenClientAdapter(googleAuthClientAsync.await()) },
+            googleTokenClient = { GmailTokenClientAdapter(googleAuthBaseClientAsync.await()) },
             mailboxRepository = { mailboxRepositoryAsync.await() },
             bridgeRepository = { bridgeRepositoryAsync.await() },
             outboxRepository = { outboxRepositoryAsync.await() },

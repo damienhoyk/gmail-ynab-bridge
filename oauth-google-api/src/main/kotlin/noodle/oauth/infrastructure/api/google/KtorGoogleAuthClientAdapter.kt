@@ -1,4 +1,4 @@
-package noodle.google.infrastructure.api
+package noodle.oauth.infrastructure.api.google
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -8,6 +8,7 @@ import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.Parameters
+import noodle.google.auth.infrastructure.api.KtorGoogleAuthClient
 import noodle.oauth.core.domain.OAuth2TokenRequest
 import noodle.oauth.core.domain.TokenResponse
 import noodle.oauth.core.port.GoogleAuthClient
@@ -15,7 +16,7 @@ import noodle.oauth.core.port.LoginIdProvider
 import noodle.oauth.infrastructure.api.KtorOidcClient
 import noodle.oauth.infrastructure.serialization.TokenInfoResponse
 
-class KtorGoogleAuthClient(
+class KtorGoogleAuthClientAdapter(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) : KtorOidcClient(
@@ -25,7 +26,8 @@ class KtorGoogleAuthClient(
     ),
     GoogleAuthClient,
     LoginIdProvider {
-    val tokenInfoEndpoint = "https://oauth2.googleapis.com/tokeninfo"
+    private val googleAuthClient = KtorGoogleAuthClient(httpClient, block)
+    private val tokenInfoEndpoint = "https://oauth2.googleapis.com/tokeninfo"
 
     override suspend fun getToken(request: OAuth2TokenRequest) = super.getToken(request)
 
