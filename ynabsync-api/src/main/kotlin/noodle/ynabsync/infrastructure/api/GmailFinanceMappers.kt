@@ -1,4 +1,4 @@
-package noodle.ynabsync.infrastructure
+package noodle.ynabsync.infrastructure.api
 
 import noodle.gmailsync.infrastructure.serialization.GmailMessage
 

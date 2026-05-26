@@ -21,8 +21,8 @@ import noodle.serialization.clientSecret
 import noodle.serialization.jsonObject
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.service.YnabEmailService
-import noodle.ynabsync.infrastructure.KtorYnabClientFactory
 import noodle.ynabsync.infrastructure.api.KtorGmailClientFactory
+import noodle.ynabsync.infrastructure.api.KtorYnabClientFactory
 import noodle.ynabsync.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbMatcherRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbOutboxRepository
