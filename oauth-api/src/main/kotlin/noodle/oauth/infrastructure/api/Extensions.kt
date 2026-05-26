@@ -1,4 +1,4 @@
-package noodle.oauth.infrastructure
+package noodle.oauth.infrastructure.api
 
 import io.ktor.client.plugins.auth.AuthConfig
 import io.ktor.client.plugins.auth.providers.BearerTokens

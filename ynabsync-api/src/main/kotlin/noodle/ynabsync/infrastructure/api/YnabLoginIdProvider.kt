@@ -9,7 +9,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import noodle.oauth.core.domain.TokenResponse
 import noodle.oauth.core.port.LoginIdProvider
-import noodle.oauth.infrastructure.bearer
+import noodle.oauth.infrastructure.api.bearer
 import noodle.ynab.infrastructure.api.KtorYnabClient
 
 class YnabLoginIdProvider(
