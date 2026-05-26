@@ -10,8 +10,8 @@ import noodle.ynab.infrastructure.api.model.YnabBudget
 import noodle.ynab.infrastructure.api.model.YnabTransaction
 import noodle.ynabsync.core.domain.YnabTransactionsRequest
 import noodle.ynabsync.core.port.YnabClient
-import noodle.ynabsync.infrastructure.toFinanceDomain
-import noodle.ynabsync.infrastructure.toYnabData
+import noodle.ynabsync.infrastructure.api.toFinanceDomain
+import noodle.ynabsync.infrastructure.api.toYnabData
 import noodle.ynabsync.core.domain.YnabTransaction as YnabTransactionDomain
 
 class KtorYnabClientAdapter(

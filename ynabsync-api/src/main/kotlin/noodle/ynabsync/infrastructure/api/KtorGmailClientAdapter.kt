@@ -8,7 +8,7 @@ import noodle.gmail.infrastructure.api.KtorGmailClient
 import noodle.gmailsync.infrastructure.serialization.GmailMessage
 import noodle.ynabsync.core.domain.MailMessageRequest
 import noodle.ynabsync.core.port.GmailClient
-import noodle.ynabsync.infrastructure.toFinanceDomain
+import noodle.ynabsync.infrastructure.api.toFinanceDomain
 
 class KtorGmailClientAdapter(
     httpClient: HttpClient,

@@ -1,4 +1,4 @@
-package noodle.ynabsync.infrastructure
+package noodle.ynabsync.infrastructure.api
 
 import noodle.ynab.infrastructure.api.model.YnabAccount
 import noodle.ynab.infrastructure.api.model.YnabBudget
