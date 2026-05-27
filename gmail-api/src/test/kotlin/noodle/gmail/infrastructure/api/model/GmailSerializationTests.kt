@@ -1,7 +1,12 @@
-package noodle.gmailsync.infrastructure.serialization
+package noodle.gmail.infrastructure.api.model
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import noodle.gmail.infrastructure.api.model.GmailHistory
+import noodle.gmail.infrastructure.api.model.GmailLabel
+import noodle.gmail.infrastructure.api.model.GmailMessage
+import noodle.gmail.infrastructure.api.model.GmailProfile
+import noodle.gmail.infrastructure.api.model.GmailWatch
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test

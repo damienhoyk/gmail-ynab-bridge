@@ -1,5 +1,6 @@
-package noodle.gmailsync.infrastructure.serialization
+package noodle.gmail.infrastructure.api.model
 
+import noodle.gmail.infrastructure.api.model.GmailMessage
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 

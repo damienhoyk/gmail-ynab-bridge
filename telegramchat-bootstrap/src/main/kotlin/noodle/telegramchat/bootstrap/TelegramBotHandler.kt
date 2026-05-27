@@ -24,14 +24,14 @@ import noodle.serialization.apiKey
 import noodle.serialization.clientId
 import noodle.serialization.clientSecret
 import noodle.serialization.jsonObject
+import noodle.telegram.infrastructure.api.model.TelegramWebhookEvent
 import noodle.telegramchat.core.domain.RespondChatCommand
 import noodle.telegramchat.core.service.TelegramBotService
 import noodle.telegramchat.infrastructure.api.KtorGmailClientFactory
-import noodle.telegram.infrastructure.api.KtorTelegramBotClient
+import noodle.telegramchat.infrastructure.api.KtorTelegramBotClientAdapter
 import noodle.telegramchat.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbUserRepository
-import noodle.telegram.infrastructure.api.model.TelegramWebhookEvent
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
@@ -121,7 +121,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val telegramBotClient =
         initScope.async(Dispatchers.IO) {
             val secret = telegramSecretAsync.await()
-            KtorTelegramBotClient(HttpClient(engineAsync.await())) {
+            KtorTelegramBotClientAdapter(HttpClient(engineAsync.await())) {
                 defaultRequest {
                     contentType(Application.Json)
                     url("https://api.telegram.org/bot${secret.apiKey!!}/")

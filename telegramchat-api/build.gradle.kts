@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":telegramchat"))
     implementation(project(":gmailsync"))
     implementation(project(":gmail-api"))
+    implementation(project(":telegram-api"))
     implementation(project(":oauth"))
     implementation(project(":oauth-api"))
     implementation(libs.bundles.ktor.client)

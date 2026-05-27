@@ -1,0 +1,906 @@
+Calculating task graph as no cached configuration is available for tasks: kF build
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:generateExternalPluginSpecBuilders UP-TO-DATE
+> Task :buildSrc:extractPrecompiledScriptPluginPlugins UP-TO-DATE
+> Task :buildSrc:compilePluginsBlocks UP-TO-DATE
+> Task :buildSrc:generatePrecompiledScriptPluginAccessors UP-TO-DATE
+> Task :buildSrc:generateScriptPluginAdapters UP-TO-DATE
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources UP-TO-DATE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+> Task :bitwarden:loadKtlintReporters UP-TO-DATE
+> Task :gmail-api:loadKtlintReporters UP-TO-DATE
+> Task :gmailsync:loadKtlintReporters UP-TO-DATE
+> Task :google-auth-api:loadKtlintReporters UP-TO-DATE
+> Task :oauth:loadKtlintReporters UP-TO-DATE
+> Task :gmailsync-bootstrap:loadKtlintReporters UP-TO-DATE
+> Task :dynamodb:loadKtlintReporters UP-TO-DATE
+> Task :gmailsync-api:loadKtlintReporters UP-TO-DATE
+> Task :loadKtlintReporters UP-TO-DATE
+> Task :gmailsync-persistence:loadKtlintReporters UP-TO-DATE
+> Task :gmail-api:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :oauth:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :google-auth-api:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :gmailsync-persistence:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :dynamodb:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :gmailsync:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :bitwarden:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :gmailsync-api:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :gmailsync-bootstrap:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :bitwarden:ktlintKotlinScriptFormat FROM-CACHE
+> Task :dynamodb:ktlintKotlinScriptFormat FROM-CACHE
+> Task :gmail-api:ktlintKotlinScriptFormat FROM-CACHE
+> Task :gmailsync-persistence:ktlintKotlinScriptFormat FROM-CACHE
+> Task :gmail-api:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :bitwarden:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :bitwarden:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :dynamodb:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :gmailsync:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :gmailsync:ktlintKotlinScriptFormat FROM-CACHE
+> Task :gmail-api:ktlintTestSourceSetFormat FROM-CACHE
+> Task :bitwarden:ktlintMainSourceSetFormat FROM-CACHE
+> Task :bitwarden:ktlintTestSourceSetFormat FROM-CACHE
+> Task :bitwarden:ktlintFormat UP-TO-DATE
+> Task :dynamodb:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :dynamodb:ktlintMainSourceSetFormat FROM-CACHE
+> Task :gmailsync:ktlintTestSourceSetFormat FROM-CACHE
+> Task :gmail-api:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :gmailsync-api:ktlintKotlinScriptFormat FROM-CACHE
+> Task :gmailsync:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :gmailsync-api:runKtlintFormatOverTestSourceSet NO-SOURCE
+> Task :gmailsync-api:ktlintTestSourceSetFormat SKIPPED
+> Task :dynamodb:ktlintTestSourceSetFormat FROM-CACHE
+> Task :dynamodb:ktlintFormat UP-TO-DATE
+> Task :gmail-api:ktlintMainSourceSetFormat FROM-CACHE
+> Task :gmail-api:ktlintFormat UP-TO-DATE
+> Task :gmailsync-bootstrap:ktlintKotlinScriptFormat FROM-CACHE
+> Task :gmailsync:ktlintMainSourceSetFormat FROM-CACHE
+> Task :gmailsync:ktlintFormat UP-TO-DATE
+> Task :gmailsync-bootstrap:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :gmailsync-persistence:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :gmailsync-bootstrap:ktlintTestSourceSetFormat FROM-CACHE
+> Task :google-auth-api:ktlintKotlinScriptFormat FROM-CACHE
+> Task :gmailsync-persistence:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :google-auth-api:runKtlintFormatOverTestSourceSet NO-SOURCE
+> Task :google-auth-api:ktlintTestSourceSetFormat SKIPPED
+> Task :oauth:ktlintKotlinScriptFormat FROM-CACHE
+> Task :gmailsync-persistence:ktlintMainSourceSetFormat FROM-CACHE
+> Task :google-auth-api:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :oauth:runKtlintFormatOverTestSourceSet NO-SOURCE
+> Task :gmailsync-persistence:ktlintTestSourceSetFormat FROM-CACHE
+> Task :oauth:ktlintTestSourceSetFormat SKIPPED
+> Task :gmailsync-persistence:ktlintFormat UP-TO-DATE
+> Task :google-auth-api:ktlintMainSourceSetFormat FROM-CACHE
+> Task :google-auth-api:ktlintFormat UP-TO-DATE
+> Task :oauth-google-api:loadKtlintReporters UP-TO-DATE
+> Task :oauth-api:loadKtlintReporters UP-TO-DATE
+> Task :oauth-google-bootstrap:loadKtlintReporters UP-TO-DATE
+> Task :oauth-ynab-api:loadKtlintReporters UP-TO-DATE
+> Task :oauth:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :oauth-persistence:loadKtlintReporters UP-TO-DATE
+> Task :oauth-ynab-bootstrap:loadKtlintReporters UP-TO-DATE
+> Task :oauth-google-api:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :oauth-google-bootstrap:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :oauth:ktlintMainSourceSetFormat FROM-CACHE
+> Task :oauth:ktlintFormat UP-TO-DATE
+> Task :oauth-api:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :oauth-ynab-api:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :oauth-ynab-bootstrap:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :oauth-persistence:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :oauth-google-api:ktlintKotlinScriptFormat FROM-CACHE
+> Task :oauth-google-api:runKtlintFormatOverTestSourceSet NO-SOURCE
+> Task :oauth-google-api:ktlintTestSourceSetFormat SKIPPED
+> Task :oauth-api:ktlintKotlinScriptFormat FROM-CACHE
+> Task :oauth-google-bootstrap:ktlintKotlinScriptFormat FROM-CACHE
+> Task :oauth-persistence:ktlintKotlinScriptFormat FROM-CACHE
+> Task :oauth-google-bootstrap:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :oauth-google-bootstrap:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :oauth-persistence:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :oauth-persistence:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :oauth-google-bootstrap:ktlintMainSourceSetFormat FROM-CACHE
+> Task :oauth-persistence:ktlintTestSourceSetFormat FROM-CACHE
+> Task :oauth-google-bootstrap:ktlintTestSourceSetFormat FROM-CACHE
+> Task :oauth-google-bootstrap:ktlintFormat UP-TO-DATE
+> Task :oauth-persistence:ktlintMainSourceSetFormat FROM-CACHE
+> Task :oauth-persistence:ktlintFormat UP-TO-DATE
+> Task :oauth-ynab-api:ktlintKotlinScriptFormat FROM-CACHE
+> Task :oauth-ynab-api:runKtlintFormatOverTestSourceSet NO-SOURCE
+> Task :oauth-ynab-api:ktlintTestSourceSetFormat SKIPPED
+> Task :oauth-ynab-api:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :oauth-ynab-bootstrap:ktlintKotlinScriptFormat FROM-CACHE
+> Task :oauth-ynab-bootstrap:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :oauth-ynab-api:ktlintMainSourceSetFormat FROM-CACHE
+> Task :oauth-ynab-api:ktlintFormat UP-TO-DATE
+> Task :oauth-ynab-bootstrap:ktlintMainSourceSetFormat FROM-CACHE
+> Task :oauth-ynab-bootstrap:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :oauth-ynab-bootstrap:ktlintTestSourceSetFormat FROM-CACHE
+> Task :oauth-ynab-bootstrap:ktlintFormat UP-TO-DATE
+> Task :telegramchat:loadKtlintReporters UP-TO-DATE
+> Task :serialization:loadKtlintReporters UP-TO-DATE
+> Task :telegramchat-api:loadKtlintReporters UP-TO-DATE
+> Task :telegramchat:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :telegramchat-api:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :telegramchat:ktlintKotlinScriptFormat FROM-CACHE
+> Task :telegramchat:runKtlintFormatOverTestSourceSet NO-SOURCE
+> Task :telegramchat:ktlintTestSourceSetFormat SKIPPED
+> Task :telegramchat:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :telegramchat-api:ktlintKotlinScriptFormat FROM-CACHE
+> Task :serialization:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :serialization:ktlintKotlinScriptFormat FROM-CACHE
+> Task :telegramchat:ktlintMainSourceSetFormat FROM-CACHE
+> Task :serialization:runKtlintFormatOverTestSourceSet NO-SOURCE
+> Task :serialization:ktlintTestSourceSetFormat SKIPPED
+> Task :telegramchat:ktlintFormat UP-TO-DATE
+> Task :serialization:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :telegramchat-api:runKtlintFormatOverTestSourceSet NO-SOURCE
+> Task :telegramchat-api:ktlintTestSourceSetFormat SKIPPED
+> Task :serialization:ktlintMainSourceSetFormat FROM-CACHE
+> Task :serialization:ktlintFormat UP-TO-DATE
+> Task :telegramchat-bootstrap:loadKtlintReporters UP-TO-DATE
+> Task :telegramchat-persistence:loadKtlintReporters UP-TO-DATE
+> Task :telegramchat-persistence:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :telegramchat-persistence:ktlintKotlinScriptFormat FROM-CACHE
+> Task :telegramchat-persistence:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :telegram-api:loadKtlintReporters FROM-CACHE
+> Task :telegramchat-persistence:ktlintMainSourceSetFormat FROM-CACHE
+> Task :telegramchat-persistence:runKtlintFormatOverTestSourceSet NO-SOURCE
+> Task :telegramchat-persistence:ktlintTestSourceSetFormat SKIPPED
+> Task :telegramchat-persistence:ktlintFormat UP-TO-DATE
+> Task :ynab-api:loadKtlintReporters UP-TO-DATE
+> Task :ynab-api:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :ynab-api:ktlintKotlinScriptFormat FROM-CACHE
+> Task :ynab-api:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :ynab-api:ktlintMainSourceSetFormat FROM-CACHE
+> Task :ynab-api:runKtlintFormatOverTestSourceSet NO-SOURCE
+> Task :ynab-api:ktlintTestSourceSetFormat SKIPPED
+> Task :ynab-api:ktlintFormat UP-TO-DATE
+> Task :ynab-auth-api:loadKtlintReporters UP-TO-DATE
+> Task :ynab-auth-api:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :ynab-auth-api:ktlintKotlinScriptFormat FROM-CACHE
+> Task :ynab-auth-api:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :ynab-auth-api:ktlintMainSourceSetFormat FROM-CACHE
+> Task :ynab-auth-api:runKtlintFormatOverTestSourceSet NO-SOURCE
+> Task :ynab-auth-api:ktlintTestSourceSetFormat SKIPPED
+> Task :ynab-auth-api:ktlintFormat UP-TO-DATE
+> Task :ynabsync:loadKtlintReporters UP-TO-DATE
+> Task :ynabsync:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :ynabsync:ktlintKotlinScriptFormat FROM-CACHE
+> Task :ynabsync:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :ynabsync:ktlintMainSourceSetFormat FROM-CACHE
+> Task :ynabsync:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :ynabsync:ktlintTestSourceSetFormat FROM-CACHE
+> Task :ynabsync:ktlintFormat UP-TO-DATE
+> Task :ynabsync-api:loadKtlintReporters UP-TO-DATE
+> Task :ynabsync-api:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :ynabsync-api:ktlintKotlinScriptFormat FROM-CACHE
+> Task :telegram-api:runKtlintFormatOverKotlinScripts
+> Task :oauth-google-api:runKtlintFormatOverMainSourceSet
+> Task :oauth-api:runKtlintFormatOverTestSourceSet
+> Task :runKtlintFormatOverKotlinScripts
+> Task :gmailsync-api:runKtlintFormatOverMainSourceSet
+> Task :ktlintKotlinScriptFormat UP-TO-DATE
+> Task :ktlintFormat UP-TO-DATE
+> Task :telegramchat-bootstrap:runKtlintFormatOverKotlinScripts
+> Task :telegram-api:ktlintKotlinScriptFormat
+> Task :telegramchat-bootstrap:ktlintKotlinScriptFormat FROM-CACHE
+> Task :oauth-api:ktlintTestSourceSetFormat
+> Task :telegramchat-bootstrap:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :telegramchat-bootstrap:ktlintTestSourceSetFormat FROM-CACHE
+> Task :oauth-google-api:ktlintMainSourceSetFormat
+> Task :oauth-google-api:ktlintFormat
+> Task :ynabsync-bootstrap:loadKtlintReporters UP-TO-DATE
+> Task :ynabsync-api:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :ynabsync-bootstrap:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :ynabsync-api:ktlintTestSourceSetFormat FROM-CACHE
+> Task :ynabsync-bootstrap:ktlintKotlinScriptFormat FROM-CACHE
+> Task :ynabsync-bootstrap:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :ynabsync-bootstrap:ktlintTestSourceSetFormat FROM-CACHE
+> Task :gmailsync-api:ktlintMainSourceSetFormat
+> Task :gmailsync-api:ktlintFormat
+> Task :bitwarden:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ynabsync-persistence:loadKtlintReporters UP-TO-DATE
+> Task :ynabsync-persistence:runKtlintFormatOverKotlinScripts FROM-CACHE
+> Task :oauth-api:runKtlintFormatOverMainSourceSet
+> Task :ynabsync-persistence:ktlintKotlinScriptFormat FROM-CACHE
+> Task :bitwarden:compileKotlin UP-TO-DATE
+> Task :ynabsync-persistence:runKtlintFormatOverMainSourceSet FROM-CACHE
+> Task :ynabsync-persistence:runKtlintFormatOverTestSourceSet FROM-CACHE
+> Task :ynabsync-persistence:ktlintMainSourceSetFormat FROM-CACHE
+> Task :ynabsync-persistence:ktlintTestSourceSetFormat FROM-CACHE
+> Task :ynabsync-persistence:ktlintFormat UP-TO-DATE
+> Task :bitwarden:processResources NO-SOURCE
+> Task :bitwarden:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :bitwarden:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :bitwarden:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :bitwarden:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :bitwarden:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :bitwarden:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :bitwarden:processTestResources NO-SOURCE
+> Task :dynamodb:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :telegramchat-api:runKtlintFormatOverMainSourceSet
+> Task :gmailsync-bootstrap:runKtlintFormatOverMainSourceSet
+> Task :bitwarden:compileJava NO-SOURCE
+> Task :bitwarden:classes UP-TO-DATE
+> Task :bitwarden:jar UP-TO-DATE
+> Task :bitwarden:assemble UP-TO-DATE
+> Task :dynamodb:compileKotlin UP-TO-DATE
+> Task :dynamodb:compileJava NO-SOURCE
+> Task :dynamodb:processResources NO-SOURCE
+> Task :dynamodb:classes UP-TO-DATE
+> Task :dynamodb:jar UP-TO-DATE
+> Task :dynamodb:assemble UP-TO-DATE
+> Task :dynamodb:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :telegram-api:runKtlintFormatOverTestSourceSet
+> Task :dynamodb:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :oauth-api:ktlintMainSourceSetFormat
+> Task :oauth-api:ktlintFormat
+> Task :gmailsync-bootstrap:ktlintMainSourceSetFormat
+> Task :gmailsync-bootstrap:ktlintFormat
+> Task :dynamodb:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :dynamodb:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :dynamodb:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :dynamodb:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :gmail-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :dynamodb:processTestResources NO-SOURCE
+> Task :telegramchat-api:ktlintMainSourceSetFormat
+> Task :telegramchat-api:ktlintFormat
+> Task :gmail-api:processResources NO-SOURCE
+> Task :gmail-api:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :gmail-api:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :gmail-api:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :gmail-api:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :ynabsync-bootstrap:runKtlintFormatOverMainSourceSet
+> Task :telegram-api:ktlintTestSourceSetFormat
+> Task :gmailsync:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gmail-api:processTestResources NO-SOURCE
+> Task :bitwarden:compileTestKotlin UP-TO-DATE
+> Task :ynabsync-bootstrap:ktlintMainSourceSetFormat FROM-CACHE
+> Task :ynabsync-bootstrap:ktlintFormat UP-TO-DATE
+> Task :gmailsync:processResources NO-SOURCE
+> Task :bitwarden:compileTestJava NO-SOURCE
+> Task :bitwarden:testClasses UP-TO-DATE
+> Task :gmailsync:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :gmailsync:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :gmailsync:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :gmailsync:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :gmailsync:processTestResources NO-SOURCE
+> Task :gmailsync-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :google-auth-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gmailsync:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :gmailsync:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :dynamodb:compileTestKotlin UP-TO-DATE
+> Task :dynamodb:compileTestJava NO-SOURCE
+> Task :dynamodb:testClasses UP-TO-DATE
+> Task :google-auth-api:processResources NO-SOURCE
+> Task :oauth:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :google-auth-api:compileKotlin UP-TO-DATE
+> Task :gmailsync:compileKotlin UP-TO-DATE
+> Task :google-auth-api:compileJava NO-SOURCE
+> Task :google-auth-api:classes UP-TO-DATE
+> Task :gmailsync:compileJava NO-SOURCE
+> Task :gmailsync:classes UP-TO-DATE
+> Task :google-auth-api:jar UP-TO-DATE
+> Task :gmailsync:jar UP-TO-DATE
+> Task :gmailsync:assemble UP-TO-DATE
+> Task :oauth:processResources NO-SOURCE
+> Task :bitwarden:test UP-TO-DATE
+> Task :oauth-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :bitwarden:check UP-TO-DATE
+> Task :bitwarden:build UP-TO-DATE
+> Task :dynamodb:test UP-TO-DATE
+> Task :gmailsync-api:processResources NO-SOURCE
+> Task :oauth-api:processResources NO-SOURCE
+> Task :dynamodb:check UP-TO-DATE
+> Task :dynamodb:build UP-TO-DATE
+> Task :gmailsync-api:runKtlintCheckOverTestSourceSet NO-SOURCE
+> Task :gmailsync-api:ktlintTestSourceSetCheck SKIPPED
+> Task :gmailsync-api:processTestResources NO-SOURCE
+> Task :gmailsync-bootstrap:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gmailsync-persistence:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gmailsync-api:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :gmailsync-api:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :gmailsync-persistence:processResources NO-SOURCE
+> Task :oauth-google-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :oauth-google-api:processResources NO-SOURCE
+> Task :oauth-persistence:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :oauth:compileKotlin UP-TO-DATE
+> Task :oauth-persistence:processResources NO-SOURCE
+> Task :serialization:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :oauth:compileJava NO-SOURCE
+> Task :oauth:classes UP-TO-DATE
+> Task :oauth:jar UP-TO-DATE
+> Task :gmailsync:compileTestKotlin UP-TO-DATE
+> Task :gmailsync:compileTestJava NO-SOURCE
+> Task :gmailsync:testClasses UP-TO-DATE
+> Task :gmailsync-persistence:compileKotlin UP-TO-DATE
+> Task :gmailsync-persistence:compileJava NO-SOURCE
+> Task :gmailsync-persistence:classes UP-TO-DATE
+> Task :gmailsync:test UP-TO-DATE
+> Task :gmailsync:check UP-TO-DATE
+> Task :gmailsync:build UP-TO-DATE
+> Task :gmailsync-persistence:jar UP-TO-DATE
+> Task :serialization:compileKotlin UP-TO-DATE
+> Task :serialization:processResources NO-SOURCE
+> Task :gmailsync-bootstrap:processResources UP-TO-DATE
+> Task :serialization:compileJava NO-SOURCE
+> Task :serialization:classes UP-TO-DATE
+> Task :serialization:jar UP-TO-DATE
+> Task :gmailsync-bootstrap:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :gmailsync-bootstrap:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :gmailsync-bootstrap:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :gmailsync-bootstrap:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :gmailsync-bootstrap:processTestResources NO-SOURCE
+> Task :gmailsync-persistence:assemble UP-TO-DATE
+> Task :gmailsync-persistence:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :gmailsync-persistence:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :telegram-api:runKtlintFormatOverMainSourceSet
+> Task :gmail-api:compileKotlin FROM-CACHE
+> Task :gmailsync-persistence:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :gmailsync-persistence:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :oauth-persistence:compileKotlin UP-TO-DATE
+> Task :gmailsync-persistence:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :gmail-api:compileJava NO-SOURCE
+> Task :gmail-api:classes UP-TO-DATE
+> Task :gmailsync-persistence:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :oauth-persistence:compileJava NO-SOURCE
+> Task :oauth-persistence:classes UP-TO-DATE
+> Task :oauth-persistence:jar UP-TO-DATE
+> Task :gmailsync-persistence:processTestResources NO-SOURCE
+> Task :google-auth-api:assemble UP-TO-DATE
+> Task :google-auth-api:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :google-auth-api:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :google-auth-api:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :google-auth-api:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :google-auth-api:runKtlintCheckOverTestSourceSet NO-SOURCE
+> Task :google-auth-api:ktlintTestSourceSetCheck SKIPPED
+> Task :ynabsync-api:runKtlintFormatOverMainSourceSet
+> Task :gmailsync-api:runKtlintCheckOverMainSourceSet
+> Task :google-auth-api:compileTestKotlin NO-SOURCE
+> Task :google-auth-api:compileTestJava NO-SOURCE
+> Task :google-auth-api:processTestResources NO-SOURCE
+> Task :google-auth-api:testClasses UP-TO-DATE
+> Task :google-auth-api:test NO-SOURCE
+> Task :google-auth-api:check UP-TO-DATE
+> Task :google-auth-api:build UP-TO-DATE
+> Task :oauth:assemble UP-TO-DATE
+> Task :oauth-api:compileKotlin FROM-CACHE
+> Task :oauth:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :oauth-api:compileJava NO-SOURCE
+> Task :oauth-api:classes UP-TO-DATE
+> Task :oauth:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :telegramchat-bootstrap:runKtlintFormatOverMainSourceSet
+> Task :oauth:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :telegram-api:ktlintMainSourceSetFormat
+> Task :telegram-api:ktlintFormat
+> Task :oauth:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :gmailsync-api:ktlintMainSourceSetCheck
+> Task :oauth:runKtlintCheckOverTestSourceSet NO-SOURCE
+> Task :oauth:ktlintTestSourceSetCheck SKIPPED
+> Task :ynabsync-api:ktlintMainSourceSetFormat
+> Task :ynabsync-api:ktlintFormat
+> Task :gmail-api:runKtlintCheckOverMainSourceSet
+> Task :oauth:processTestResources NO-SOURCE
+> Task :gmailsync-bootstrap:runKtlintCheckOverMainSourceSet
+> Task :gmail-api:jar
+> Task :gmail-api:assemble
+> Task :oauth-api:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :oauth:compileTestKotlin NO-SOURCE
+> Task :oauth-api:jar
+> Task :oauth-api:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :telegramchat-bootstrap:ktlintMainSourceSetFormat
+> Task :telegramchat-bootstrap:ktlintFormat
+> Task :oauth-api:assemble
+> Task :gmailsync-persistence:compileTestKotlin UP-TO-DATE
+> Task :gmailsync-bootstrap:ktlintMainSourceSetCheck
+> Task :oauth-api:processTestResources NO-SOURCE
+> Task :oauth:compileTestJava NO-SOURCE
+> Task :oauth:testClasses UP-TO-DATE
+> Task :gmailsync-persistence:compileTestJava NO-SOURCE
+> Task :gmailsync-persistence:testClasses UP-TO-DATE
+> Task :oauth-google-api:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :oauth:test NO-SOURCE
+> Task :oauth:check UP-TO-DATE
+> Task :oauth:build UP-TO-DATE
+> Task :oauth-google-api:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :oauth-google-api:runKtlintCheckOverTestSourceSet NO-SOURCE
+> Task :oauth-google-api:ktlintTestSourceSetCheck SKIPPED
+> Task :oauth-google-api:processTestResources NO-SOURCE
+> Task :oauth-google-bootstrap:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :oauth-google-bootstrap:processResources UP-TO-DATE
+> Task :oauth-google-bootstrap:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :gmailsync-persistence:test UP-TO-DATE
+> Task :gmailsync-persistence:check UP-TO-DATE
+> Task :gmailsync-persistence:build UP-TO-DATE
+> Task :oauth-google-bootstrap:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :oauth-google-bootstrap:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :oauth-google-bootstrap:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :oauth-google-bootstrap:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :oauth-google-bootstrap:processTestResources NO-SOURCE
+> Task :oauth-persistence:assemble UP-TO-DATE
+> Task :gmail-api:ktlintMainSourceSetCheck
+> Task :oauth-google-bootstrap:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :oauth-persistence:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :oauth-persistence:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :oauth-persistence:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :oauth-persistence:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :oauth-persistence:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :oauth-persistence:processTestResources NO-SOURCE
+> Task :oauth-ynab-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ynab-auth-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :oauth-persistence:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :ynab-auth-api:processResources NO-SOURCE
+> Task :oauth-ynab-api:processResources NO-SOURCE
+> Task :oauth-ynab-api:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :oauth-api:runKtlintCheckOverTestSourceSet
+> Task :oauth-google-api:runKtlintCheckOverMainSourceSet
+> Task :oauth-api:ktlintTestSourceSetCheck
+> Task :oauth-ynab-api:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :oauth-ynab-api:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :oauth-ynab-api:runKtlintCheckOverTestSourceSet NO-SOURCE
+> Task :oauth-ynab-api:ktlintTestSourceSetCheck SKIPPED
+> Task :oauth-ynab-api:processTestResources NO-SOURCE
+> Task :oauth-ynab-bootstrap:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ynabsync:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ynab-auth-api:compileKotlin UP-TO-DATE
+> Task :oauth-ynab-api:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :ynabsync:processResources NO-SOURCE
+> Task :ynab-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ynab-auth-api:compileJava NO-SOURCE
+> Task :ynab-auth-api:classes UP-TO-DATE
+> Task :ynab-auth-api:jar UP-TO-DATE
+> Task :oauth-google-api:ktlintMainSourceSetCheck
+> Task :ynab-api:processResources NO-SOURCE
+> Task :ynabsync-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ynabsync-api:processResources NO-SOURCE
+> Task :oauth-ynab-bootstrap:processResources UP-TO-DATE
+> Task :oauth-persistence:compileTestKotlin UP-TO-DATE
+> Task :oauth-persistence:compileTestJava NO-SOURCE
+> Task :oauth-persistence:testClasses UP-TO-DATE
+> Task :oauth-persistence:test UP-TO-DATE
+> Task :oauth-persistence:check UP-TO-DATE
+> Task :oauth-persistence:build UP-TO-DATE
+> Task :oauth-ynab-bootstrap:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :oauth-ynab-bootstrap:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :oauth-ynab-bootstrap:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :oauth-ynab-bootstrap:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :oauth-ynab-bootstrap:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :ynab-api:compileKotlin UP-TO-DATE
+> Task :oauth-ynab-bootstrap:processTestResources NO-SOURCE
+> Task :serialization:assemble UP-TO-DATE
+> Task :oauth-ynab-bootstrap:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :ynab-api:compileJava NO-SOURCE
+> Task :ynab-api:classes UP-TO-DATE
+> Task :serialization:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :oauth-api:runKtlintCheckOverMainSourceSet
+> Task :serialization:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :serialization:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :serialization:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :ynab-api:jar UP-TO-DATE
+> Task :serialization:runKtlintCheckOverTestSourceSet NO-SOURCE
+> Task :serialization:ktlintTestSourceSetCheck SKIPPED
+> Task :telegram-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :telegramchat:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :serialization:processTestResources NO-SOURCE
+> Task :serialization:compileTestKotlin NO-SOURCE
+> Task :telegramchat:processResources NO-SOURCE
+> Task :telegram-api:processResources NO-SOURCE
+> Task :serialization:compileTestJava NO-SOURCE
+> Task :serialization:testClasses UP-TO-DATE
+> Task :serialization:test NO-SOURCE
+> Task :serialization:check UP-TO-DATE
+> Task :serialization:build UP-TO-DATE
+> Task :ynabsync:compileKotlin UP-TO-DATE
+> Task :ynabsync:compileJava NO-SOURCE
+> Task :ynabsync:classes UP-TO-DATE
+> Task :ynabsync:jar UP-TO-DATE
+> Task :oauth-api:ktlintMainSourceSetCheck
+> Task :telegramchat:compileKotlin UP-TO-DATE
+> Task :telegramchat:compileJava NO-SOURCE
+> Task :telegramchat:classes UP-TO-DATE
+> Task :telegramchat:jar UP-TO-DATE
+> Task :telegram-api:runKtlintCheckOverKotlinScripts
+> Task :telegram-api:runKtlintCheckOverTestSourceSet
+> Task :telegram-api:ktlintKotlinScriptCheck
+> Task :telegram-api:processTestResources NO-SOURCE
+> Task :telegramchat:assemble UP-TO-DATE
+> Task :telegram-api:ktlintTestSourceSetCheck
+> Task :telegramchat:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :telegramchat:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :telegramchat:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :telegramchat:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :telegramchat:runKtlintCheckOverTestSourceSet NO-SOURCE
+> Task :telegramchat:ktlintTestSourceSetCheck SKIPPED
+> Task :telegramchat:processTestResources NO-SOURCE
+> Task :telegramchat-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :telegramchat:compileTestKotlin NO-SOURCE
+> Task :telegramchat:compileTestJava NO-SOURCE
+> Task :telegramchat:testClasses UP-TO-DATE
+> Task :telegramchat:test NO-SOURCE
+> Task :telegramchat:check UP-TO-DATE
+> Task :telegramchat:build UP-TO-DATE
+> Task :telegramchat-api:processResources NO-SOURCE
+> Task :telegram-api:runKtlintCheckOverMainSourceSet
+> Task :telegramchat-api:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :telegramchat-api:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :telegram-api:ktlintMainSourceSetCheck
+> Task :telegramchat-api:runKtlintCheckOverTestSourceSet NO-SOURCE
+> Task :telegramchat-api:ktlintTestSourceSetCheck SKIPPED
+> Task :telegramchat-api:processTestResources NO-SOURCE
+> Task :telegramchat-bootstrap:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :telegramchat-persistence:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :telegramchat-persistence:compileKotlin UP-TO-DATE
+> Task :telegramchat-persistence:compileJava NO-SOURCE
+> Task :telegramchat-persistence:processResources NO-SOURCE
+> Task :telegramchat-persistence:classes UP-TO-DATE
+> Task :telegramchat-persistence:jar UP-TO-DATE
+> Task :telegramchat-bootstrap:processResources UP-TO-DATE
+> Task :telegramchat-api:runKtlintCheckOverMainSourceSet
+> Task :telegramchat-bootstrap:runKtlintCheckOverKotlinScripts
+> Task :telegramchat-bootstrap:ktlintKotlinScriptCheck FROM-CACHE
+> Task :telegramchat-api:ktlintMainSourceSetCheck
+> Task :telegramchat-bootstrap:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :telegramchat-bootstrap:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :telegramchat-bootstrap:processTestResources NO-SOURCE
+> Task :telegramchat-persistence:assemble UP-TO-DATE
+> Task :telegramchat-persistence:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :telegramchat-persistence:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :telegramchat-persistence:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :telegramchat-persistence:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :telegramchat-persistence:runKtlintCheckOverTestSourceSet NO-SOURCE
+> Task :telegramchat-persistence:ktlintTestSourceSetCheck SKIPPED
+> Task :telegramchat-persistence:compileTestKotlin NO-SOURCE
+> Task :telegramchat-persistence:compileTestJava NO-SOURCE
+> Task :telegramchat-persistence:processTestResources NO-SOURCE
+> Task :telegramchat-persistence:testClasses UP-TO-DATE
+> Task :telegramchat-persistence:test NO-SOURCE
+> Task :telegramchat-persistence:check UP-TO-DATE
+> Task :telegramchat-persistence:build UP-TO-DATE
+> Task :ynab-api:assemble UP-TO-DATE
+> Task :ynab-api:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :ynab-api:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :ynab-api:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :ynab-api:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :ynab-api:runKtlintCheckOverTestSourceSet NO-SOURCE
+> Task :ynab-api:ktlintTestSourceSetCheck SKIPPED
+> Task :ynab-api:compileTestKotlin NO-SOURCE
+> Task :ynab-api:compileTestJava NO-SOURCE
+> Task :ynab-api:processTestResources NO-SOURCE
+> Task :ynab-api:testClasses UP-TO-DATE
+> Task :ynab-api:test NO-SOURCE
+> Task :ynab-api:check UP-TO-DATE
+> Task :ynab-api:build UP-TO-DATE
+> Task :ynab-auth-api:assemble UP-TO-DATE
+> Task :ynab-auth-api:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :ynab-auth-api:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :ynab-auth-api:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :ynab-auth-api:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :ynab-auth-api:runKtlintCheckOverTestSourceSet NO-SOURCE
+> Task :ynab-auth-api:ktlintTestSourceSetCheck SKIPPED
+> Task :ynab-auth-api:compileTestKotlin NO-SOURCE
+> Task :ynab-auth-api:compileTestJava NO-SOURCE
+> Task :ynab-auth-api:processTestResources NO-SOURCE
+> Task :ynab-auth-api:testClasses UP-TO-DATE
+> Task :ynab-auth-api:test NO-SOURCE
+> Task :ynab-auth-api:check UP-TO-DATE
+> Task :ynab-auth-api:build UP-TO-DATE
+> Task :ynabsync:assemble UP-TO-DATE
+> Task :ynabsync:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :ynabsync:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :ynabsync:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :ynabsync:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :ynabsync:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :ynabsync:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :ynabsync:compileTestKotlin UP-TO-DATE
+> Task :ynabsync:compileTestJava NO-SOURCE
+> Task :ynabsync:processTestResources UP-TO-DATE
+> Task :ynabsync:testClasses UP-TO-DATE
+> Task :telegramchat-bootstrap:runKtlintCheckOverMainSourceSet
+> Task :ynabsync:test UP-TO-DATE
+> Task :ynabsync:check UP-TO-DATE
+> Task :ynabsync:build UP-TO-DATE
+> Task :ynabsync-api:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :ynabsync-api:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :telegramchat-bootstrap:ktlintMainSourceSetCheck
+> Task :ynabsync-api:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :ynabsync-api:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :ynabsync-api:processTestResources NO-SOURCE
+> Task :ynabsync-bootstrap:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ynabsync-persistence:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ynabsync-persistence:compileKotlin UP-TO-DATE
+> Task :ynabsync-persistence:compileJava NO-SOURCE
+> Task :ynabsync-persistence:processResources NO-SOURCE
+> Task :ynabsync-persistence:classes UP-TO-DATE
+> Task :ynabsync-persistence:jar UP-TO-DATE
+> Task :ynabsync-bootstrap:processResources UP-TO-DATE
+> Task :ynabsync-bootstrap:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :ynabsync-bootstrap:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :ynabsync-bootstrap:runKtlintCheckOverMainSourceSet FROM-CACHE
+> Task :ynabsync-bootstrap:ktlintMainSourceSetCheck
+> Task :ynabsync-bootstrap:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :ynabsync-bootstrap:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :ynabsync-bootstrap:processTestResources NO-SOURCE
+> Task :ynabsync-persistence:assemble UP-TO-DATE
+> Task :ynabsync-persistence:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :ynabsync-persistence:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :ynabsync-persistence:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :ynabsync-persistence:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :ynabsync-persistence:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :ynabsync-persistence:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :ynabsync-persistence:compileTestKotlin UP-TO-DATE
+> Task :ynabsync-persistence:compileTestJava NO-SOURCE
+> Task :ynabsync-persistence:processTestResources NO-SOURCE
+> Task :ynabsync-persistence:testClasses UP-TO-DATE
+> Task :ynabsync-persistence:test UP-TO-DATE
+> Task :ynabsync-persistence:check UP-TO-DATE
+> Task :ynabsync-persistence:build UP-TO-DATE
+> Task :ynabsync-api:runKtlintCheckOverMainSourceSet
+> Task :ynabsync-api:ktlintMainSourceSetCheck
+> Task :oauth-ynab-api:compileKotlin
+> Task :oauth-ynab-api:compileJava NO-SOURCE
+> Task :oauth-ynab-api:classes UP-TO-DATE
+> Task :oauth-ynab-api:jar UP-TO-DATE
+> Task :oauth-ynab-api:assemble UP-TO-DATE
+> Task :oauth-ynab-api:compileTestKotlin NO-SOURCE
+> Task :oauth-ynab-api:compileTestJava NO-SOURCE
+> Task :oauth-ynab-api:testClasses UP-TO-DATE
+> Task :oauth-ynab-api:test NO-SOURCE
+> Task :oauth-ynab-api:check UP-TO-DATE
+> Task :oauth-ynab-api:build UP-TO-DATE
+> Task :telegram-api:compileKotlin
+> Task :telegram-api:compileJava NO-SOURCE
+> Task :telegram-api:classes UP-TO-DATE
+> Task :telegram-api:jar
+> Task :telegram-api:assemble
+> Task :oauth-google-api:compileKotlin
+> Task :oauth-google-api:compileJava NO-SOURCE
+> Task :oauth-google-api:classes UP-TO-DATE
+> Task :oauth-google-api:jar
+> Task :oauth-google-api:assemble
+> Task :oauth-google-api:compileTestKotlin NO-SOURCE
+> Task :oauth-google-api:compileTestJava NO-SOURCE
+> Task :oauth-google-api:testClasses UP-TO-DATE
+> Task :oauth-google-api:test NO-SOURCE
+> Task :oauth-google-api:check
+> Task :oauth-google-api:build
+> Task :oauth-google-bootstrap:compileKotlin UP-TO-DATE
+> Task :oauth-google-bootstrap:compileJava NO-SOURCE
+> Task :oauth-google-bootstrap:classes UP-TO-DATE
+> Task :oauth-google-bootstrap:jar UP-TO-DATE
+> Task :oauth-api:compileTestKotlin
+> Task :oauth-api:compileTestJava NO-SOURCE
+> Task :oauth-api:testClasses UP-TO-DATE
+> Task :oauth-google-bootstrap:compileTestKotlin UP-TO-DATE
+> Task :oauth-google-bootstrap:compileTestJava NO-SOURCE
+> Task :oauth-google-bootstrap:testClasses UP-TO-DATE
+> Task :gmailsync-api:compileKotlin
+> Task :telegramchat-api:compileKotlin
+> Task :gmailsync-api:compileJava NO-SOURCE
+> Task :gmailsync-api:classes UP-TO-DATE
+> Task :telegramchat-api:compileJava NO-SOURCE
+> Task :telegramchat-api:classes UP-TO-DATE
+> Task :telegramchat-api:jar
+> Task :telegramchat-api:assemble
+> Task :telegramchat-api:compileTestKotlin NO-SOURCE
+> Task :gmailsync-api:jar
+> Task :gmailsync-api:assemble
+> Task :telegramchat-api:compileTestJava NO-SOURCE
+> Task :telegramchat-api:testClasses UP-TO-DATE
+> Task :gmailsync-api:compileTestKotlin NO-SOURCE
+> Task :gmailsync-api:compileTestJava NO-SOURCE
+> Task :gmailsync-api:testClasses UP-TO-DATE
+> Task :gmailsync-api:test NO-SOURCE
+> Task :gmailsync-api:check
+> Task :gmailsync-api:build
+> Task :telegramchat-api:test NO-SOURCE
+> Task :telegramchat-api:check
+> Task :telegramchat-api:build
+
+> Task :gmail-api:compileTestKotlin
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:21:54 Unresolved reference 'GmailHistory'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:22:54 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:23:54 Unresolved reference 'GmailProfile'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:24:54 Unresolved reference 'GmailWatch'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:179:59 None of the following candidates is applicable:
+
+suspend fun <reified T> HttpClientCall.body(): T:
+  Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+suspend fun <reified T> HttpClientCall.body(): T
+
+suspend fun <reified T> HttpResponse.body(): T:
+  Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+suspend fun <reified T> HttpResponse.body(): T
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:179:64 Unresolved reference 'GmailProfile'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:180:41 Unresolved reference 'emailAddress'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:181:45 Unresolved reference 'historyId'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:187:58 None of the following candidates is applicable:
+
+suspend fun <reified T> HttpClientCall.body(): T:
+  Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+suspend fun <reified T> HttpClientCall.body(): T
+
+suspend fun <reified T> HttpResponse.body(): T:
+  Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+suspend fun <reified T> HttpResponse.body(): T
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:187:63 Unresolved reference 'GmailHistory'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:189:25 Unresolved reference 'history'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:191:22 Unresolved reference 'messagesAdded'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:193:48 Unresolved reference 'historyId'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:194:45 Unresolved reference 'message'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:201:69 None of the following candidates is applicable:
+
+suspend fun <reified T> HttpClientCall.body(): T:
+  Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+suspend fun <reified T> HttpClientCall.body(): T
+
+suspend fun <reified T> HttpResponse.body(): T:
+  Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+suspend fun <reified T> HttpResponse.body(): T
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:201:74 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:202:47 Unresolved reference 'from'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:203:45 Unresolved reference 'text'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:215:56 None of the following candidates is applicable:
+
+suspend fun <reified T> HttpClientCall.body(): T:
+  Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+suspend fun <reified T> HttpClientCall.body(): T
+
+suspend fun <reified T> HttpResponse.body(): T:
+  Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+suspend fun <reified T> HttpResponse.body(): T
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:215:61 Unresolved reference 'GmailWatch'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:216:44 Unresolved reference 'historyId'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmail/infrastructure/api/KtorGmailClientTests.kt:217:45 Unresolved reference 'expiration'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailMessageTests.kt:10:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailMessageTests.kt:11:17 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailMessageTests.kt:12:17 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailMessageTests.kt:16:13 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailMessageTests.kt:17:17 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailMessageTests.kt:18:17 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailMessageTests.kt:21:20 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailMessageTests.kt:27:57 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:16:62 Unresolved reference 'GmailProfile'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:16:88 Unresolved reference 'GmailProfile'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:17:49 Unresolved reference 'emailAddress'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:18:34 Unresolved reference 'historyId'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:31:62 Unresolved reference 'GmailHistory'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:31:88 Unresolved reference 'GmailHistory'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:32:34 Unresolved reference 'historyId'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:33:36 Unresolved reference 'nextPageToken'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:36:20 Unresolved reference 'history'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:38:18 Unresolved reference 'messagesAdded'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:40:18 Unresolved reference 'message'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:47:62 Unresolved reference 'GmailHistory'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:47:95 Unresolved reference 'GmailHistory'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:50:20 Unresolved reference 'messagesAdded'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:52:18 Unresolved reference 'message'.
+
+> Task :ynabsync-api:compileKotlin
+> Task :ynabsync-api:compileJava NO-SOURCE
+> Task :ynabsync-api:classes UP-TO-DATE
+> Task :ynabsync-api:jar
+> Task :ynabsync-api:assemble
+
+> Task :gmail-api:compileTestKotlin FAILED
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:59:62 Unresolved reference 'GmailHistory'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:59:96 Unresolved reference 'GmailHistory'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:60:35 Unresolved reference 'message'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:66:62 Unresolved reference 'GmailLabel'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:66:86 Unresolved reference 'GmailLabel'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:67:38 Unresolved reference 'id'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:68:38 Unresolved reference 'name'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:74:62 Unresolved reference 'GmailLabel'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:74:91 Unresolved reference 'GmailLabel'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:75:32 Unresolved reference 'labels'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:76:38 Unresolved reference 'labels'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:76:53 Unresolved reference 'id'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:82:62 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:82:88 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:83:35 Unresolved reference 'id'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:84:35 Unresolved reference 'threadId'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:85:38 Unresolved reference 'snippet'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:91:62 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:91:93 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:92:41 Unresolved reference 'data'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:98:62 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:98:93 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:99:32 Unresolved reference 'resultSizeEstimate'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:100:35 Unresolved reference 'messages'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:100:52 Unresolved reference 'id'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:106:62 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:106:93 Unresolved reference 'GmailMessage'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:107:34 Unresolved reference 'partId'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:108:43 Unresolved reference 'mimeType'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:109:41 Unresolved reference 'data'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:110:37 Unresolved reference 'headers'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:116:62 Unresolved reference 'GmailWatch'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:116:86 Unresolved reference 'GmailWatch'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:117:33 Unresolved reference 'historyId'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:118:36 Unresolved reference 'expiration'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:119:27 Unresolved reference 'error'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:125:62 Unresolved reference 'GmailWatch'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:125:86 Unresolved reference 'GmailWatch'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:126:34 Unresolved reference 'error'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:127:42 Unresolved reference 'error'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:133:62 Unresolved reference 'GmailWatch'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:133:92 Unresolved reference 'GmailWatch'.
+e: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmail-api/src/test/kotlin/noodle/gmailsync/infrastructure/serialization/GmailSerializationTests.kt:135:42 Unresolved reference 'message'.
+
+> Task :ynabsync-api:compileTestKotlin
+> Task :oauth-ynab-bootstrap:compileKotlin
+> Task :telegram-api:compileTestKotlin
+> Task :oauth-google-bootstrap:startScripts
+
+> Task :oauth-api:test
+
+TokenSerializationTests > tokenInfoResponseNullEmail() PASSED
+
+TokenSerializationTests > tokenResponse() PASSED
+
+TokenSerializationTests > tokenResponseSerialNames() PASSED
+
+TokenSerializationTests > tokenInfoResponse() PASSED
+
+TokenSerializationTests > tokenResponseError() PASSED
+
+> Task :gmailsync-bootstrap:compileKotlin
+w: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmailsync-bootstrap/src/main/kotlin/noodle/gmailsync/bootstrap/GmailPubsubHandler.kt:44:89 'static fun create(): DefaultCredentialsProvider!' is deprecated. Deprecated in Java.
+
+> Task :ynabsync-bootstrap:compileKotlin
+w: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/ynabsync-bootstrap/src/main/kotlin/noodle/ynabsync/bootstrap/YnabEmailHandler.kt:39:89 'static fun create(): DefaultCredentialsProvider!' is deprecated. Deprecated in Java.
+
+> Task :telegramchat-bootstrap:compileKotlin
+w: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/telegramchat-bootstrap/src/main/kotlin/noodle/telegramchat/bootstrap/TelegramBotHandler.kt:48:89 'static fun create(): DefaultCredentialsProvider!' is deprecated. Deprecated in Java.
+
+> Task :gmailsync-bootstrap:compileKotlin
+w: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/gmailsync-bootstrap/src/main/kotlin/noodle/gmailsync/bootstrap/GmailPubsubHandler.kt:44:89 'static fun create(): DefaultCredentialsProvider!' is deprecated. Deprecated in Java.
+
+> Task :telegramchat-bootstrap:compileKotlin
+w: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/telegramchat-bootstrap/src/main/kotlin/noodle/telegramchat/bootstrap/TelegramBotHandler.kt:48:89 'static fun create(): DefaultCredentialsProvider!' is deprecated. Deprecated in Java.
+[2026-05-26T17:46:20Z ERROR bitwarden_json::client] Failed to parse settings: invalid type: null, expected a string at line 1 column 38
+
+> Task :oauth-google-bootstrap:test
+
+GoogleOAuthHandlerTests > initTime() FAILED
+    kotlinx.coroutines.JobCancellationException at JobSupport.kt:745
+        Caused by: kotlinx.coroutines.JobCancellationException at JobSupport.kt:745
+            Caused by: software.amazon.awssdk.core.exception.SdkClientException at SdkClientException.java:130
+
+GoogleOAuthHandlerTests > handleRequest() SKIPPED
+
+2 tests completed, 1 failed, 1 skipped
+
+> Task :oauth-google-bootstrap:test FAILED
+
+FAILURE: Build completed with 2 failures.
+
+1: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':gmail-api:compileTestKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.btapi.BuildToolsApiCompilationWork
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+2: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':oauth-google-bootstrap:test'.
+> There were failing tests. See the report at: file:///Users/damienho/Projects/damienhoyk/gmail-ynab-bridge/oauth-google-bootstrap/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights.
+==============================================================================
+
+BUILD FAILED in 37s
+397 actionable tasks: 75 executed, 121 from cache, 201 up-to-date
+Configuration cache entry stored.

@@ -18,10 +18,10 @@ import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
-import noodle.gmailsync.infrastructure.serialization.GmailHistory
-import noodle.gmailsync.infrastructure.serialization.GmailMessage
-import noodle.gmailsync.infrastructure.serialization.GmailProfile
-import noodle.gmailsync.infrastructure.serialization.GmailWatch
+import noodle.gmail.infrastructure.api.model.GmailHistory
+import noodle.gmail.infrastructure.api.model.GmailMessage
+import noodle.gmail.infrastructure.api.model.GmailProfile
+import noodle.gmail.infrastructure.api.model.GmailWatch
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

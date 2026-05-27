@@ -11,12 +11,11 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.http.HttpHeaders
-import noodle.telegramchat.core.port.TelegramBotClient
 
-class KtorTelegramBotClient(
+open class KtorTelegramBotClient(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
-) : TelegramBotClient {
+) {
     private val httpClient =
         httpClient.config {
             install(Logging) {
@@ -40,7 +39,7 @@ class KtorTelegramBotClient(
         block: HttpRequestBuilder.() -> Unit = {},
     ) = httpClient.post("sendMessage", block)
 
-    override suspend fun sendMessage(
+    suspend fun sendMessage(
         chatId: String,
         message: String,
     ) {
@@ -55,7 +54,7 @@ class KtorTelegramBotClient(
         block: HttpRequestBuilder.() -> Unit = {},
     ) = httpClient.post("sendChatAction", block)
 
-    override suspend fun sendChatAction(
+    suspend fun sendChatAction(
         chatId: String,
         action: String,
     ) {
