@@ -1,19 +1,11 @@
 package noodle.oauth.infrastructure.api.google
 
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
 import noodle.oauth.core.domain.OAuth2TokenRequest
 import noodle.oauth.core.port.OAuth2TokenProvider
-import noodle.oauth.infrastructure.api.KtorOidcClient
+import noodle.oauth.infrastructure.api.OidcApi
 
 class KtorGoogleOidcClient(
-    httpClient: HttpClient,
-    block: HttpClientConfig<*>.() -> Unit = {},
-) : KtorOidcClient(
-        httpClient,
-        "https://accounts.google.com/.well-known/openid-configuration",
-        block,
-    ),
-    OAuth2TokenProvider {
-    override suspend fun getToken(request: OAuth2TokenRequest) = super.getToken(request)
+    private val oidcApi: OidcApi,
+) : OAuth2TokenProvider {
+    override suspend fun getToken(request: OAuth2TokenRequest) = oidcApi.getToken(request)
 }

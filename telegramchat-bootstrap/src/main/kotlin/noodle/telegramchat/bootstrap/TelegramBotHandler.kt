@@ -19,17 +19,19 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.Bitwarden
 import noodle.oauth.core.service.TokenService
+import noodle.oauth.infrastructure.api.OidcApi
 import noodle.oauth.infrastructure.api.bearer
 import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
 import noodle.serialization.apiKey
 import noodle.serialization.clientId
 import noodle.serialization.clientSecret
 import noodle.serialization.jsonObject
+import noodle.telegram.infrastructure.api.TelegramBotApi
 import noodle.telegram.infrastructure.api.model.TelegramWebhookEvent
 import noodle.telegramchat.core.domain.RespondChatCommand
 import noodle.telegramchat.core.service.TelegramBotService
 import noodle.telegramchat.infrastructure.api.KtorGmailClientFactory
-import noodle.telegramchat.infrastructure.api.KtorTelegramBotClientAdapter
+import noodle.telegramchat.infrastructure.api.KtorTelegramBotClient
 import noodle.telegramchat.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbUserRepository
@@ -77,7 +79,7 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val telegramSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("telegram")?.jsonObject()!! }
 
-    private val googleOidcClientAsync = initScope.async { KtorGoogleOidcClient(HttpClient(engineAsync.await())) }
+    private val googleOidcClientAsync = initScope.async { KtorGoogleOidcClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")) }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
@@ -128,12 +130,14 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val telegramBotClient =
         initScope.async(Dispatchers.IO) {
             val secret = telegramSecretAsync.await()
-            KtorTelegramBotClientAdapter(HttpClient(engineAsync.await())) {
-                defaultRequest {
-                    contentType(Application.Json)
-                    url("https://api.telegram.org/bot${secret.apiKey!!}/")
-                }
-            }
+            KtorTelegramBotClient(
+                TelegramBotApi(HttpClient(engineAsync.await())) {
+                    defaultRequest {
+                        contentType(Application.Json)
+                        url("https://api.telegram.org/bot${secret.apiKey!!}/")
+                    }
+                },
+            )
         }
 
     private val securityTokenRepository =

@@ -12,8 +12,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.Bitwarden
+import noodle.google.auth.infrastructure.api.GoogleOAuth2Api
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
+import noodle.oauth.infrastructure.api.OidcApi
 import noodle.oauth.infrastructure.api.google.KtorGoogleOAuth2Client
 import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
@@ -54,8 +56,8 @@ class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
 
     private val engineAsync = initScope.async { Java.create() }
-    val googleOidcClient = initScope.async { KtorGoogleOidcClient(HttpClient(engineAsync.await())) }
-    val googleLoginProviderAsync = initScope.async { KtorGoogleOAuth2Client(HttpClient(engineAsync.await())) }
+    val googleOidcClient = initScope.async { KtorGoogleOidcClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")) }
+    val googleLoginProviderAsync = initScope.async { KtorGoogleOAuth2Client(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
 
     val redirectUri = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
     val secretId = System.getenv("SECRET_ID")?.trim() ?: throw IllegalStateException()

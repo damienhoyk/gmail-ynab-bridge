@@ -13,13 +13,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import noodle.bitwarden.Bitwarden
 import noodle.oauth.core.service.TokenService
+import noodle.oauth.infrastructure.api.OidcApi
 import noodle.oauth.infrastructure.api.bearer
 import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
-import noodle.oauth.infrastructure.api.ynab.KtorYnabAuthClientAdapter
+import noodle.oauth.infrastructure.api.ynab.KtorYnabAuthClient
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.serialization.clientId
 import noodle.serialization.clientSecret
 import noodle.serialization.jsonObject
+import noodle.ynab.auth.infrastructure.api.YnabAuthApi
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.service.YnabEmailService
 import noodle.ynabsync.infrastructure.api.KtorGmailClientFactory
@@ -63,7 +65,7 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val engineAsync = initScope.async { Java.create() }
 
     private val googleSecretAsync = initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
-    private val googleOidcClientAsync = initScope.async { KtorGoogleOidcClient(HttpClient(engineAsync.await())) }
+    private val googleOidcClientAsync = initScope.async { KtorGoogleOidcClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")) }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
@@ -76,7 +78,12 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
         }
 
     private val ynabSecretAsync = initScope.async { bitwardenAsync.await().getSecret("ynab")?.jsonObject()!! }
-    private val ynabAuthClientAsync = initScope.async { KtorYnabAuthClientAdapter(HttpClient(engineAsync.await())) }
+    private val ynabAuthClientAsync =
+        initScope.async {
+            KtorYnabAuthClient(
+                YnabAuthApi(HttpClient(engineAsync.await())),
+            )
+        }
     private val ynabAuthTokenService =
         initScope.async {
             val secret = ynabSecretAsync.await()

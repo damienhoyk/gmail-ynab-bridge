@@ -184,7 +184,11 @@ class KtorYnabClientTests {
                 level = LogLevel.ALL
             }
         }
-    val ynabClient = KtorYnabClientAdapter(httpClient)
+    val ynabClient =
+        KtorYnabClient(
+            noodle.ynab.infrastructure.api
+                .YnabApi(httpClient),
+        )
 
     @Test
     fun getUser(): Unit =

@@ -1,7 +1,6 @@
 package noodle.ynabsync.infrastructure.api
 
 import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.Auth
 import kotlinx.serialization.json.JsonObject
@@ -10,16 +9,15 @@ import kotlinx.serialization.json.jsonPrimitive
 import noodle.oauth.core.domain.TokenResponse
 import noodle.oauth.core.port.LoginIdProvider
 import noodle.oauth.infrastructure.api.bearer
-import noodle.ynab.infrastructure.api.KtorYnabClient
+import noodle.ynab.infrastructure.api.YnabApi
 
 class YnabLoginIdProvider(
     private val httpClient: HttpClient,
-    private val block: HttpClientConfig<*>.() -> Unit = {},
 ) : LoginIdProvider {
     override suspend fun getLoginId(response: TokenResponse): String? {
         val client =
             response.accessToken?.let {
-                KtorYnabClient(httpClient) { install(Auth) { bearer(it) } }
+                YnabApi(httpClient) { install(Auth) { bearer(it) } }
             }
         val body = client?.getUser()?.body<JsonObject>()
         val id =

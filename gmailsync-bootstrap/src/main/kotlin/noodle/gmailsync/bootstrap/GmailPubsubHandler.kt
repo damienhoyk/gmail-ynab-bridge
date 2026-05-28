@@ -22,7 +22,9 @@ import noodle.gmailsync.infrastructure.api.KtorGoogleOAuth2Client
 import noodle.gmailsync.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
+import noodle.google.auth.infrastructure.api.GoogleOAuth2Api
 import noodle.oauth.core.service.TokenService
+import noodle.oauth.infrastructure.api.OidcApi
 import noodle.oauth.infrastructure.api.bearer
 import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
@@ -69,8 +71,8 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val googleSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
-    private val googleOidcClientAsync = initScope.async { KtorGoogleOidcClient(HttpClient(engineAsync.await())) }
-    private val googleOAuth2ClientAsync = initScope.async { KtorGoogleOAuth2Client(HttpClient(engineAsync.await())) }
+    private val googleOidcClientAsync = initScope.async { KtorGoogleOidcClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")) }
+    private val googleOAuth2ClientAsync = initScope.async { KtorGoogleOAuth2Client(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()

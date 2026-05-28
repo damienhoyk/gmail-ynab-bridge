@@ -1,4 +1,4 @@
-package noodle.gmail.infrastructure.api
+package noodle.ynab.infrastructure.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -17,7 +17,7 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-open class KtorGmailClient(
+class YnabApi(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) {
@@ -31,49 +31,29 @@ open class KtorGmailClient(
 
             defaultRequest {
                 contentType(ContentType.Application.Json)
-                url("https://gmail.googleapis.com/gmail/v1/users/")
+                url("https://api.ynab.com/v1/")
             }
 
             install(ContentNegotiation) {
                 json(
-                    Json {
-                        ignoreUnknownKeys = true
-                        explicitNulls = false
-                    },
+                    Json { ignoreUnknownKeys = true },
                 )
             }
 
             block()
         }
 
-    suspend fun getHistory(
-        user: String = "me",
-        block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.get("$user/history", block)
+    suspend fun getUser(block: HttpRequestBuilder.() -> Unit = {}) = httpClient.get("user", block)
 
-    suspend fun getMessage(
-        user: String = "me",
-        messageId: String,
+    suspend fun getAccounts(
+        budgetId: String = "default",
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.get("$user/messages/$messageId", block)
+    ) = httpClient.get("budgets/$budgetId/accounts", block)
 
-    suspend fun getProfile(
-        user: String = "me",
-        block: HttpRequestBuilder.() -> Unit,
-    ) = httpClient.get("$user/profile", block)
+    suspend fun getBudgets(block: HttpRequestBuilder.() -> Unit = {}) = httpClient.get("budgets", block)
 
-    suspend fun getLabels(
-        user: String = "me",
+    suspend fun postTransactions(
+        budgetId: String = "default",
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.get("$user/labels", block)
-
-    suspend fun postWatch(
-        user: String = "me",
-        block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.post("$user/watch", block)
-
-    suspend fun postStop(
-        user: String = "me",
-        block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.post("$user/stop", block)
+    ) = httpClient.post("budgets/$budgetId/transactions", block)
 }

@@ -31,7 +31,7 @@ import kotlin.io.encoding.Base64.Default.UrlSafe
 
 @DisabledInNativeImage
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class KtorGmailClientTests {
+class GmailApiTests {
     val gmail = "damien.hoyk@gmail.com"
     val historyId = (1000L..9999L).random().toString()
     val newHistoryId = historyId + (1L..99L).random()
@@ -107,7 +107,7 @@ class KtorGmailClientTests {
                             "headers": [
                               {
                                 "name": "From",
-                                "value": "$senderName \u003c$senderEmail\u003e"
+                                "value": "$senderName <$senderEmail>"
                               }
                             ],
                             "body": {
@@ -171,7 +171,7 @@ class KtorGmailClientTests {
             }
         }
 
-    val googleGmailClient = KtorGmailClient(httpClient)
+    val googleGmailClient = GmailApi(httpClient)
 
     @Test
     fun getProfile() =

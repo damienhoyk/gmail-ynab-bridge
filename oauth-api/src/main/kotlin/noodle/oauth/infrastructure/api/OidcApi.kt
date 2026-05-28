@@ -20,7 +20,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-open class KtorOidcClient(
+class OidcApi(
     httpClient: HttpClient,
     private val discoveryUrl: String,
     block: HttpClientConfig<*>.() -> Unit = {},
