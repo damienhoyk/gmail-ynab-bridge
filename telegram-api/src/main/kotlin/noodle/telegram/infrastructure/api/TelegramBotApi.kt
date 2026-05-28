@@ -12,7 +12,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.http.HttpHeaders
 
-open class KtorTelegramBotClient(
+class TelegramBotApi(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) {
