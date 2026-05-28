@@ -14,8 +14,6 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
-import noodle.bitwarden.infrastructure.api.clientId
-import noodle.bitwarden.infrastructure.api.clientSecret
 import noodle.gmail.infrastructure.api.model.GmailEvent
 import noodle.gmail.infrastructure.api.model.pubsub.PubsubNotification
 import noodle.gmailsync.core.domain.SyncMailboxCommand

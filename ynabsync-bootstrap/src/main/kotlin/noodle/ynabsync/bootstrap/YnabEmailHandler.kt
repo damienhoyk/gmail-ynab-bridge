@@ -13,8 +13,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
-import noodle.bitwarden.infrastructure.api.clientId
-import noodle.bitwarden.infrastructure.api.clientSecret
 import noodle.oauth.core.service.TokenService
 import noodle.oauth.infrastructure.api.OidcApi
 import noodle.oauth.infrastructure.api.bearer

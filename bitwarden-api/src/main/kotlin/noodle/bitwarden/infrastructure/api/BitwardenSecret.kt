@@ -5,10 +5,15 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-fun String.bitwardenSecret(): JsonObject = Json.decodeFromString(this)
+@JvmInline
+value class BitwardenSecret(
+    private val json: JsonObject,
+) {
+    val apiKey get() = json["apiKey"]?.content
+    val clientId get() = json["clientId"]?.content
+    val clientSecret get() = json["clientSecret"]?.content
 
-val JsonObject.apiKey get() = get("apiKey")?.content
-val JsonObject.clientId get() = get("clientId")?.content
-val JsonObject.clientSecret get() = get("clientSecret")?.content
+    private val JsonElement.content get() = jsonPrimitive.content
+}
 
-private val JsonElement.content get() = jsonPrimitive.content
+fun String.bitwardenSecret(): BitwardenSecret = BitwardenSecret(Json.decodeFromString(this))
