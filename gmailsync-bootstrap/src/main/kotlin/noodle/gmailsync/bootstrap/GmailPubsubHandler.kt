@@ -13,6 +13,9 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.infrastructure.api.Bitwarden
+import noodle.bitwarden.infrastructure.api.bitwardenSecret
+import noodle.bitwarden.infrastructure.api.clientId
+import noodle.bitwarden.infrastructure.api.clientSecret
 import noodle.gmail.infrastructure.api.model.GmailEvent
 import noodle.gmail.infrastructure.api.model.pubsub.PubsubNotification
 import noodle.gmailsync.core.domain.SyncMailboxCommand
@@ -28,9 +31,6 @@ import noodle.oauth.infrastructure.api.OidcApi
 import noodle.oauth.infrastructure.api.bearer
 import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
-import noodle.serialization.clientId
-import noodle.serialization.clientSecret
-import noodle.serialization.jsonObject
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
@@ -70,7 +70,7 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val engineAsync = initScope.async { Java.create() }
 
     private val googleSecretAsync =
-        initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
+        initScope.async { bitwardenAsync.await().getSecret("google")?.bitwardenSecret()!! }
     private val googleOidcClientAsync = initScope.async { KtorGoogleOidcClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")) }
     private val googleOAuth2ClientAsync = initScope.async { KtorGoogleOAuth2Client(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
     private val googleAuthTokenService =

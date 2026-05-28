@@ -35,7 +35,6 @@ include(":ynabsync-api")
 // Common Libraries
 include(":bitwarden-api")
 include(":dynamodb")
-include(":serialization")
 
 // Bootstrap
 include(":gmailsync-bootstrap")

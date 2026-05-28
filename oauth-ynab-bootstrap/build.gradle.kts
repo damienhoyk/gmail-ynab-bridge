@@ -12,7 +12,6 @@ dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
     implementation(project(":bitwarden-api"))
-    implementation(project(":serialization"))
     implementation(project(":dynamodb"))
     implementation(project(":oauth"))
     implementation(project(":oauth-api"))

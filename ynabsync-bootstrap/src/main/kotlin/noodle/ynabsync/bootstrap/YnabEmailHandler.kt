@@ -12,15 +12,15 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import noodle.bitwarden.infrastructure.api.Bitwarden
+import noodle.bitwarden.infrastructure.api.bitwardenSecret
+import noodle.bitwarden.infrastructure.api.clientId
+import noodle.bitwarden.infrastructure.api.clientSecret
 import noodle.oauth.core.service.TokenService
 import noodle.oauth.infrastructure.api.OidcApi
 import noodle.oauth.infrastructure.api.bearer
 import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
 import noodle.oauth.infrastructure.api.ynab.KtorYnabAuthClient
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
-import noodle.serialization.clientId
-import noodle.serialization.clientSecret
-import noodle.serialization.jsonObject
 import noodle.ynab.auth.infrastructure.api.YnabAuthApi
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.service.YnabEmailService
@@ -64,7 +64,7 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
 
     private val engineAsync = initScope.async { Java.create() }
 
-    private val googleSecretAsync = initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
+    private val googleSecretAsync = initScope.async { bitwardenAsync.await().getSecret("google")?.bitwardenSecret()!! }
     private val googleOidcClientAsync = initScope.async { KtorGoogleOidcClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")) }
     private val googleAuthTokenService =
         initScope.async {
@@ -77,7 +77,7 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
             )
         }
 
-    private val ynabSecretAsync = initScope.async { bitwardenAsync.await().getSecret("ynab")?.jsonObject()!! }
+    private val ynabSecretAsync = initScope.async { bitwardenAsync.await().getSecret("ynab")?.bitwardenSecret()!! }
     private val ynabAuthClientAsync =
         initScope.async {
             KtorYnabAuthClient(
