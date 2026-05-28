@@ -1,10 +1,8 @@
 package noodle.ynabsync.infrastructure.api
 
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.request.setBody
-import noodle.ynab.infrastructure.api.KtorYnabClient
+import noodle.ynab.infrastructure.api.YnabApi
 import noodle.ynab.infrastructure.api.model.YnabAccount
 import noodle.ynab.infrastructure.api.model.YnabBudget
 import noodle.ynab.infrastructure.api.model.YnabTransaction
@@ -14,14 +12,14 @@ import noodle.ynabsync.infrastructure.api.toFinanceDomain
 import noodle.ynabsync.infrastructure.api.toYnabData
 import noodle.ynabsync.core.domain.YnabTransaction as YnabTransactionDomain
 
-class KtorYnabClientAdapter(
-    httpClient: HttpClient,
-    block: HttpClientConfig<*>.() -> Unit = {},
-) : KtorYnabClient(httpClient, block),
-    YnabClient {
-    suspend fun getAccounts(budgetId: String = "default") = getAccounts(budgetId) {}.body<YnabAccount.Data>().toFinanceDomain()
+class KtorYnabClient(
+    private val ynabApi: YnabApi,
+) : YnabClient {
+    suspend fun getUser() = ynabApi.getUser()
 
-    suspend fun getBudgets() = getBudgets {}.body<YnabBudget.Data>().toFinanceDomain()
+    suspend fun getAccounts(budgetId: String = "default") = ynabApi.getAccounts(budgetId) {}.body<YnabAccount.Data>().toFinanceDomain()
+
+    suspend fun getBudgets() = ynabApi.getBudgets {}.body<YnabBudget.Data>().toFinanceDomain()
 
     override suspend fun postTransactions(
         budgetId: String,
@@ -42,6 +40,6 @@ class KtorYnabClientAdapter(
             YnabTransaction.Body(
                 transactions = transactionData,
             )
-        postTransactions(budgetId) { setBody(body) }
+        ynabApi.postTransactions(budgetId) { setBody(body) }
     }
 }
