@@ -20,7 +20,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import java.util.UUID.randomUUID
 
-class KtorTelegramBotClientTests {
+class TelegramBotApiTests {
     val apiKey = "${randomUUID()}"
     val subdomain = "${randomUUID()}"
 
@@ -32,7 +32,7 @@ class KtorTelegramBotClientTests {
                         """
                         {
                             "ok": true,
-                        }            
+                        }
                         """.trimIndent()
                     else -> "{}"
                 }
@@ -50,7 +50,7 @@ class KtorTelegramBotClientTests {
         }
 
     val client =
-        KtorTelegramBotClient(HttpClient(engine)) {
+        TelegramBotApi(HttpClient(engine)) {
             install(Logging) {
                 logger = Logger.DEFAULT
                 level = LogLevel.ALL
