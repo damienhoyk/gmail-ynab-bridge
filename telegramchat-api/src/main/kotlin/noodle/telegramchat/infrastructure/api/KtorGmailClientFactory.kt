@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.AuthConfig
+import noodle.gmail.infrastructure.api.GmailApi
 import noodle.telegramchat.core.port.GmailClientFactory
 
 class KtorGmailClientFactory(
@@ -11,7 +12,9 @@ class KtorGmailClientFactory(
     private val engine: HttpClientEngine,
 ) : GmailClientFactory {
     override suspend fun create(loginId: String) =
-        KtorGmailClientAdapter(HttpClient(engine)) {
-            install(Auth) { installAuth(loginId) }
-        }
+        KtorGmailClient(
+            GmailApi(HttpClient(engine)) {
+                install(Auth) { installAuth(loginId) }
+            },
+        )
 }
