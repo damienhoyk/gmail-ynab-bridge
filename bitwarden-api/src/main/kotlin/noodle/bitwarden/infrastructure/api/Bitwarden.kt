@@ -12,10 +12,10 @@ class Bitwarden(
 
     private val secret = initScope.async { secretsManagerClient.getSecret("bitwarden") }
     private val secretJson = initScope.async { secret.await()!!.bitwardenSecret() }
-    private val organizationId = initScope.async { secretJson.await().clientId!! }
-    private val apiKey = initScope.async { secretJson.await().clientSecret!! }
+    private val clientId = initScope.async { secretJson.await().clientId!! }
+    private val clientSecret = initScope.async { secretJson.await().clientSecret!! }
 
-    private val client = initScope.async { bitwardenClient().apply { auth().authorize(apiKey.await()) } }
+    private val client = initScope.async { bitwardenClient().apply { auth().authorize(clientSecret.await()) } }
 
-    suspend fun getSecret(name: String) = client.await().secrets().getSecret(organizationId.await(), name)
+    suspend fun getSecret(name: String) = client.await().secrets().getSecret(clientId.await(), name)
 }

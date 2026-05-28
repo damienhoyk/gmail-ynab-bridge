@@ -17,10 +17,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.infrastructure.api.Bitwarden
-import noodle.bitwarden.infrastructure.api.apiKey
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
-import noodle.bitwarden.infrastructure.api.clientId
-import noodle.bitwarden.infrastructure.api.clientSecret
 import noodle.oauth.core.service.TokenService
 import noodle.oauth.infrastructure.api.OidcApi
 import noodle.oauth.infrastructure.api.bearer

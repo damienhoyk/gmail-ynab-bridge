@@ -13,8 +13,6 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
-import noodle.bitwarden.infrastructure.api.clientId
-import noodle.bitwarden.infrastructure.api.clientSecret
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
 import noodle.oauth.infrastructure.api.ynab.KtorYnabAuthClient
