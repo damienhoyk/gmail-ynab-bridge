@@ -53,8 +53,8 @@ class GmailPubsubService(
 
             val messageIdsAsync = async { googleGmailClient.getAddedMessageIds(mailboxState) }
 
-            val tokenInfo = tokenInfoAsync.await()
-            if (tokenInfo.email.isNullOrEmpty()) return@coroutineScope 403
+            val tokenEmail = tokenInfoAsync.await()
+            if (tokenEmail.isNullOrEmpty()) return@coroutineScope 403
 
             val messageIds = messageIdsAsync.await()
 
