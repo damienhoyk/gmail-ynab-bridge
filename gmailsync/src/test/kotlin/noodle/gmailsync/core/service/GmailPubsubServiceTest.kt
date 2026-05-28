@@ -15,7 +15,7 @@ class GmailPubsubServiceTest {
     private val savedOutboxes = mutableListOf<Outbox>()
 
     private val googleTokenClient =
-        object : GoogleTokenClient {
+        object : OAuth2Client {
             override suspend fun getTokenInfo(token: String) =
                 when (token) {
                     "valid-token" -> TokenInfoResponse(email = email)

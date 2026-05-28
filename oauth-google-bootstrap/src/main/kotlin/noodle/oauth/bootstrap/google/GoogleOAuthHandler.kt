@@ -14,7 +14,8 @@ import kotlinx.serialization.json.put
 import noodle.bitwarden.Bitwarden
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
-import noodle.oauth.infrastructure.api.google.KtorGoogleAuthClientAdapter
+import noodle.oauth.infrastructure.api.google.KtorGoogleOAuth2Client
+import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
@@ -53,7 +54,8 @@ class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
 
     private val engineAsync = initScope.async { Java.create() }
-    val googleAuthClient = initScope.async { KtorGoogleAuthClientAdapter(HttpClient(engineAsync.await())) }
+    val googleOidcClient = initScope.async { KtorGoogleOidcClient(HttpClient(engineAsync.await())) }
+    val googleLoginProviderAsync = initScope.async { KtorGoogleOAuth2Client(HttpClient(engineAsync.await())) }
 
     val redirectUri = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
     val secretId = System.getenv("SECRET_ID")?.trim() ?: throw IllegalStateException()
@@ -75,8 +77,8 @@ class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             clientId = runBlocking { secretAsync.await().clientId!! },
             clientSecret = runBlocking { secretAsync.await().clientSecret!! },
             redirectUri = redirectUri,
-            authClient = { googleAuthClient.await() },
-            loginIdProvider = { googleAuthClient.await() },
+            authClient = { googleOidcClient.await() },
+            loginIdProvider = { googleLoginProviderAsync.await() },
             tokenRepository = { tokenRepository.await() },
             userRepository = { userRepository.await() },
             loginRepository = { loginRepository.await() },

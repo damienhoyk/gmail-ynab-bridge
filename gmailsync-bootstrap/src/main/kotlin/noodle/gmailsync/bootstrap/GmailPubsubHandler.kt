@@ -18,12 +18,12 @@ import noodle.gmail.infrastructure.api.model.pubsub.PubsubNotification
 import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.service.GmailPubsubService
 import noodle.gmailsync.infrastructure.api.KtorGmailClientFactory
-import noodle.gmailsync.infrastructure.api.KtorGoogleAuthClient
+import noodle.gmailsync.infrastructure.api.KtorGoogleOAuth2Client
 import noodle.gmailsync.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
 import noodle.oauth.core.service.TokenService
-import noodle.oauth.infrastructure.api.google.KtorGoogleAuthClientAdapter
+import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.serialization.clientId
 import noodle.serialization.clientSecret
@@ -68,12 +68,8 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val googleSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
-    private val googleAuthClientAsync = initScope.async { KtorGoogleAuthClientAdapter(HttpClient(engineAsync.await())) }
-    private val googleAuthBaseClientAsync =
-        initScope.async {
-            noodle.google.auth.infrastructure.api
-                .KtorGoogleAuthClient(HttpClient(engineAsync.await()))
-        }
+    private val googleOidcClientAsync = initScope.async { KtorGoogleOidcClient(HttpClient(engineAsync.await())) }
+    private val googleOAuth2ClientAsync = initScope.async { KtorGoogleOAuth2Client(HttpClient(engineAsync.await())) }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
@@ -81,7 +77,7 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                 clientId = secret.clientId!!,
                 clientSecret = secret.clientSecret!!,
                 tokenRepository = tokenRepositoryAsync.await(),
-                authClient = googleAuthClientAsync.await(),
+                authClient = googleOidcClientAsync.await(),
             )
         }
 
@@ -100,7 +96,7 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val service =
         GmailPubsubService(
             gmailClientFactory = { gmailClientFactory.await() },
-            googleTokenClient = { KtorGoogleAuthClient(googleAuthBaseClientAsync.await()) },
+            googleTokenClient = { googleOAuth2ClientAsync.await() },
             mailboxRepository = { mailboxRepositoryAsync.await() },
             bridgeRepository = { bridgeRepositoryAsync.await() },
             outboxRepository = { outboxRepositoryAsync.await() },

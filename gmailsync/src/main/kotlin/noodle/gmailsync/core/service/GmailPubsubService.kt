@@ -7,14 +7,14 @@ import noodle.gmailsync.core.domain.Outbox
 import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.port.BridgeRepository
 import noodle.gmailsync.core.port.GmailClientFactory
-import noodle.gmailsync.core.port.GoogleTokenClient
+import noodle.gmailsync.core.port.OAuth2Client
 import noodle.gmailsync.core.port.MailboxRepository
 import noodle.gmailsync.core.port.OutboxRepository
 import org.slf4j.LoggerFactory
 
 class GmailPubsubService(
     private val gmailClientFactory: suspend () -> GmailClientFactory,
-    private val googleTokenClient: suspend () -> GoogleTokenClient,
+    private val googleTokenClient: suspend () -> OAuth2Client,
     private val bridgeRepository: suspend () -> BridgeRepository,
     private val mailboxRepository: suspend () -> MailboxRepository,
     private val outboxRepository: suspend () -> OutboxRepository,
