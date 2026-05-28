@@ -17,7 +17,7 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-open class KtorGmailClient(
+class GmailApi(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) {
