@@ -8,7 +8,6 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.http.HttpHeaders
 
@@ -33,34 +32,11 @@ class TelegramBotApi(
         block: HttpRequestBuilder.() -> Unit = {},
     ) = httpClient.get("setWebhook", block)
 
-    suspend fun setWebhook(url: String) = setWebhook { parameter("url", url) }
-
     suspend fun sendMessage(
         block: HttpRequestBuilder.() -> Unit = {},
     ) = httpClient.post("sendMessage", block)
 
-    suspend fun sendMessage(
-        chatId: String,
-        message: String,
-    ) {
-        sendMessage {
-            parameter("chat_id", chatId)
-            parameter("text", message)
-            parameter("parse_mode", "MarkdownV2")
-        }
-    }
-
     suspend fun sendChatAction(
         block: HttpRequestBuilder.() -> Unit = {},
     ) = httpClient.post("sendChatAction", block)
-
-    suspend fun sendChatAction(
-        chatId: String,
-        action: String,
-    ) {
-        sendChatAction {
-            parameter("chat_id", chatId)
-            parameter("action", action)
-        }
-    }
 }
