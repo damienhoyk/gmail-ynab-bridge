@@ -5,7 +5,7 @@ import io.ktor.client.HttpClientConfig
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
 
-open class KtorGoogleOAuth2Client(
+class GoogleOAuth2Api(
     protected val httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) {
