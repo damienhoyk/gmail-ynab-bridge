@@ -11,7 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import noodle.bitwarden.Bitwarden
+import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.google.auth.infrastructure.api.GoogleOAuth2Api
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService

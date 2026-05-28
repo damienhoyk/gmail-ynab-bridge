@@ -1,4 +1,4 @@
-package noodle.bitwarden
+package noodle.bitwarden.infrastructure.api
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default

@@ -33,7 +33,7 @@ include(":ynab-auth-api")
 include(":ynabsync-api")
 
 // Common Libraries
-include(":bitwarden")
+include(":bitwarden-api")
 include(":dynamodb")
 include(":serialization")
 

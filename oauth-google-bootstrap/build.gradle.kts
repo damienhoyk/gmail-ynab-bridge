@@ -11,7 +11,7 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
-    implementation(project(":bitwarden"))
+    implementation(project(":bitwarden-api"))
     implementation(project(":serialization"))
     implementation(project(":google-auth-api"))
     implementation(project(":oauth"))

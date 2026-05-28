@@ -12,7 +12,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import noodle.bitwarden.Bitwarden
+import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.gmail.infrastructure.api.model.GmailEvent
 import noodle.gmail.infrastructure.api.model.pubsub.PubsubNotification
 import noodle.gmailsync.core.domain.SyncMailboxCommand
