@@ -21,7 +21,7 @@ class YnabApi(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) {
-    protected val httpClient =
+    private val httpClient =
         httpClient.config {
             install(Logging) {
                 logger = Logger.DEFAULT

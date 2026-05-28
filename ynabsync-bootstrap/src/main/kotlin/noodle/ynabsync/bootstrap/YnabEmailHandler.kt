@@ -21,6 +21,7 @@ import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.serialization.clientId
 import noodle.serialization.clientSecret
 import noodle.serialization.jsonObject
+import noodle.ynab.auth.infrastructure.api.YnabAuthApi
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.service.YnabEmailService
 import noodle.ynabsync.infrastructure.api.KtorGmailClientFactory
@@ -77,7 +78,12 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
         }
 
     private val ynabSecretAsync = initScope.async { bitwardenAsync.await().getSecret("ynab")?.jsonObject()!! }
-    private val ynabAuthClientAsync = initScope.async { KtorYnabAuthClient(HttpClient(engineAsync.await())) }
+    private val ynabAuthClientAsync =
+        initScope.async {
+            KtorYnabAuthClient(
+                YnabAuthApi(HttpClient(engineAsync.await())),
+            )
+        }
     private val ynabAuthTokenService =
         initScope.async {
             val secret = ynabSecretAsync.await()
