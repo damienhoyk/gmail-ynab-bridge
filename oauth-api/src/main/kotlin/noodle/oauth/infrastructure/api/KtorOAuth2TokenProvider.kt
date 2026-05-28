@@ -20,7 +20,7 @@ abstract class KtorOAuth2TokenProvider : OAuth2TokenProvider {
             .post(tokenEndpoint.await()) {
                 setBody(
                     FormDataContent(
-                        Parameters.Companion.build {
+                        Parameters.build {
                             request.code?.let { append("code", it) }
                             request.clientId?.let { append("client_id", it) }
                             request.clientSecret?.let { append("client_secret", it) }

@@ -7,8 +7,8 @@ import noodle.gmailsync.core.domain.Outbox
 import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.port.BridgeRepository
 import noodle.gmailsync.core.port.GmailClientFactory
-import noodle.gmailsync.core.port.OAuth2Client
 import noodle.gmailsync.core.port.MailboxRepository
+import noodle.gmailsync.core.port.OAuth2Client
 import noodle.gmailsync.core.port.OutboxRepository
 import org.slf4j.LoggerFactory
 

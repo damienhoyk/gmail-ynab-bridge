@@ -39,6 +39,7 @@ dependencies {
     implementation(project(":ynabsync-api"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
+    implementation("io.ktor:ktor-client-auth")
     implementation(libs.jakarta.mail)
     implementation(libs.kotlinx.coroutines)
     implementation("joda-time:joda-time:2.14.0")

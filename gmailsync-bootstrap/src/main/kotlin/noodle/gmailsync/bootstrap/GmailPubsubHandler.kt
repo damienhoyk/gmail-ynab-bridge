@@ -23,6 +23,7 @@ import noodle.gmailsync.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
 import noodle.oauth.core.service.TokenService
+import noodle.oauth.infrastructure.api.bearer
 import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.serialization.clientId
@@ -82,7 +83,13 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
         }
 
     private val gmailClientFactory =
-        initScope.async { KtorGmailClientFactory(googleAuthTokenService.await(), engineAsync.await()) }
+        initScope.async {
+            val tokenService = googleAuthTokenService.await()
+            KtorGmailClientFactory(
+                installAuth = { loginId -> bearer(tokenService, loginId) },
+                engine = engineAsync.await(),
+            )
+        }
 
     private val bridgeRepositoryAsync =
         initScope.async { DynamoDbBridgeRepository(client = dynamoDbClientAsync.await()) }

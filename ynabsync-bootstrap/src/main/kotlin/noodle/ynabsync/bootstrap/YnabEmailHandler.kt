@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import noodle.bitwarden.Bitwarden
 import noodle.oauth.core.service.TokenService
+import noodle.oauth.infrastructure.api.bearer
 import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
 import noodle.oauth.infrastructure.api.ynab.KtorYnabAuthClientAdapter
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
@@ -87,8 +88,22 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
             )
         }
 
-    private val gmailClientFactory = initScope.async { KtorGmailClientFactory(googleAuthTokenService.await(), engineAsync.await()) }
-    private val ynabClientFactory = initScope.async { KtorYnabClientFactory(ynabAuthTokenService.await(), engineAsync.await()) }
+    private val gmailClientFactory =
+        initScope.async {
+            val tokenService = googleAuthTokenService.await()
+            KtorGmailClientFactory(
+                installAuth = { loginId -> bearer(tokenService, loginId) },
+                engine = engineAsync.await(),
+            )
+        }
+    private val ynabClientFactory =
+        initScope.async {
+            val tokenService = ynabAuthTokenService.await()
+            KtorYnabClientFactory(
+                installAuth = { loginId -> bearer(tokenService, loginId) },
+                engine = engineAsync.await(),
+            )
+        }
 
     private val bridgeRepositoryAsync = initScope.async { DynamoDbBridgeRepository(client = dynamoDbClientAsync.await()) }
     private val matcherRepositoryAsync = initScope.async { DynamoDbMatcherRepository(client = dynamoDbClientAsync.await()) }

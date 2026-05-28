@@ -38,6 +38,7 @@ dependencies {
     implementation(project(":oauth-persistence"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
+    implementation("io.ktor:ktor-client-auth")
     implementation(libs.kotlinx.coroutines)
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:secretsmanager")
