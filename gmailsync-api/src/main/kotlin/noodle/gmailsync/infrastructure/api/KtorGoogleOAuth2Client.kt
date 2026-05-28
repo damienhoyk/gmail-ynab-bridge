@@ -1,21 +1,20 @@
 package noodle.gmailsync.infrastructure.api
 
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.setBody
 import io.ktor.http.Parameters
 import noodle.gmailsync.core.port.OAuth2Client
+import noodle.google.auth.infrastructure.api.GoogleOAuth2Api
 import noodle.oauth.infrastructure.api.TokenInfoResponse
 
 class KtorGoogleOAuth2Client(
-    httpClient: HttpClient,
-    block: HttpClientConfig<*>.() -> Unit = {},
-) : noodle.google.auth.infrastructure.api.KtorGoogleOAuth2Client(httpClient, block),
-    OAuth2Client {
+    private val googleOAuth2Api: GoogleOAuth2Api,
+) : OAuth2Client {
     override suspend fun getTokenInfo(token: String): String? =
-        getTokenInfo {
-            setBody(FormDataContent(Parameters.build { append("id_token", token) }))
-        }.body<TokenInfoResponse>().email
+        googleOAuth2Api
+            .getTokenInfo {
+                setBody(FormDataContent(Parameters.build { append("id_token", token) }))
+            }.body<TokenInfoResponse>()
+            .email
 }
