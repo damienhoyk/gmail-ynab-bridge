@@ -11,16 +11,16 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import noodle.bitwarden.Bitwarden
+import noodle.bitwarden.infrastructure.api.Bitwarden
+import noodle.bitwarden.infrastructure.api.bitwardenSecret
+import noodle.bitwarden.infrastructure.api.clientId
+import noodle.bitwarden.infrastructure.api.clientSecret
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
 import noodle.oauth.infrastructure.api.ynab.KtorYnabAuthClient
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
-import noodle.serialization.clientId
-import noodle.serialization.clientSecret
-import noodle.serialization.jsonObject
 import noodle.ynab.auth.infrastructure.api.YnabAuthApi
 import noodle.ynabsync.infrastructure.api.YnabLoginIdProvider
 import org.slf4j.LoggerFactory
@@ -72,7 +72,7 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     val secretAsync =
         initScope.async {
             val bitwarden = bitwardenAsync.await()
-            bitwarden.getSecret(secretId)?.jsonObject()!!
+            bitwarden.getSecret(secretId)?.bitwardenSecret()!!
         }
 
     val tokenRepository = initScope.async { DynamoDbTokenRepository(dynamoDbClientAsync.await()) }

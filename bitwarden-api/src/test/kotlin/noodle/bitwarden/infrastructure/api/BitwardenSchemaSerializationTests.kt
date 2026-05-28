@@ -1,4 +1,4 @@
-package noodle.bitwarden
+package noodle.bitwarden.infrastructure.api
 
 import com.bitwarden.sdk.schema.ClientSettings
 import com.bitwarden.sdk.schema.SecretGetRequest

@@ -15,17 +15,16 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
-import noodle.bitwarden.Bitwarden
+import noodle.bitwarden.infrastructure.api.Bitwarden
+import noodle.bitwarden.infrastructure.api.apiKey
+import noodle.bitwarden.infrastructure.api.bitwardenSecret
+import noodle.bitwarden.infrastructure.api.clientId
+import noodle.bitwarden.infrastructure.api.clientSecret
 import noodle.oauth.core.service.TokenService
 import noodle.oauth.infrastructure.api.OidcApi
 import noodle.oauth.infrastructure.api.bearer
 import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
-import noodle.serialization.apiKey
-import noodle.serialization.clientId
-import noodle.serialization.clientSecret
-import noodle.serialization.jsonObject
 import noodle.telegram.infrastructure.api.TelegramBotApi
 import noodle.telegram.infrastructure.api.model.TelegramWebhookEvent
 import noodle.telegramchat.core.domain.RespondChatCommand
@@ -73,11 +72,11 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val engineAsync = initScope.async { Java.create() }
 
     private val googleSecretAsync =
-        initScope.async { bitwardenAsync.await().getSecret("google")?.jsonObject()!! }
+        initScope.async { bitwardenAsync.await().getSecret("google")?.bitwardenSecret()!! }
     private val ynabSecretAsync =
-        initScope.async { bitwardenAsync.await().getSecret("ynab")?.jsonObject()!! }
+        initScope.async { bitwardenAsync.await().getSecret("ynab")?.bitwardenSecret()!! }
     private val telegramSecretAsync =
-        initScope.async { bitwardenAsync.await().getSecret("telegram")?.jsonObject()!! }
+        initScope.async { bitwardenAsync.await().getSecret("telegram")?.bitwardenSecret()!! }
 
     private val googleOidcClientAsync = initScope.async { KtorGoogleOidcClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")) }
     private val googleAuthTokenService =
