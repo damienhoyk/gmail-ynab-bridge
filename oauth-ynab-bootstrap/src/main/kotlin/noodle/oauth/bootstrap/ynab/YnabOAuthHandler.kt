@@ -14,7 +14,7 @@ import kotlinx.serialization.json.put
 import noodle.bitwarden.Bitwarden
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
-import noodle.oauth.infrastructure.api.ynab.KtorYnabAuthClientAdapter
+import noodle.oauth.infrastructure.api.ynab.KtorYnabAuthClient
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
@@ -55,7 +55,7 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val engineAsync = initScope.async { Java.create() }
 
-    val ynabAuthClient = initScope.async { KtorYnabAuthClientAdapter(HttpClient(engineAsync.await())) }
+    val ynabAuthClient = initScope.async { KtorYnabAuthClient(HttpClient(engineAsync.await())) }
     val ynabClient = initScope.async { YnabLoginIdProvider(HttpClient(engineAsync.await())) }
 
     val redirectUri = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()

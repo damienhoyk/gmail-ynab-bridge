@@ -34,6 +34,7 @@ dependencies {
     implementation(project(":oauth-api"))
     implementation(project(":oauth-persistence"))
     implementation(project(":oauth-ynab-api"))
+    implementation(project(":ynab-auth-api"))
     implementation(project(":ynabsync"))
     implementation(project(":ynabsync-persistence"))
     implementation(project(":ynabsync-api"))
