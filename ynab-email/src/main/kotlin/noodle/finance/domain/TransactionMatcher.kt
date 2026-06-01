@@ -56,24 +56,28 @@ class TransactionMatcher(
             val amount = if (outgoing) -mills else mills
 
             val parsedDate = inputDateFormatter.parse(dateMatch)
-            val systemDate = LocalDate.now()
+            val needsSystemDate =
+                !parsedDate.isSupported(YEAR) ||
+                    !parsedDate.isSupported(MONTH_OF_YEAR) ||
+                    !parsedDate.isSupported(DAY_OF_MONTH)
+            val systemDate = if (needsSystemDate) LocalDate.now() else null
 
             val resolvedDate =
                 LocalDate.of(
                     if (parsedDate.isSupported(YEAR)) {
                         parsedDate.get(YEAR)
                     } else {
-                        systemDate.get(YEAR)
+                        systemDate!!.get(YEAR)
                     },
                     if (parsedDate.isSupported(MONTH_OF_YEAR)) {
                         parsedDate.get(MONTH_OF_YEAR)
                     } else {
-                        systemDate.get(MONTH_OF_YEAR)
+                        systemDate!!.get(MONTH_OF_YEAR)
                     },
                     if (parsedDate.isSupported(DAY_OF_MONTH)) {
                         parsedDate.get(DAY_OF_MONTH)
                     } else {
-                        systemDate.get(DAY_OF_MONTH)
+                        systemDate!!.get(DAY_OF_MONTH)
                     },
                 )
             val date = resolvedDate.toString()

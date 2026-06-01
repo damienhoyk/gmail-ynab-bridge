@@ -12,3 +12,6 @@
 ## 2026-05-04 - Sequence Processing in Kotlin Pipelines
 **Learning:** In Kotlin data processing pipelines, using `asSequence()` before chaining operations like `mapNotNull` and combining transformations into terminal operations (e.g., `joinToString`) avoids allocating intermediate lists. This measurably improves performance by preventing unnecessary memory copies, particularly in models like `GmailMessage` where large part payloads are flattened and processed.
 **Action:** When transforming lists with multiple sequential operations (e.g., map, filter) in hot paths, consider inserting `.asSequence()` to prevent intermediate allocations, especially if the pipeline results in a terminal collection or string.
+## 2025-05-18 - Defer LocalDate.now() in hot paths
+**Learning:** Eagerly calling `LocalDate.now()` in high-frequency parsing paths introduces unnecessary object allocations and system clock reads. This was observed in `TransactionMatcher.parse` where the system date was instantiated every time, even when the parsed date contained all necessary components (year, month, day).
+**Action:** Always defer evaluating `LocalDate.now()` or checking the system clock until it is strictly necessary to resolve missing date components. Use lazy evaluation or conditional checks to avoid the overhead on the hot path.
