@@ -8,15 +8,15 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 import kotlin.time.Clock.System.now
 
-class DynamoDbTokenRepository(
+public class DynamoDbTokenRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
 ) : DynamoDbSortRepository(environment),
     TokenRepository {
-    override val name = "token"
+    override val name: String = "token"
 
-    override val partitionKey = "id"
-    override val sortKey = "type"
+    override val partitionKey: String = "id"
+    override val sortKey: String = "type"
 
     override suspend fun putToken(token: StateToken) {
         val ttl = (now() + token.duration).epochSeconds

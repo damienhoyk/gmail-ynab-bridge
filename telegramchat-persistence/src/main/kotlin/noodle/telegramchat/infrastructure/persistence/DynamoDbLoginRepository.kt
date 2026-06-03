@@ -6,14 +6,14 @@ import noodle.telegramchat.core.port.LoginRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 
-class DynamoDbLoginRepository(
+public class DynamoDbLoginRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
 ) : DynamoDbRepository(environment),
     LoginRepository {
-    override val name = "login"
+    override val name: String = "login"
 
-    override val partitionKey = "id"
+    override val partitionKey: String = "id"
 
     override suspend fun putLogin(login: Login) {
         put(login.id) { put("userId", fromS(login.userId)) }
