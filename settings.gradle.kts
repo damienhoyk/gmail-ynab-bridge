@@ -43,4 +43,7 @@ include(":telegramchat-bootstrap")
 include(":ynabsync-bootstrap")
 include(":oauth-ynab-bootstrap")
 
+// Architecture tests
+include(":architecture-test")
+
 rootProject.name = "gmail-ynab-bridge"
