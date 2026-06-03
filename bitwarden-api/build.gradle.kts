@@ -17,10 +17,6 @@ graalvmNative {
 group = "noodle.bitwarden"
 version = "0.0.1-SNAPSHOT"
 
-kotlin {
-    explicitApi()
-}
-
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))

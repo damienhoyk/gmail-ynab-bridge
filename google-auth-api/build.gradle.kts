@@ -4,9 +4,6 @@ plugins {
 
 group = "noodle.google.auth"
 
-kotlin {
-    explicitApi()
-}
 version = "0.0.1-SNAPSHOT"
 
 dependencies {

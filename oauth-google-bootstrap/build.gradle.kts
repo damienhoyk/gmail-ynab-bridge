@@ -5,10 +5,6 @@ plugins {
     id("kotlin-native-test")
 }
 
-kotlin {
-    explicitApi()
-}
-
 group = "noodle.oauth"
 version = "0.0.1-SNAPSHOT"
 

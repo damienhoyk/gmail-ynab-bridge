@@ -6,10 +6,6 @@ plugins {
 group = "noodle.database"
 version = "0.0.1-SNAPSHOT"
 
-kotlin {
-    explicitApi()
-}
-
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(libs.kotlinx.coroutines)
