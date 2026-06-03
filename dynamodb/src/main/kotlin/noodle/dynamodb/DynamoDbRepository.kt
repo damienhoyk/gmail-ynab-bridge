@@ -1,27 +1,31 @@
 package noodle.dynamodb
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse
+import software.amazon.awssdk.services.dynamodb.model.GetItemResponse
+import software.amazon.awssdk.services.dynamodb.model.PutItemResponse
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse
 
-abstract class DynamoDbRepository(
+public abstract class DynamoDbRepository(
     private val environment: String? = null,
 ) : DynamoDbCrud() {
-    abstract val name: String
-    abstract val partitionKey: String
+    public abstract val name: String
+    public abstract val partitionKey: String
     override val table: String get() = environment?.let { "$name-$it" } ?: name
 
-    suspend fun put(
+    public suspend fun put(
         partition: String,
         block: Item.() -> Unit = {},
-    ) = put(key(partition), block)
+    ): PutItemResponse = put(key(partition), block)
 
-    suspend fun get(partition: String) = get(key(partition))
+    public suspend fun get(partition: String): GetItemResponse = get(key(partition))
 
-    suspend fun update(
+    public suspend fun update(
         partition: String,
         block: Item.() -> Unit = {},
-    ) = update(key(partition), block)
+    ): UpdateItemResponse = update(key(partition), block)
 
-    suspend fun delete(partition: String) = delete(key(partition))
+    public suspend fun delete(partition: String): DeleteItemResponse = delete(key(partition))
 
-    protected fun key(partition: String) = mapOf(partitionKey to fromS(partition))
+    protected fun key(partition: String): Key = mapOf(partitionKey to fromS(partition))
 }

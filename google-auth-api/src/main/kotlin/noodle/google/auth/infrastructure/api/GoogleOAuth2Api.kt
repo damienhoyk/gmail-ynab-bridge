@@ -8,9 +8,10 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpHeaders
 
-class GoogleOAuth2Api(
+public class GoogleOAuth2Api(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) {
@@ -25,5 +26,7 @@ class GoogleOAuth2Api(
             block()
         }
 
-    suspend fun getTokenInfo(block: HttpRequestBuilder.() -> Unit) = httpClient.post("https://oauth2.googleapis.com/tokeninfo", block)
+    public suspend fun getTokenInfo(
+        block: HttpRequestBuilder.() -> Unit,
+    ): HttpResponse = httpClient.post("https://oauth2.googleapis.com/tokeninfo", block)
 }

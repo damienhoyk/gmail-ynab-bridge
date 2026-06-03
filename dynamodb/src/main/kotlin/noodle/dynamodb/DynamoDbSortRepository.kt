@@ -3,28 +3,33 @@ package noodle.dynamodb
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse
+import software.amazon.awssdk.services.dynamodb.model.GetItemResponse
+import software.amazon.awssdk.services.dynamodb.model.PutItemResponse
+import software.amazon.awssdk.services.dynamodb.model.QueryResponse
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse
 
-abstract class DynamoDbSortRepository(
+public abstract class DynamoDbSortRepository(
     private val environment: String? = null,
 ) : DynamoDbCrud() {
-    abstract val name: String
+    public abstract val name: String
 
-    abstract val partitionKey: String
-    abstract val sortKey: String
+    public abstract val partitionKey: String
+    public abstract val sortKey: String
     override val table: String get() = environment?.let { "$name-$it" } ?: name
 
-    suspend fun put(
+    public suspend fun put(
         partition: String,
         sort: String,
         block: Item.() -> Unit = {},
-    ) = put(key(partition, sort), block)
+    ): PutItemResponse = put(key(partition, sort), block)
 
-    suspend fun get(
+    public suspend fun get(
         partition: String,
         sort: String,
-    ) = get(key(partition, sort))
+    ): GetItemResponse = get(key(partition, sort))
 
-    suspend fun query(partition: String) =
+    public suspend fun query(partition: String): QueryResponse =
         withContext(IO) {
             client.query {
                 it
@@ -35,19 +40,19 @@ abstract class DynamoDbSortRepository(
             }
         }
 
-    suspend fun update(
+    public suspend fun update(
         partition: String,
         sort: String,
         block: Item.() -> Unit = {},
-    ) = update(key(partition, sort), block)
+    ): UpdateItemResponse = update(key(partition, sort), block)
 
-    suspend fun delete(
+    public suspend fun delete(
         partition: String,
         sort: String,
-    ) = delete(key(partition, sort))
+    ): DeleteItemResponse = delete(key(partition, sort))
 
     protected fun key(
         partition: String,
         sort: String,
-    ) = mapOf(partitionKey to fromS(partition), sortKey to fromS(sort))
+    ): Key = mapOf(partitionKey to fromS(partition), sortKey to fromS(sort))
 }

@@ -9,9 +9,10 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpHeaders
 
-class TelegramBotApi(
+public class TelegramBotApi(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) {
@@ -26,17 +27,17 @@ class TelegramBotApi(
             block()
         }
 
-    suspend fun getMe() = httpClient.get("getMe")
+    public suspend fun getMe(): HttpResponse = httpClient.get("getMe")
 
-    suspend fun setWebhook(
+    public suspend fun setWebhook(
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.get("setWebhook", block)
+    ): HttpResponse = httpClient.get("setWebhook", block)
 
-    suspend fun sendMessage(
+    public suspend fun sendMessage(
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.post("sendMessage", block)
+    ): HttpResponse = httpClient.post("sendMessage", block)
 
-    suspend fun sendChatAction(
+    public suspend fun sendChatAction(
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.post("sendChatAction", block)
+    ): HttpResponse = httpClient.post("sendChatAction", block)
 }

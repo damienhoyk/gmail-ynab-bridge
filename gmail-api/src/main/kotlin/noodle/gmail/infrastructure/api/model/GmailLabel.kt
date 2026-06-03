@@ -3,14 +3,14 @@ package noodle.gmail.infrastructure.api.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GmailLabel(
-    val id: String,
-    val name: String,
+public data class GmailLabel(
+    public val id: String,
+    public val name: String,
 ) {
     @Serializable
-    data class List(
-        val labels: kotlin.collections.List<GmailLabel> = emptyList(),
+    public data class List(
+        public val labels: kotlin.collections.List<GmailLabel> = emptyList(),
     ) {
-        fun toMap(): Map<String, String> = labels.associate { it.id to it.name }
+        public fun toMap(): Map<String, String> = labels.associate { it.id to it.name }
     }
 }

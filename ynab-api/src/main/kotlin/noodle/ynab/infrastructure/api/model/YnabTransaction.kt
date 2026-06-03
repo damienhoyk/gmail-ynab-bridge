@@ -4,22 +4,22 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class YnabTransaction(
-    val id: String? = null,
+public data class YnabTransaction(
+    public val id: String? = null,
     @SerialName("account_id") val accountId: String? = null,
-    val amount: Int? = null,
-    val date: String? = null,
+    public val amount: Int? = null,
+    public val date: String? = null,
     @SerialName("payee_name") val payeeName: String? = null,
 ) {
     @Serializable
-    data class Body(
+    public data class Body(
         @SerialName("transaction_ids") val transactionIds: List<String>? = emptyList(),
-        val transaction: YnabTransaction? = null,
-        val transactions: List<YnabTransaction>? = emptyList(),
+        public val transaction: YnabTransaction? = null,
+        public val transactions: List<YnabTransaction>? = emptyList(),
     )
 
     @Serializable
-    data class Data(
-        val data: Body,
+    public data class Data(
+        public val data: Body,
     )
 }

@@ -10,25 +10,26 @@ import kotlinx.coroutines.withContext
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import java.util.UUID.fromString
 
-suspend fun bitwardenClient() = withContext(Default) { BitwardenClient(BitwardenSettings()) }
+public suspend fun bitwardenClient(): BitwardenClient = withContext(Default) { BitwardenClient(BitwardenSettings()) }
 
-suspend fun SecretsClient.getSecret(
+public suspend fun SecretsClient.getSecret(
     organizationId: String,
     name: String,
-) = withContext(IO) {
-    val organizationId = fromString(organizationId)
+): String? =
+    withContext(IO) {
+        val organizationId = fromString(organizationId)
 
-    val secrets = list(organizationId)
-    val secretResponse = secrets.data?.find { it.key.equals(name) }
-    val secret = secretResponse?.let { get(it.id) }
-    val secretValue = secret?.value
+        val secrets = list(organizationId)
+        val secretResponse = secrets.data?.find { it.key.equals(name) }
+        val secret = secretResponse?.let { get(it.id) }
+        val secretValue = secret?.value
 
-    secretValue
-}
+        secretValue
+    }
 
-suspend fun AuthClient.authorize(
+public suspend fun AuthClient.authorize(
     apiKey: String,
     stateFile: String = "build/bitwarden-state",
-) = withContext(IO) { apply { loginAccessToken(apiKey, stateFile) } }
+): Unit = withContext(IO) { loginAccessToken(apiKey, stateFile) }
 
-suspend fun SecretsManagerClient.getSecret(name: String) = withContext(IO) { getSecretValue { it.secretId(name) }.secretString() }
+public suspend fun SecretsManagerClient.getSecret(name: String): String = withContext(IO) { getSecretValue { it.secretId(name) }.secretString() }
