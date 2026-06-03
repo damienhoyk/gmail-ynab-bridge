@@ -6,28 +6,28 @@ import noodle.oauth.core.port.TokenRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 
-class DynamoDbTokenRepository(
+public class DynamoDbTokenRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
 ) : DynamoDbSortRepository(environment),
     TokenRepository {
-    override val name = "token"
+    public override val name: String = "token"
 
-    override val partitionKey = "id"
-    override val sortKey = "type"
+    public override val partitionKey: String = "id"
+    public override val sortKey: String = "type"
 
-    override suspend fun getUserId(state: String): String? {
+    public override suspend fun getUserId(state: String): String? {
         val sort = "state"
         val item = get(state, sort).item()
         val value = item["value"]?.s()
         return value
     }
 
-    override suspend fun getAccessToken(id: String): String? = get(id, "access").item()["value"]?.s()
+    public override suspend fun getAccessToken(id: String): String? = get(id, "access").item()["value"]?.s()
 
-    override suspend fun getRefreshToken(id: String): String? = get(id, "refresh").item()["value"]?.s()
+    public override suspend fun getRefreshToken(id: String): String? = get(id, "refresh").item()["value"]?.s()
 
-    override suspend fun updateTokenValue(
+    public override suspend fun updateTokenValue(
         id: String,
         type: String,
         value: String,

@@ -9,10 +9,10 @@ import noodle.oauth.infrastructure.api.bearer
 import noodle.ynab.infrastructure.api.YnabApi
 import noodle.ynab.infrastructure.api.model.YnabUser
 
-class KtorYnabLoginIdProvider(
+public class KtorYnabLoginIdProvider(
     private val httpClient: HttpClient,
 ) : LoginIdProvider {
-    override suspend fun getLoginId(response: TokenResponse): String? =
+    public override suspend fun getLoginId(response: TokenResponse): String? =
         response.accessToken?.let { accessToken ->
             YnabApi(httpClient) { install(Auth) { bearer(accessToken) } }
                 .getUser()

@@ -1,6 +1,6 @@
 package noodle.oauth.core.domain
 
-data class OAuth2TokenRequest(
+public data class OAuth2TokenRequest(
     val code: String? = null,
     val clientId: String? = null,
     val clientSecret: String? = null,

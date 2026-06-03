@@ -5,14 +5,14 @@ import kotlinx.serialization.Serializable
 import noodle.oauth.core.domain.TokenResponse
 
 @Serializable
-data class TokenResponse(
-    @SerialName("access_token") val accessToken: String? = null,
-    @SerialName("id_token") val idToken: String? = null,
-    @SerialName("refresh_token") val refreshToken: String? = null,
-    @SerialName("expires_in") val expiresIn: Int? = null,
-    val error: String? = null,
+public data class TokenResponse(
+    @SerialName("access_token") public val accessToken: String? = null,
+    @SerialName("id_token") public val idToken: String? = null,
+    @SerialName("refresh_token") public val refreshToken: String? = null,
+    @SerialName("expires_in") public val expiresIn: Int? = null,
+    public val error: String? = null,
 ) {
-    fun domain() =
+    public fun domain(): noodle.oauth.core.domain.TokenResponse =
         TokenResponse(
             accessToken = accessToken,
             idToken = idToken,

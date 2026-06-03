@@ -9,7 +9,7 @@ import noodle.oauth.core.port.OAuth2TokenProvider
 import noodle.oauth.core.port.TokenRepository
 import org.slf4j.LoggerFactory
 
-class TokenService(
+public class TokenService(
     private val clientId: String,
     private val clientSecret: String,
     private val tokenRepository: TokenRepository,
@@ -17,9 +17,9 @@ class TokenService(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    suspend fun execute(command: LoadTokensCommand): String = tokenRepository.getAccessToken(command.loginId)!!
+    public suspend fun execute(command: LoadTokensCommand): String = tokenRepository.getAccessToken(command.loginId)!!
 
-    suspend fun execute(command: RefreshTokensCommand): String {
+    public suspend fun execute(command: RefreshTokensCommand): String {
         val loginId = command.loginId
         val value = tokenRepository.getRefreshToken(loginId)!!
 
