@@ -1,14 +1,14 @@
 package noodle.ynabsync.core.domain
 
-data class YnabAccount(
-    val id: String,
-    val name: String,
+public data class YnabAccount(
+    public val id: String,
+    public val name: String,
 ) {
-    data class Body(
-        val accounts: List<YnabAccount>,
+    public data class Body(
+        public val accounts: List<YnabAccount>,
     )
 
-    data class Data(
-        val data: Body,
+    public data class Data(
+        public val data: Body,
     )
 }

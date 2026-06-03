@@ -2,6 +2,6 @@ package noodle.ynabsync.core.port
 
 import noodle.ynabsync.core.domain.TransactionMatcher
 
-interface MatcherRepository {
-    suspend fun queryMatcher(source: String): List<TransactionMatcher>
+public interface MatcherRepository {
+    public suspend fun queryMatcher(source: String): List<TransactionMatcher>
 }

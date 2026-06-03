@@ -1,8 +1,8 @@
 package noodle.ynabsync.core.domain
 
-data class SyncYnabCommand(
-    val destination: String,
-    val mailId: String,
-    val mailAddress: String,
-    val source: String,
+public data class SyncYnabCommand(
+    public val destination: String,
+    public val mailId: String,
+    public val mailAddress: String,
+    public val source: String,
 )

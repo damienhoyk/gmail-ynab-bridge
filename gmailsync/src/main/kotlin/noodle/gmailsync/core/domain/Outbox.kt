@@ -1,10 +1,10 @@
 package noodle.gmailsync.core.domain
 
-data class Outbox(
-    val destination: String,
-    val source: String,
+public data class Outbox(
+    public val destination: String,
+    public val source: String,
 ) {
-    constructor(
+    public constructor(
         destination: String,
         sourceAddress: String,
         messageId: String?,
@@ -13,9 +13,9 @@ data class Outbox(
         "$messageId:$sourceAddress",
     )
 
-    val messageId: String
+    public val messageId: String
         get() = destination.substringBefore(":")
 
-    val sourceAddress: String
+    public val sourceAddress: String
         get() = source.substringAfter(":")
 }

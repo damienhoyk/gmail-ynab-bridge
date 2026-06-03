@@ -1,5 +1,5 @@
 package noodle.ynabsync.core.port
 
-interface YnabClientFactory {
-    suspend fun create(loginId: String): YnabClient
+public interface YnabClientFactory {
+    public suspend fun create(loginId: String): YnabClient
 }

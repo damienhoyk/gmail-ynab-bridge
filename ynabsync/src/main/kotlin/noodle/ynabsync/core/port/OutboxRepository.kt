@@ -2,8 +2,8 @@ package noodle.ynabsync.core.port
 
 import kotlin.time.Duration
 
-interface OutboxRepository {
-    suspend fun updateTtl(
+public interface OutboxRepository {
+    public suspend fun updateTtl(
         destination: String,
         source: String,
         duration: Duration,
