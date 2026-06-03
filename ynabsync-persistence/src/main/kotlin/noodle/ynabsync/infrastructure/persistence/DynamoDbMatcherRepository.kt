@@ -7,17 +7,17 @@ import noodle.ynabsync.core.port.MatcherRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 
-class DynamoDbMatcherRepository(
+public class DynamoDbMatcherRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
 ) : DynamoDbSortRepository(environment),
     MatcherRepository {
-    override val name = "gmail-ynab-bridge-matcher"
+    override val name: String = "gmail-ynab-bridge-matcher"
 
-    override val partitionKey = "source"
-    override val sortKey = "mode"
+    override val partitionKey: String = "source"
+    override val sortKey: String = "mode"
 
-    override suspend fun queryMatcher(source: String) =
+    override suspend fun queryMatcher(source: String): List<TransactionMatcher> =
         query(source).items().mapNotNull {
             val datePattern = it["datePattern"]?.s()
             val pattern = it["pattern"]?.s()?.toRegex()

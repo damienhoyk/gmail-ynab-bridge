@@ -1,23 +1,23 @@
 package noodle.ynabsync.core.domain
 
-data class YnabTransactionsRequest(
-    val body: Body,
+public data class YnabTransactionsRequest(
+    public val body: Body,
 ) {
-    data class YnabTransaction(
-        val id: String? = null,
-        val accountId: String? = null,
-        val amount: Int? = null,
-        val date: String? = null,
-        val payeeName: String? = null,
+    public data class YnabTransaction(
+        public val id: String? = null,
+        public val accountId: String? = null,
+        public val amount: Int? = null,
+        public val date: String? = null,
+        public val payeeName: String? = null,
     )
 
-    data class Body(
-        val transactionIds: List<String>? = emptyList(),
-        val transaction: YnabTransaction? = null,
-        val transactions: List<YnabTransaction>? = emptyList(),
+    public data class Body(
+        public val transactionIds: List<String>? = emptyList(),
+        public val transaction: YnabTransaction? = null,
+        public val transactions: List<YnabTransaction>? = emptyList(),
     )
 
-    data class Data(
-        val data: Body,
+    public data class Data(
+        public val data: Body,
     )
 }

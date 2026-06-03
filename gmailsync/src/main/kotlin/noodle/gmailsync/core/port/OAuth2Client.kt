@@ -1,5 +1,5 @@
 package noodle.gmailsync.core.port
 
-interface OAuth2Client {
-    suspend fun getTokenInfo(token: String): String?
+public interface OAuth2Client {
+    public suspend fun getTokenInfo(token: String): String?
 }

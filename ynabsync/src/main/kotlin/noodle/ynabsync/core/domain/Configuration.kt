@@ -2,16 +2,16 @@ package noodle.ynabsync.core.domain
 
 import kotlin.time.Duration.Companion.hours
 
-data class Configuration(
-    val matchers: List<Matcher> = emptyList(),
-    val accounts: Map<String, String> = emptyMap(),
-    val pollingInterval: Long = 1.hours.inWholeMilliseconds,
+internal data class Configuration(
+    internal val matchers: List<Matcher> = emptyList(),
+    internal val accounts: Map<String, String> = emptyMap(),
+    internal val pollingInterval: Long = 1.hours.inWholeMilliseconds,
 ) {
-    data class Matcher(
-        val name: String,
-        val pattern: String,
-        val outgoing: Boolean = true,
-        val order: LinkedHashSet<TransactionMatcher.RegexGroup>,
-        val datePattern: String,
+    internal data class Matcher(
+        internal val name: String,
+        internal val pattern: String,
+        internal val outgoing: Boolean = true,
+        internal val order: LinkedHashSet<TransactionMatcher.RegexGroup>,
+        internal val datePattern: String,
     )
 }

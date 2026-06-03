@@ -7,7 +7,7 @@ import io.ktor.client.plugins.auth.AuthConfig
 import noodle.gmail.infrastructure.api.GmailApi
 import noodle.gmailsync.core.port.GmailClientFactory
 
-class KtorGmailClientFactory(
+public class KtorGmailClientFactory(
     private val installAuth: AuthConfig.(loginId: String) -> Unit,
     private val engine: HttpClientEngine,
 ) : GmailClientFactory {

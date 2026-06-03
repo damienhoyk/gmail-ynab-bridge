@@ -4,6 +4,10 @@ plugins {
     id("kotlin-function-native")
 }
 
+kotlin {
+    explicitApi()
+}
+
 group = "noodle.ynabsync"
 version = "0.0.1-SNAPSHOT"
 

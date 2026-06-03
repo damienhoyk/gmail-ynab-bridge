@@ -5,17 +5,17 @@ import noodle.gmailsync.core.domain.Bridge
 import noodle.gmailsync.core.port.BridgeRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
-class DynamoDbBridgeRepository(
+public class DynamoDbBridgeRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
 ) : DynamoDbSortRepository(environment),
     BridgeRepository {
-    override val name = "bridge"
+    override val name: String = "bridge"
 
-    override val partitionKey = "source"
-    override val sortKey = "destination"
+    override val partitionKey: String = "source"
+    override val sortKey: String = "destination"
 
-    override suspend fun queryBridge(source: String) =
+    override suspend fun queryBridge(source: String): List<Bridge> =
         query(source)
             .items()
             .map {

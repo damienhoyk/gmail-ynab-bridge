@@ -7,15 +7,15 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 import kotlin.time.Clock.System.now
 import kotlin.time.Duration
 
-class DynamoDbOutboxRepository(
+public class DynamoDbOutboxRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
 ) : DynamoDbSortRepository(environment),
     OutboxRepository {
-    override val name = "outbox"
+    override val name: String = "outbox"
 
     override val partitionKey: String = "destination"
-    override val sortKey = "source"
+    override val sortKey: String = "source"
 
     override suspend fun updateTtl(
         destination: String,

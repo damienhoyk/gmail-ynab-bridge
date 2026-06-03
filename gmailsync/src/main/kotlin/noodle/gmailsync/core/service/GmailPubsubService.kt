@@ -12,7 +12,7 @@ import noodle.gmailsync.core.port.OAuth2Client
 import noodle.gmailsync.core.port.OutboxRepository
 import org.slf4j.LoggerFactory
 
-class GmailPubsubService(
+public class GmailPubsubService(
     private val gmailClientFactory: suspend () -> GmailClientFactory,
     private val googleTokenClient: suspend () -> OAuth2Client,
     private val bridgeRepository: suspend () -> BridgeRepository,
@@ -21,7 +21,7 @@ class GmailPubsubService(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    suspend fun execute(command: SyncMailboxCommand) =
+    public suspend fun execute(command: SyncMailboxCommand): Int =
         coroutineScope {
             if (command.email.isNullOrEmpty()) return@coroutineScope 400
             if (command.state == null) return@coroutineScope 400

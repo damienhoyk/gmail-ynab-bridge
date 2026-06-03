@@ -11,23 +11,23 @@ import noodle.ynabsync.core.port.YnabClientFactory
 import org.slf4j.LoggerFactory
 import kotlin.time.Duration.Companion.hours
 
-class YnabEmailService(
-    val ynabClientFactory: suspend () -> YnabClientFactory,
-    val gmailClientFactory: suspend () -> GmailClientFactory,
-    val bridgeRepository: suspend () -> BridgeRepository,
-    val matcherRepository: suspend () -> MatcherRepository,
-    val outboxRepository: suspend () -> OutboxRepository,
+public class YnabEmailService(
+    public val ynabClientFactory: suspend () -> YnabClientFactory,
+    public val gmailClientFactory: suspend () -> GmailClientFactory,
+    public val bridgeRepository: suspend () -> BridgeRepository,
+    public val matcherRepository: suspend () -> MatcherRepository,
+    public val outboxRepository: suspend () -> OutboxRepository,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    companion object {
+    public companion object {
         private val TTL_SUCCESS = 24.hours
         private val TTL_NOT_FOUND = 1.hours
         private val TTL_ERROR = 120.hours
         private val TTL_NO_MATCH = 1.hours
     }
 
-    suspend fun execute(command: SyncYnabCommand) {
+    public suspend fun execute(command: SyncYnabCommand) {
         val destination = command.destination
         val mailAddress = command.mailAddress
         val mailId = command.mailId

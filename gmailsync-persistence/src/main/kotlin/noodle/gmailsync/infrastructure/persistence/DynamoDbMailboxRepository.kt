@@ -6,14 +6,14 @@ import noodle.gmailsync.core.port.MailboxRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 
-class DynamoDbMailboxRepository(
+public class DynamoDbMailboxRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
 ) : DynamoDbRepository(environment),
     MailboxRepository {
-    override val name = "mailbox"
+    override val name: String = "mailbox"
 
-    override val partitionKey = "address"
+    override val partitionKey: String = "address"
 
     override suspend fun putMailbox(mailbox: Mailbox) {
         put(mailbox.address) {

@@ -1,11 +1,11 @@
 package noodle.ynabsync.core.domain
 
-data class MailMessageRequest(
-    val messageId: String,
-    val format: Format,
+public data class MailMessageRequest(
+    public val messageId: String,
+    public val format: Format,
 ) {
-    enum class Format(
-        val value: String,
+    public enum class Format(
+        public val value: String,
     ) {
         MINIMAL("minimal"),
         FULL("full"),

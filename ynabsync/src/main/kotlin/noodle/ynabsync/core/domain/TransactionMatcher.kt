@@ -5,13 +5,13 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField.*
 
-class TransactionMatcher(
-    val regex: Regex,
-    val outgoing: Boolean = true,
-    val order: Set<RegexGroup>,
+public class TransactionMatcher(
+    public val regex: Regex,
+    public val outgoing: Boolean = true,
+    public val order: Set<RegexGroup>,
     inputDatePattern: String,
 ) {
-    constructor(
+    internal constructor(
         configuration: Configuration.Matcher,
     ) : this(
         configuration.pattern.toRegex(),
@@ -29,7 +29,7 @@ class TransactionMatcher(
     private val dateIndex = order.indexOf(RegexGroup.DATE).let { if (it >= 0) it + 1 else -1 }
     private val payeeIndex = order.indexOf(RegexGroup.PAYEE).let { if (it >= 0) it + 1 else -1 }
 
-    fun parse(input: String) =
+    public fun parse(input: String): YnabTransaction? =
         regex.find(input)?.groupValues?.let { match ->
             val amountMatch = if (amountIndex >= 0) match[amountIndex] else null
             val dateMatch = if (dateIndex >= 0) match[dateIndex] else null
@@ -86,7 +86,7 @@ class TransactionMatcher(
             )
         }
 
-    enum class RegexGroup {
+    public enum class RegexGroup {
         ACCOUNT,
         AMOUNT,
         DATE,

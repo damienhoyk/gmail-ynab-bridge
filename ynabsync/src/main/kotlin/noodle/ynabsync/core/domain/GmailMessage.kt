@@ -1,8 +1,8 @@
 package noodle.ynabsync.core.domain
 
-data class GmailMessage(
-    val id: String? = null,
-    val text: String? = null,
-    val senderEmail: String? = null,
-    val status: Int? = null,
+public data class GmailMessage(
+    public val id: String? = null,
+    public val text: String? = null,
+    public val senderEmail: String? = null,
+    public val status: Int? = null,
 )

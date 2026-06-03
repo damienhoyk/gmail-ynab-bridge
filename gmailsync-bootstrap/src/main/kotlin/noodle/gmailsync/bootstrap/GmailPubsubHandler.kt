@@ -36,7 +36,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import java.util.Base64
 
-class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
+public class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val log = LoggerFactory.getLogger(javaClass)
     private val initScope = CoroutineScope(Dispatchers.Default)
     private val decoder = Base64.getUrlDecoder()
@@ -109,23 +109,24 @@ class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             outboxRepository = { outboxRepositoryAsync.await() },
         )
 
-    override fun handleRequest(
+    public override fun handleRequest(
         request: APIGatewayV2HTTPEvent,
         context: Context?,
-    ) = runBlocking {
-        val notification = mapper.decodeFromString<PubsubNotification>(request.body)
-        val notificationData = decoder.decode(notification.message.data)
-        val event = mapper.decodeFromString<GmailEvent>(String(notificationData))
+    ): String =
+        runBlocking {
+            val notification = mapper.decodeFromString<PubsubNotification>(request.body)
+            val notificationData = decoder.decode(notification.message.data)
+            val event = mapper.decodeFromString<GmailEvent>(String(notificationData))
 
-        val command =
-            SyncMailboxCommand(
-                email = event.emailAddress,
-                authorization = request.headers?.get("authorization"),
-                state = event.historyId,
-            )
+            val command =
+                SyncMailboxCommand(
+                    email = event.emailAddress,
+                    authorization = request.headers?.get("authorization"),
+                    state = event.historyId,
+                )
 
-        val statusCode = service.execute(command)
+            val statusCode = service.execute(command)
 
-        buildJsonObject { put("statusCode", statusCode) }.toString()
-    }
+            buildJsonObject { put("statusCode", statusCode) }.toString()
+        }
 }
