@@ -30,6 +30,9 @@ public suspend fun SecretsClient.getSecret(
 public suspend fun AuthClient.authorize(
     apiKey: String,
     stateFile: String = "build/bitwarden-state",
-): Unit = withContext(IO) { loginAccessToken(apiKey, stateFile) }
+): AuthClient =
+    withContext(IO) {
+        this@authorize.apply { loginAccessToken(apiKey, stateFile) }
+    }
 
 public suspend fun SecretsManagerClient.getSecret(name: String): String = withContext(IO) { getSecretValue { it.secretId(name) }.secretString() }
