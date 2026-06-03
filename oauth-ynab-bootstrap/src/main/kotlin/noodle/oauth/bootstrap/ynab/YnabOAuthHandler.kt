@@ -16,11 +16,11 @@ import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
 import noodle.oauth.infrastructure.api.ynab.KtorYnabAuthClient
+import noodle.oauth.infrastructure.api.ynab.KtorYnabLoginIdProvider
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
 import noodle.ynab.auth.infrastructure.api.YnabAuthApi
-import noodle.ynabsync.infrastructure.api.YnabLoginIdProvider
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
@@ -60,7 +60,7 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                 YnabAuthApi(HttpClient(engineAsync.await())),
             )
         }
-    val ynabClient = initScope.async { YnabLoginIdProvider(HttpClient(engineAsync.await())) }
+    val ynabLoginProviderAsync = initScope.async { KtorYnabLoginIdProvider(HttpClient(engineAsync.await())) }
 
     val redirectUri = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
     val secretId = System.getenv("SECRET_ID")?.trim() ?: throw IllegalStateException()
@@ -83,7 +83,7 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             clientSecret = runBlocking { secretAsync.await().clientSecret!! },
             redirectUri = redirectUri,
             authClient = { ynabAuthClient.await() },
-            loginIdProvider = { ynabClient.await() },
+            loginIdProvider = { ynabLoginProviderAsync.await() },
             tokenRepository = { tokenRepository.await() },
             userRepository = { userRepository.await() },
             loginRepository = { loginRepository.await() },
