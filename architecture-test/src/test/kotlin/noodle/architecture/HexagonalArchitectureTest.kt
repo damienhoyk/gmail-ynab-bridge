@@ -1,7 +1,7 @@
 package noodle.architecture
 
 import com.lemonappdev.konsist.api.Konsist
-import org.junit.jupiter.api.Disabled
+import com.lemonappdev.konsist.api.container.KoScope
 import org.junit.jupiter.api.Test
 
 class HexagonalArchitectureTest {
@@ -55,30 +55,30 @@ class HexagonalArchitectureTest {
             }
     }
 
-    @Disabled(
-        "Known violation: gmailsync-api imports TokenInfoResponse from oauth-api. " +
-            "This lateral infra→infra dependency will be resolved by the compliance refactor. " +
-            "This rule is present to be enabled once that refactor removes the cross-app coupling.",
-    )
     @Test
     fun `no lateral infrastructure-to-infrastructure dependencies across applications`() {
         val scope = Konsist.scopeFromProject()
+        val applicationNames = applicationNames(scope)
 
-        // No infrastructure file should import from another application's infrastructure
+        // No infrastructure file should import from another application's infrastructure.
+        // Shared integration modules (noodle.<integration>.infrastructure.*) have no core
+        // package and are not applications, so importing them is allowed.
         scope.files
             .filter { it.packagee?.name?.contains(".infrastructure.") == true }
             .forEach { file ->
-                val packageSegments = file.packagee?.name?.split(".") ?: emptyList()
-                val appName = packageSegments.getOrNull(1) // "noodle.<app>.infrastructure..."
+                val appName =
+                    file.packagee
+                        ?.name
+                        ?.split(".")
+                        ?.getOrNull(1) // "noodle.<app>.infrastructure..."
 
                 file.imports.forEach { import ->
                     val importName = import.name
 
                     if (importName.startsWith("noodle.") && importName.contains(".infrastructure.")) {
-                        val importAppSegments = importName.split(".")
-                        val importAppName = importAppSegments.getOrNull(1)
+                        val importAppName = importName.split(".").getOrNull(1)
 
-                        require(importAppName == appName) {
+                        require(importAppName == appName || importAppName !in applicationNames) {
                             "File ${file.name} in $appName infrastructure imports from $importAppName infrastructure: $importName"
                         }
                     }
@@ -86,22 +86,20 @@ class HexagonalArchitectureTest {
             }
     }
 
-    @Disabled(
-        "Known violation: gmailsync-api imports TokenInfoResponse from oauth-api's infrastructure module. " +
-            "Adapter classes should only import from their own application's core, drivers (noodle.<driver>), " +
-            "or integrations (noodle.<integration>.infrastructure.*) — not from another application's infrastructure package. " +
-            "This violation will be resolved by the compliance refactor.",
-    )
     @Test
     fun `adapter classes should only import from own-app core, drivers, or integrations`() {
         val scope = Konsist.scopeFromProject()
+        val applicationNames = applicationNames(scope)
 
         // Adapter classes should only import from own-app core, drivers, or integrations
         scope.files
             .filter { it.packagee?.name?.contains(".infrastructure.") == true }
             .forEach { file ->
-                val packageSegments = file.packagee?.name?.split(".") ?: emptyList()
-                val appName = packageSegments.getOrNull(1) // "noodle.<app>.infrastructure..."
+                val appName =
+                    file.packagee
+                        ?.name
+                        ?.split(".")
+                        ?.getOrNull(1) // "noodle.<app>.infrastructure..."
 
                 file.imports.forEach { import ->
                     val importName = import.name
@@ -119,10 +117,11 @@ class HexagonalArchitectureTest {
                             return@forEach
                         }
 
-                        // Reject other app's infrastructure packages
+                        // Reject other application's infrastructure packages. Shared integration
+                        // modules have no core package, so they are not applications and are allowed.
                         if (importName.contains(".infrastructure.")) {
                             val importAppName = importSegments.getOrNull(1)
-                            if (importAppName != appName && importAppName != null) {
+                            if (importAppName != appName && importAppName in applicationNames) {
                                 require(false) {
                                     "File ${file.name} in $appName infrastructure imports from $importAppName infrastructure: $importName"
                                 }
@@ -132,4 +131,17 @@ class HexagonalArchitectureTest {
                 }
             }
     }
+
+    // An application owns a core package; shared integration modules do not. The set of
+    // application names lets the rules above distinguish a forbidden cross-application
+    // infrastructure import from an allowed shared-integration import.
+    private fun applicationNames(scope: KoScope): Set<String> =
+        scope.files
+            .filter { it.packagee?.name?.contains(".core.") == true }
+            .mapNotNull {
+                it.packagee
+                    ?.name
+                    ?.split(".")
+                    ?.getOrNull(1)
+            }.toSet()
 }
