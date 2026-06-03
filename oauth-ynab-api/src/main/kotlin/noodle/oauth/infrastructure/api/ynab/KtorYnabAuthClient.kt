@@ -4,12 +4,12 @@ import kotlinx.coroutines.Deferred
 import noodle.oauth.infrastructure.api.KtorOAuth2TokenProvider
 import noodle.ynab.auth.infrastructure.api.YnabAuthApi
 
-class KtorYnabAuthClient(
+public class KtorYnabAuthClient(
     private val ynabAuthApi: YnabAuthApi,
 ) : KtorOAuth2TokenProvider() {
-    override val httpClient
+    public override val httpClient: io.ktor.client.HttpClient
         get() = ynabAuthApi.httpClient
 
-    override val tokenEndpoint: Deferred<String>
+    public override val tokenEndpoint: Deferred<String>
         get() = ynabAuthApi.tokenEndpoint
 }

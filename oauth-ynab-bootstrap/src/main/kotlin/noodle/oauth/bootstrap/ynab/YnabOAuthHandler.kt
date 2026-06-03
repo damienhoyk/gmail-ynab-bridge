@@ -27,14 +27,14 @@ import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 
-class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
+public class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val initScope = CoroutineScope(Default)
     private val log = LoggerFactory.getLogger(javaClass)
 
     private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.create() }
     private val urlConnectionClient = UrlConnectionHttpClient.builder()
 
-    private val dynamoDbClientAsync =
+    private val dynamoDbClientAsync: kotlinx.coroutines.Deferred<DynamoDbClient> =
         initScope.async {
             DynamoDbClient
                 .builder()
@@ -43,7 +43,7 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
                 .build()
         }
 
-    private val secretsManagerClientAsync =
+    private val secretsManagerClientAsync: kotlinx.coroutines.Deferred<SecretsManagerClient> =
         initScope.async {
             SecretsManagerClient
                 .builder()
@@ -54,30 +54,30 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val engineAsync = initScope.async { Java.create() }
 
-    val ynabAuthClient =
+    private val ynabAuthClient: kotlinx.coroutines.Deferred<KtorYnabAuthClient> =
         initScope.async {
             KtorYnabAuthClient(
                 YnabAuthApi(HttpClient(engineAsync.await())),
             )
         }
-    val ynabLoginProviderAsync = initScope.async { KtorYnabLoginIdProvider(HttpClient(engineAsync.await())) }
+    private val ynabLoginProviderAsync: kotlinx.coroutines.Deferred<KtorYnabLoginIdProvider> = initScope.async { KtorYnabLoginIdProvider(HttpClient(engineAsync.await())) }
 
-    val redirectUri = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
-    val secretId = System.getenv("SECRET_ID")?.trim() ?: throw IllegalStateException()
+    private val redirectUri: String = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
+    private val secretId: String = System.getenv("SECRET_ID")?.trim() ?: throw IllegalStateException()
 
-    val bitwardenAsync = initScope.async { Bitwarden(secretsManagerClientAsync.await()) }
+    private val bitwardenAsync: kotlinx.coroutines.Deferred<Bitwarden> = initScope.async { Bitwarden(secretsManagerClientAsync.await()) }
 
-    val secretAsync =
+    private val secretAsync: kotlinx.coroutines.Deferred<noodle.bitwarden.infrastructure.api.BitwardenSecret> =
         initScope.async {
             val bitwarden = bitwardenAsync.await()
             bitwarden.getSecret(secretId)?.bitwardenSecret()!!
         }
 
-    val tokenRepository = initScope.async { DynamoDbTokenRepository(dynamoDbClientAsync.await()) }
-    val userRepository = initScope.async { DynamoDbUserRepository(dynamoDbClientAsync.await()) }
-    val loginRepository = initScope.async { DynamoDbLoginRepository(dynamoDbClientAsync.await()) }
+    private val tokenRepository: kotlinx.coroutines.Deferred<DynamoDbTokenRepository> = initScope.async { DynamoDbTokenRepository(dynamoDbClientAsync.await()) }
+    private val userRepository: kotlinx.coroutines.Deferred<DynamoDbUserRepository> = initScope.async { DynamoDbUserRepository(dynamoDbClientAsync.await()) }
+    private val loginRepository: kotlinx.coroutines.Deferred<DynamoDbLoginRepository> = initScope.async { DynamoDbLoginRepository(dynamoDbClientAsync.await()) }
 
-    val service =
+    private val service: AuthorizeService =
         AuthorizeService(
             clientId = runBlocking { secretAsync.await().clientId!! },
             clientSecret = runBlocking { secretAsync.await().clientSecret!! },
@@ -89,16 +89,17 @@ class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             loginRepository = { loginRepository.await() },
         )
 
-    override fun handleRequest(
+    public override fun handleRequest(
         request: APIGatewayV2HTTPEvent,
         context: Context?,
-    ) = runBlocking {
-        val code = request.queryStringParameters?.get("code")
-        val state = request.queryStringParameters?.get("state")
+    ): String =
+        runBlocking {
+            val code = request.queryStringParameters?.get("code")
+            val state = request.queryStringParameters?.get("state")
 
-        val command = AuthorizeCommand(code, state)
-        val statusCode = service.execute(command)
+            val command = AuthorizeCommand(code, state)
+            val statusCode = service.execute(command)
 
-        buildJsonObject { put("statusCode", statusCode) }.toString()
-    }
+            buildJsonObject { put("statusCode", statusCode) }.toString()
+        }
 }

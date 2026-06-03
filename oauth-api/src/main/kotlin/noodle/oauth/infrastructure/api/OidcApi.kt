@@ -20,14 +20,14 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-class OidcApi(
+public class OidcApi(
     httpClient: HttpClient,
     private val discoveryUrl: String,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) : KtorOAuth2TokenProvider() {
     private val initScope = CoroutineScope(Dispatchers.Default)
 
-    override val httpClient =
+    public override val httpClient: HttpClient =
         httpClient.config {
             install(Logging) {
                 logger = Logger.DEFAULT
@@ -46,32 +46,32 @@ class OidcApi(
             block()
         }
 
-    val discoveryDocument =
+    public val discoveryDocument: kotlinx.coroutines.Deferred<JsonObject> =
         initScope.async {
             getDiscoveryDocument().body<JsonObject>()
         }
 
-    override val tokenEndpoint =
+    public override val tokenEndpoint: kotlinx.coroutines.Deferred<String> =
         initScope.async {
             val discoveryDocument = discoveryDocument.await()
             discoveryDocument["token_endpoint"]?.jsonPrimitive?.content ?: throw IllegalStateException()
         }
 
-    val revocationEndpoint =
+    public val revocationEndpoint: kotlinx.coroutines.Deferred<String> =
         initScope.async {
             val discoveryDocument = discoveryDocument.await()
             discoveryDocument["revocation_endpoint"]?.jsonPrimitive?.content ?: throw IllegalStateException()
         }
 
-    val authorizationEndpoint =
+    public val authorizationEndpoint: kotlinx.coroutines.Deferred<String> =
         initScope.async {
             val discoveryDocument = discoveryDocument.await()
             discoveryDocument["authorization_endpoint"]?.jsonPrimitive?.content ?: throw IllegalStateException()
         }
 
-    suspend fun getDiscoveryDocument() = httpClient.get(discoveryUrl)
+    public suspend fun getDiscoveryDocument(): io.ktor.client.statement.HttpResponse = httpClient.get(discoveryUrl)
 
-    suspend fun revokeToken(block: HttpRequestBuilder.() -> Unit = {}) =
+    public suspend fun revokeToken(block: HttpRequestBuilder.() -> Unit = {}): io.ktor.client.statement.HttpResponse =
         httpClient
             .post(revocationEndpoint.await(), block)
 }

@@ -5,26 +5,27 @@ import noodle.oauth.core.domain.User
 import noodle.oauth.core.port.UserRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
-class DynamoDbUserRepository(
+public class DynamoDbUserRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
 ) : DynamoDbSortRepository(environment),
     UserRepository {
-    override val name = "user"
+    public override val name: String = "user"
 
-    override val partitionKey = "id"
-    override val sortKey = "loginId"
+    public override val partitionKey: String = "id"
+    public override val sortKey: String = "loginId"
 
-    override suspend fun putUser(user: User) {
+    public override suspend fun putUser(user: User) {
         put(user.id, user.loginId)
     }
 
-    suspend fun getUser(
+    public suspend fun getUser(
         id: String,
         loginId: String,
-    ) = get(id, loginId).item().let {
-        val id = it["id"]?.s()!!
-        val loginId = it["loginId"]?.s()!!
-        User(id, loginId)
-    }
+    ): User =
+        get(id, loginId).item().let {
+            val id = it["id"]?.s()!!
+            val loginId = it["loginId"]?.s()!!
+            User(id, loginId)
+        }
 }

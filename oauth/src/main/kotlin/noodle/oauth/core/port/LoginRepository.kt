@@ -2,6 +2,6 @@ package noodle.oauth.core.port
 
 import noodle.oauth.core.domain.Login
 
-interface LoginRepository {
-    suspend fun putLogin(login: Login)
+public interface LoginRepository {
+    public suspend fun putLogin(login: Login)
 }

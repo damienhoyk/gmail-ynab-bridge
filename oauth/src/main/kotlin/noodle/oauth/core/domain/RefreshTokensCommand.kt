@@ -1,5 +1,5 @@
 package noodle.oauth.core.domain
 
-data class RefreshTokensCommand(
+public data class RefreshTokensCommand(
     val loginId: String,
 )
