@@ -1,8 +1,8 @@
-package noodle.oauth.infrastructure.api
+package noodle.google.auth.infrastructure.api.model
 
 import kotlinx.serialization.Serializable
 
 @Serializable
 public data class TokenInfoResponse(
-    public val email: String? = null,
+    val email: String? = null,
 )

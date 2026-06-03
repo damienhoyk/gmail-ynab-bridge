@@ -11,7 +11,6 @@ dependencies {
     implementation(project(":gmailsync"))
     implementation(project(":gmail-api"))
     implementation(project(":google-auth-api"))
-    implementation(project(":oauth-api"))
     implementation(libs.bundles.ktor.client)
     implementation("io.ktor:ktor-client-auth")
     implementation(libs.kotlinx.coroutines)

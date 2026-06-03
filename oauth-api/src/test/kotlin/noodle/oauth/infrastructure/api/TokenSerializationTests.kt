@@ -46,18 +46,4 @@ class TokenSerializationTests {
         assertEquals("invalid_grant", result.error)
         assertNull(result.accessToken)
     }
-
-    @Test
-    fun tokenInfoResponse() {
-        val raw = """{"email": "user@example.com"}"""
-        val result = json.decodeFromString(serializer(typeOf<TokenInfoResponse>()), raw) as TokenInfoResponse
-        assertEquals("user@example.com", result.email)
-    }
-
-    @Test
-    fun tokenInfoResponseNullEmail() {
-        val raw = """{}"""
-        val result = json.decodeFromString(serializer(typeOf<TokenInfoResponse>()), raw) as TokenInfoResponse
-        assertNull(result.email)
-    }
 }
