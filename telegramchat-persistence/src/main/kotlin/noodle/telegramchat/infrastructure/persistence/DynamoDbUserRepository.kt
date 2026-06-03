@@ -5,21 +5,21 @@ import noodle.telegramchat.core.domain.User
 import noodle.telegramchat.core.port.UserRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
-class DynamoDbUserRepository(
+public class DynamoDbUserRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
 ) : DynamoDbSortRepository(environment),
     UserRepository {
-    override val name = "user"
+    override val name: String = "user"
 
-    override val partitionKey = "id"
-    override val sortKey = "loginId"
+    override val partitionKey: String = "id"
+    override val sortKey: String = "loginId"
 
     override suspend fun putUser(user: User) {
         put(user.id, user.loginId)
     }
 
-    override suspend fun queryUser(id: String) =
+    override suspend fun queryUser(id: String): List<User> =
         query(id).items().map {
             val id = it["id"]?.s()!!
             val loginId = it["loginId"]?.s()!!

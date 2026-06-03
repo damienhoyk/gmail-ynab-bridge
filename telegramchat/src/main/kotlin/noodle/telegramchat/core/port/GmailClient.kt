@@ -4,10 +4,10 @@ import noodle.telegramchat.core.domain.GmailProfile
 import noodle.telegramchat.core.domain.GmailWatch
 import noodle.telegramchat.core.domain.WatchMailboxRequest
 
-interface GmailClient {
-    suspend fun getProfile(): GmailProfile?
+public interface GmailClient {
+    public suspend fun getProfile(): GmailProfile?
 
-    suspend fun getLabelId(labelName: String): String?
+    public suspend fun getLabelId(labelName: String): String?
 
-    suspend fun postWatch(request: WatchMailboxRequest): GmailWatch
+    public suspend fun postWatch(request: WatchMailboxRequest): GmailWatch
 }

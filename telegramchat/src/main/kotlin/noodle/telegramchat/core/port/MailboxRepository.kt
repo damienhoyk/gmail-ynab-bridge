@@ -2,6 +2,6 @@ package noodle.telegramchat.core.port
 
 import noodle.telegramchat.core.domain.Mailbox
 
-interface MailboxRepository {
-    suspend fun updateMailbox(mailbox: Mailbox)
+public interface MailboxRepository {
+    public suspend fun updateMailbox(mailbox: Mailbox)
 }

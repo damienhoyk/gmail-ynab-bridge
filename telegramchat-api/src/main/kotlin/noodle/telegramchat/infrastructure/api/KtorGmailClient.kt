@@ -15,12 +15,12 @@ import noodle.gmailsync.core.domain.GmailWatchRequest
 import noodle.telegramchat.core.domain.WatchMailboxRequest
 import noodle.telegramchat.core.port.GmailClient
 
-class KtorGmailClient(
+internal class KtorGmailClient(
     private val gmailApi: GmailApi,
 ) : GmailClient {
-    override suspend fun getProfile() = gmailApi.getProfile {}.body<GmailProfile>().toChatDomain()
+    override suspend fun getProfile(): noodle.telegramchat.core.domain.GmailProfile? = gmailApi.getProfile {}.body<GmailProfile>().toChatDomain()
 
-    override suspend fun getLabelId(labelName: String) =
+    override suspend fun getLabelId(labelName: String): String? =
         gmailApi
             .getLabels {}
             .body<GmailLabel.List>()

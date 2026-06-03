@@ -4,7 +4,7 @@ import io.ktor.client.request.parameter
 import noodle.telegram.infrastructure.api.TelegramBotApi
 import noodle.telegramchat.core.port.TelegramBotClient
 
-class KtorTelegramBotClient(
+public class KtorTelegramBotClient(
     private val telegramBotApi: TelegramBotApi,
 ) : TelegramBotClient {
     override suspend fun sendChatAction(
