@@ -9,7 +9,7 @@ import noodle.oauth.core.domain.TokenResponse
 import noodle.oauth.core.port.LoginIdProvider
 import noodle.oauth.infrastructure.api.TokenInfoResponse
 
-class KtorGoogleOAuth2Client(
+class KtorGoogleLoginIdProvider(
     private val googleOAuth2Api: GoogleOAuth2Api,
 ) : LoginIdProvider {
     override suspend fun getLoginId(response: TokenResponse): String? =

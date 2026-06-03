@@ -18,8 +18,6 @@ dependencies {
     implementation(project(":oauth-persistence"))
     implementation(project(":oauth-ynab-api"))
     implementation(project(":ynab-auth-api"))
-    implementation(project(":ynabsync"))
-    implementation(project(":ynabsync-api"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)
     implementation(libs.kotlinx.coroutines)
