@@ -30,7 +30,7 @@ class OidcApi(
     override val httpClient =
         httpClient.config {
             install(Logging) {
-                logger = Logger.Companion.DEFAULT
+                logger = Logger.DEFAULT
                 level = LogLevel.INFO
                 sanitizeHeader { it == HttpHeaders.Authorization }
             }
