@@ -3,14 +3,14 @@ package noodle.gmail.infrastructure.api.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GmailWatch(
-    val historyId: Long?,
-    val expiration: Long?,
-    val error: Error?,
+public data class GmailWatch(
+    public val historyId: Long?,
+    public val expiration: Long?,
+    public val error: Error?,
 ) {
     @Serializable
-    data class Error(
-        val code: Int,
-        val message: String,
+    public data class Error(
+        public val code: Int,
+        public val message: String,
     )
 }

@@ -33,7 +33,7 @@ import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 
-class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
+public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val log = LoggerFactory.getLogger(javaClass)
     private val initScope = CoroutineScope(Dispatchers.Default)
 
@@ -124,16 +124,17 @@ class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
             outboxRepository = { outboxRepositoryAsync.await() },
         )
 
-    override fun handleRequest(
+    public override fun handleRequest(
         request: DynamodbEvent,
         context: Context?,
-    ) = runBlocking {
-        request.records
-            .filter { "insert".equals(it.eventName, ignoreCase = true) }
-            .map { launch { handle(it) } }
-            .joinAll()
-        return@runBlocking "OK"
-    }
+    ): String =
+        runBlocking {
+            request.records
+                .filter { "insert".equals(it.eventName, ignoreCase = true) }
+                .map { launch { handle(it) } }
+                .joinAll()
+            return@runBlocking "OK"
+        }
 
     private suspend fun handle(record: DynamodbEvent.DynamodbStreamRecord) {
         val outbox = record.dynamodb.newImage

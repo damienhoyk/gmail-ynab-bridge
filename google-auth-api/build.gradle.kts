@@ -3,6 +3,7 @@ plugins {
 }
 
 group = "noodle.google.auth"
+
 version = "0.0.1-SNAPSHOT"
 
 dependencies {

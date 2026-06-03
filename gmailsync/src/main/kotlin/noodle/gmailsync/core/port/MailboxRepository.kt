@@ -2,8 +2,8 @@ package noodle.gmailsync.core.port
 
 import noodle.gmailsync.core.domain.Mailbox
 
-interface MailboxRepository {
-    suspend fun getMailbox(address: String): Mailbox
+public interface MailboxRepository {
+    public suspend fun getMailbox(address: String): Mailbox
 
-    suspend fun putMailbox(mailbox: Mailbox)
+    public suspend fun putMailbox(mailbox: Mailbox)
 }

@@ -10,14 +10,14 @@ import noodle.ynabsync.core.domain.YnabTransactionsRequest
 import noodle.ynabsync.core.port.YnabClient
 import noodle.ynabsync.core.domain.YnabTransaction as YnabTransactionDomain
 
-class KtorYnabClient(
+public class KtorYnabClient(
     private val ynabApi: YnabApi,
 ) : YnabClient {
-    suspend fun getUser() = ynabApi.getUser()
+    public suspend fun getUser(): io.ktor.client.statement.HttpResponse = ynabApi.getUser()
 
-    suspend fun getAccounts(budgetId: String = "default") = ynabApi.getAccounts(budgetId) {}.body<YnabAccount.Data>().toFinanceDomain()
+    public suspend fun getAccounts(budgetId: String = "default"): noodle.ynabsync.core.domain.YnabAccount.Data = ynabApi.getAccounts(budgetId) {}.body<YnabAccount.Data>().toFinanceDomain()
 
-    suspend fun getBudgets() = ynabApi.getBudgets {}.body<YnabBudget.Data>().toFinanceDomain()
+    public suspend fun getBudgets(): noodle.ynabsync.core.domain.YnabBudget.Data = ynabApi.getBudgets {}.body<YnabBudget.Data>().toFinanceDomain()
 
     override suspend fun postTransactions(
         budgetId: String,

@@ -31,6 +31,7 @@ dependencies {
 }
 
 kotlin {
+    explicitApi()
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
     }

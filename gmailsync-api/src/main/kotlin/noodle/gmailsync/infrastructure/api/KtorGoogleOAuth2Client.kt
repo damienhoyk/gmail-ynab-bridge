@@ -8,7 +8,7 @@ import noodle.gmailsync.core.port.OAuth2Client
 import noodle.google.auth.infrastructure.api.GoogleOAuth2Api
 import noodle.oauth.infrastructure.api.TokenInfoResponse
 
-class KtorGoogleOAuth2Client(
+public class KtorGoogleOAuth2Client(
     private val googleOAuth2Api: GoogleOAuth2Api,
 ) : OAuth2Client {
     override suspend fun getTokenInfo(token: String): String? =

@@ -1,12 +1,12 @@
 package noodle.telegramchat.core.port
 
-interface TelegramBotClient {
-    suspend fun sendChatAction(
+public interface TelegramBotClient {
+    public suspend fun sendChatAction(
         chatId: String,
         action: String,
     )
 
-    suspend fun sendMessage(
+    public suspend fun sendMessage(
         chatId: String,
         message: String,
     )

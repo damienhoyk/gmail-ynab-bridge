@@ -1,6 +1,6 @@
 package noodle.gmailsync.core.domain
 
-data class Mailbox(
+public data class Mailbox(
     val address: String,
     val state: Long?,
 )

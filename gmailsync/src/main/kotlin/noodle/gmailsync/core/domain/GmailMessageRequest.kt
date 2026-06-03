@@ -1,11 +1,11 @@
 package noodle.gmailsync.core.domain
 
-data class GmailMessageRequest(
-    val id: String,
-    val format: Format,
+public data class GmailMessageRequest(
+    public val id: String,
+    public val format: Format,
 ) {
-    enum class Format(
-        val value: String,
+    public enum class Format(
+        public val value: String,
     ) {
         MINIMAL("minimal"),
         FULL("full"),

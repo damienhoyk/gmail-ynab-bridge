@@ -6,10 +6,10 @@ import noodle.gmail.infrastructure.api.GmailApi
 import noodle.gmail.infrastructure.api.model.GmailHistory
 import noodle.gmailsync.core.port.GmailClient
 
-class KtorGmailClient(
+public class KtorGmailClient(
     private val gmailApi: GmailApi,
 ) : GmailClient {
-    override suspend fun getAddedMessageIds(sinceHistoryId: Long) =
+    override suspend fun getAddedMessageIds(sinceHistoryId: Long): List<String> =
         gmailApi
             .getHistory {
                 parameter("startHistoryId", sinceHistoryId)

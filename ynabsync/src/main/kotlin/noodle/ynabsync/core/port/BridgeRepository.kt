@@ -1,7 +1,7 @@
 package noodle.ynabsync.core.port
 
-interface BridgeRepository {
-    suspend fun getAccounts(
+public interface BridgeRepository {
+    public suspend fun getAccounts(
         source: String,
         destination: String,
     ): Map<String, String>

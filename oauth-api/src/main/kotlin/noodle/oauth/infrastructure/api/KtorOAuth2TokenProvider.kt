@@ -11,11 +11,11 @@ import noodle.oauth.core.domain.OAuth2TokenRequest
 import noodle.oauth.core.port.OAuth2TokenProvider
 import noodle.oauth.infrastructure.api.TokenResponse
 
-abstract class KtorOAuth2TokenProvider : OAuth2TokenProvider {
-    abstract val httpClient: HttpClient
-    abstract val tokenEndpoint: Deferred<String>
+public abstract class KtorOAuth2TokenProvider : OAuth2TokenProvider {
+    public abstract val httpClient: HttpClient
+    public abstract val tokenEndpoint: Deferred<String>
 
-    override suspend fun getToken(request: OAuth2TokenRequest) =
+    public override suspend fun getToken(request: OAuth2TokenRequest): noodle.oauth.core.domain.TokenResponse =
         httpClient
             .post(tokenEndpoint.await()) {
                 setBody(

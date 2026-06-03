@@ -1,6 +1,6 @@
 package noodle.oauth.core.domain
 
-data class TokenResponse(
+public data class TokenResponse(
     val accessToken: String? = null,
     val idToken: String? = null,
     val refreshToken: String? = null,

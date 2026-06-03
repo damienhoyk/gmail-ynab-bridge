@@ -39,7 +39,7 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository as SecurityTokenRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbTokenRepository as TelegramTokenRepository
 
-class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
+public class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val log = LoggerFactory.getLogger(javaClass)
     private val initScope = CoroutineScope(Dispatchers.Default)
     private val mapper = Json { ignoreUnknownKeys = true }
@@ -166,25 +166,26 @@ class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     override fun handleRequest(
         event: APIGatewayV2HTTPEvent,
         context: Context,
-    ) = runBlocking {
-        val webhookEvent = mapper.decodeFromString<TelegramWebhookEvent>(event.body!!)
-        val command =
-            RespondChatCommand(
-                telegramUserId =
-                    webhookEvent.message
-                        ?.from
-                        ?.id
-                        ?.toString(),
-                text = webhookEvent.message?.text,
-                chatId =
-                    webhookEvent.message
-                        ?.chat
-                        ?.id
-                        ?.toString(),
-            )
+    ): String =
+        runBlocking {
+            val webhookEvent = mapper.decodeFromString<TelegramWebhookEvent>(event.body!!)
+            val command =
+                RespondChatCommand(
+                    telegramUserId =
+                        webhookEvent.message
+                            ?.from
+                            ?.id
+                            ?.toString(),
+                    text = webhookEvent.message?.text,
+                    chatId =
+                        webhookEvent.message
+                            ?.chat
+                            ?.id
+                            ?.toString(),
+                )
 
-        val statusCode = service.execute(command)
+            val statusCode = service.execute(command)
 
-        return@runBlocking buildJsonObject { put("statusCode", statusCode) }.toString()
-    }
+            return@runBlocking buildJsonObject { put("statusCode", statusCode) }.toString()
+        }
 }

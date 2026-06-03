@@ -10,19 +10,20 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
 import kotlinx.serialization.json.Json
 
-class YnabAuthApi(
+public class YnabAuthApi(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) {
     private val initScope = CoroutineScope(Default)
 
-    val tokenEndpoint = initScope.async { "https://app.ynab.com/oauth/token" }
+    public val tokenEndpoint: Deferred<String> = initScope.async { "https://app.ynab.com/oauth/token" }
 
-    val httpClient =
+    public val httpClient: HttpClient =
         httpClient.config {
             install(Logging) {
                 logger = Logger.DEFAULT

@@ -5,15 +5,15 @@ import noodle.gmailsync.core.domain.Outbox
 import noodle.gmailsync.core.port.OutboxRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
-class DynamoDbOutboxRepository(
+public class DynamoDbOutboxRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
     environment: String? = null,
 ) : DynamoDbSortRepository(environment),
     OutboxRepository {
-    override val name = "outbox"
+    override val name: String = "outbox"
 
     override val partitionKey: String = "destination"
-    override val sortKey = "source"
+    override val sortKey: String = "source"
 
     override suspend fun putOutbox(outbox: Outbox) {
         put(outbox.destination, outbox.source)

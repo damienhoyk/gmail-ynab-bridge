@@ -6,14 +6,14 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 @JvmInline
-value class BitwardenSecret(
+public value class BitwardenSecret(
     private val json: JsonObject,
 ) {
-    val apiKey get() = json["apiKey"]?.content
-    val clientId get() = json["clientId"]?.content
-    val clientSecret get() = json["clientSecret"]?.content
+    public val apiKey: String? get() = json["apiKey"]?.content
+    public val clientId: String? get() = json["clientId"]?.content
+    public val clientSecret: String? get() = json["clientSecret"]?.content
 
-    private val JsonElement.content get() = jsonPrimitive.content
+    private val JsonElement.content: String get() = jsonPrimitive.content
 }
 
-fun String.bitwardenSecret(): BitwardenSecret = BitwardenSecret(Json.decodeFromString(this))
+public fun String.bitwardenSecret(): BitwardenSecret = BitwardenSecret(Json.decodeFromString(this))

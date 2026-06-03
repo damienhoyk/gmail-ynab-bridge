@@ -1,5 +1,5 @@
 package noodle.gmailsync.core.port
 
-interface GmailClientFactory {
-    suspend fun create(loginId: String): GmailClient
+public interface GmailClientFactory {
+    public suspend fun create(loginId: String): GmailClient
 }

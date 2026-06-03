@@ -14,21 +14,21 @@ private fun String.stripHtml() =
         .replace(WHITESPACE_REGEX, " ")
 
 @Serializable
-data class GmailMessage(
-    val id: String? = null,
-    val threadId: String? = null,
-    val snippet: String? = null,
-    val historyId: String? = null,
-    val internalDate: String? = null,
-    val sizeEstimate: Int? = null,
-    val raw: String? = null,
-    val payload: Part? = null,
+public data class GmailMessage(
+    public val id: String? = null,
+    public val threadId: String? = null,
+    public val snippet: String? = null,
+    public val historyId: String? = null,
+    public val internalDate: String? = null,
+    public val sizeEstimate: Int? = null,
+    public val raw: String? = null,
+    public val payload: Part? = null,
 ) {
-    val parts by lazy {
+    public val parts: kotlin.collections.List<Part> by lazy {
         payload?.flatten() ?: emptyList()
     }
 
-    val text by lazy {
+    public val text: String by lazy {
         parts
             .asSequence()
             .mapNotNull { it.data }
@@ -36,7 +36,7 @@ data class GmailMessage(
             .joinToString(" ") { String(it).stripHtml().trim() }
     }
 
-    val from by lazy {
+    public val from: InternetAddress? by lazy {
         payload
             ?.headers
             ?.find { it["name"].equals("from", true) }
@@ -45,29 +45,29 @@ data class GmailMessage(
     }
 
     @Serializable
-    data class Data(
-        val data: String? = null,
+    public data class Data(
+        public val data: String? = null,
     )
 
     @Serializable
-    data class List(
-        val messages: kotlin.collections.List<GmailMessage> = emptyList(),
-        val nextPageToken: String? = null,
-        val resultSizeEstimate: Int,
+    public data class List(
+        public val messages: kotlin.collections.List<GmailMessage> = emptyList(),
+        public val nextPageToken: String? = null,
+        public val resultSizeEstimate: Int,
     )
 
     @Serializable
-    data class Part(
-        val partId: String,
-        val mimeType: String,
-        val parts: kotlin.collections.List<Part> = emptyList(),
-        val headers: kotlin.collections.List<Map<String, String>> = emptyList(),
-        val body: Data? = null,
+    public data class Part(
+        public val partId: String,
+        public val mimeType: String,
+        public val parts: kotlin.collections.List<Part> = emptyList(),
+        public val headers: kotlin.collections.List<Map<String, String>> = emptyList(),
+        public val body: Data? = null,
     ) {
-        val data
+        public val data: String?
             get() = body?.data
 
-        fun flatten(): kotlin.collections.List<Part> {
+        public fun flatten(): kotlin.collections.List<Part> {
             val result = mutableListOf<Part>()
             val queue = ArrayDeque<Part>()
 

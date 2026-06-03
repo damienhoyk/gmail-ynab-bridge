@@ -14,19 +14,19 @@ import noodle.oauth.core.port.TokenRepository
 import noodle.oauth.core.port.UserRepository
 import org.slf4j.LoggerFactory
 
-class AuthorizeService(
-    val clientId: String,
-    val clientSecret: String,
-    val redirectUri: String,
-    val authClient: suspend () -> OAuth2TokenProvider,
-    val loginIdProvider: suspend () -> LoginIdProvider,
-    val tokenRepository: suspend () -> TokenRepository,
-    val userRepository: suspend () -> UserRepository,
-    val loginRepository: suspend () -> LoginRepository,
+public class AuthorizeService(
+    public val clientId: String,
+    public val clientSecret: String,
+    public val redirectUri: String,
+    public val authClient: suspend () -> OAuth2TokenProvider,
+    public val loginIdProvider: suspend () -> LoginIdProvider,
+    public val tokenRepository: suspend () -> TokenRepository,
+    public val userRepository: suspend () -> UserRepository,
+    public val loginRepository: suspend () -> LoginRepository,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    fun execute(command: AuthorizeCommand) =
+    public fun execute(command: AuthorizeCommand): Int =
         runBlocking {
             val code = command.code
             val state = command.state

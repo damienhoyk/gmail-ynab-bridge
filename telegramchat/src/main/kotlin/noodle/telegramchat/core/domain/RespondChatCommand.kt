@@ -1,6 +1,6 @@
 package noodle.telegramchat.core.domain
 
-data class RespondChatCommand(
+public data class RespondChatCommand(
     val telegramUserId: String?,
     val text: String?,
     val chatId: String?,

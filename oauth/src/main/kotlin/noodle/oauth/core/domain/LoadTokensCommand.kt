@@ -1,5 +1,5 @@
 package noodle.oauth.core.domain
 
-data class LoadTokensCommand(
+public data class LoadTokensCommand(
     val loginId: String,
 )

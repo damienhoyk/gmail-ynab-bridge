@@ -3,23 +3,23 @@ package noodle.telegram.infrastructure.api.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TelegramWebhookEvent(
-    val message: Message? = null,
+public data class TelegramWebhookEvent(
+    public val message: Message? = null,
 ) {
     @Serializable
-    data class Message(
-        val chat: Chat? = null,
-        val from: User? = null,
-        val text: String? = null,
+    public data class Message(
+        public val chat: Chat? = null,
+        public val from: User? = null,
+        public val text: String? = null,
     )
 
     @Serializable
-    data class Chat(
-        val id: Long? = null,
+    public data class Chat(
+        public val id: Long? = null,
     )
 
     @Serializable
-    data class User(
-        val id: Long? = null,
+    public data class User(
+        public val id: Long? = null,
     )
 }

@@ -7,10 +7,10 @@ import noodle.gmail.infrastructure.api.model.GmailMessage
 import noodle.ynabsync.core.domain.MailMessageRequest
 import noodle.ynabsync.core.port.GmailClient
 
-class KtorGmailClient(
+public class KtorGmailClient(
     private val gmailApi: GmailApi,
 ) : GmailClient {
-    override suspend fun getMessage(request: MailMessageRequest) =
+    override suspend fun getMessage(request: MailMessageRequest): noodle.ynabsync.core.domain.GmailMessage =
         gmailApi
             .getMessage(messageId = request.messageId) {
                 parameter("format", request.format.value)

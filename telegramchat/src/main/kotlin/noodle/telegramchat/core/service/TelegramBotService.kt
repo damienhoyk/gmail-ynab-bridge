@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory
 import java.util.UUID
 import kotlin.time.Duration.Companion.minutes
 
-class TelegramBotService(
+public class TelegramBotService(
     private val botClient: suspend () -> TelegramBotClient,
     private val googleAuthorizationUrl: suspend () -> String,
     private val ynabAuthorizationUrl: suspend () -> String,
@@ -33,7 +33,7 @@ class TelegramBotService(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    suspend fun execute(command: RespondChatCommand): Int =
+    public suspend fun execute(command: RespondChatCommand): Int =
         coroutineScope {
             val text = command.text ?: return@coroutineScope 400
             val chatId = command.chatId ?: return@coroutineScope 400

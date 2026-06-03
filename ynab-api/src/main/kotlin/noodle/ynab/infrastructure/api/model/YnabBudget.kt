@@ -3,17 +3,17 @@ package noodle.ynab.infrastructure.api.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class YnabBudget(
-    val id: String,
-    val name: String,
+public data class YnabBudget(
+    public val id: String,
+    public val name: String,
 ) {
     @Serializable
-    data class Body(
-        val budgets: List<YnabBudget>,
+    public data class Body(
+        public val budgets: List<YnabBudget>,
     )
 
     @Serializable
-    data class Data(
-        val data: Body,
+    public data class Data(
+        public val data: Body,
     )
 }

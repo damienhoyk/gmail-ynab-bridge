@@ -2,7 +2,7 @@ package noodle.telegramchat.core.domain
 
 import kotlin.time.Duration
 
-data class StateToken(
+public data class StateToken(
     val id: String,
     val userId: String?,
     val duration: Duration,

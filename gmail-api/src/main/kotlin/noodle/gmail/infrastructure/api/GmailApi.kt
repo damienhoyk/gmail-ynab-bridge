@@ -11,13 +11,14 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-class GmailApi(
+public class GmailApi(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) {
@@ -46,34 +47,34 @@ class GmailApi(
             block()
         }
 
-    suspend fun getHistory(
+    public suspend fun getHistory(
         user: String = "me",
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.get("$user/history", block)
+    ): HttpResponse = httpClient.get("$user/history", block)
 
-    suspend fun getMessage(
+    public suspend fun getMessage(
         user: String = "me",
         messageId: String,
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.get("$user/messages/$messageId", block)
+    ): HttpResponse = httpClient.get("$user/messages/$messageId", block)
 
-    suspend fun getProfile(
+    public suspend fun getProfile(
         user: String = "me",
         block: HttpRequestBuilder.() -> Unit,
-    ) = httpClient.get("$user/profile", block)
+    ): HttpResponse = httpClient.get("$user/profile", block)
 
-    suspend fun getLabels(
+    public suspend fun getLabels(
         user: String = "me",
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.get("$user/labels", block)
+    ): HttpResponse = httpClient.get("$user/labels", block)
 
-    suspend fun postWatch(
+    public suspend fun postWatch(
         user: String = "me",
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.post("$user/watch", block)
+    ): HttpResponse = httpClient.post("$user/watch", block)
 
-    suspend fun postStop(
+    public suspend fun postStop(
         user: String = "me",
         block: HttpRequestBuilder.() -> Unit = {},
-    ) = httpClient.post("$user/stop", block)
+    ): HttpResponse = httpClient.post("$user/stop", block)
 }

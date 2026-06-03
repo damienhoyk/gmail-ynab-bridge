@@ -1,10 +1,10 @@
 package noodle.gmailsync.core.domain
 
-data class SyncMailboxCommand(
-    val email: String?,
-    val authorization: String?,
-    val state: Long?,
+public data class SyncMailboxCommand(
+    public val email: String?,
+    public val authorization: String?,
+    public val state: Long?,
 ) {
-    val bearerToken: String
+    public val bearerToken: String
         get() = authorization?.substringAfter("Bearer ") ?: ""
 }
