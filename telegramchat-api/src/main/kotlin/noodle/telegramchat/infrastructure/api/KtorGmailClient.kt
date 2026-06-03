@@ -14,7 +14,6 @@ import noodle.gmail.infrastructure.api.model.GmailWatch
 import noodle.gmailsync.core.domain.GmailWatchRequest
 import noodle.telegramchat.core.domain.WatchMailboxRequest
 import noodle.telegramchat.core.port.GmailClient
-import noodle.telegramchat.infrastructure.api.toChatDomain
 
 class KtorGmailClient(
     private val gmailApi: GmailApi,
@@ -50,3 +49,22 @@ class KtorGmailClient(
             .toChatDomain()
     }
 }
+
+private fun GmailProfile.toChatDomain() =
+    noodle.telegramchat.core.domain.GmailProfile(
+        emailAddress = emailAddress,
+        historyId = historyId,
+    )
+
+private fun GmailWatch.toChatDomain() =
+    noodle.telegramchat.core.domain.GmailWatch(
+        historyId = historyId,
+        expiration = expiration,
+        error = error?.toChatDomain(),
+    )
+
+private fun GmailWatch.Error.toChatDomain() =
+    noodle.telegramchat.core.domain.GmailWatch.Error(
+        code = code,
+        message = message,
+    )

@@ -6,7 +6,6 @@ import noodle.gmail.infrastructure.api.GmailApi
 import noodle.gmail.infrastructure.api.model.GmailMessage
 import noodle.ynabsync.core.domain.MailMessageRequest
 import noodle.ynabsync.core.port.GmailClient
-import noodle.ynabsync.infrastructure.api.toFinanceDomain
 
 class KtorGmailClient(
     private val gmailApi: GmailApi,
@@ -24,3 +23,10 @@ class KtorGmailClient(
                 }
             }
 }
+
+private fun GmailMessage.toFinanceDomain() =
+    noodle.ynabsync.core.domain.GmailMessage(
+        id = id,
+        text = text,
+        senderEmail = from?.address,
+    )

@@ -5,7 +5,6 @@ import io.ktor.client.request.parameter
 import noodle.gmail.infrastructure.api.GmailApi
 import noodle.gmail.infrastructure.api.model.GmailHistory
 import noodle.gmailsync.core.port.GmailClient
-import noodle.gmailsync.infrastructure.api.toAddedMessageIds
 
 class KtorGmailClient(
     private val gmailApi: GmailApi,
@@ -22,3 +21,5 @@ class KtorGmailClient(
         const val MESSAGE_ADDED = "messageAdded"
     }
 }
+
+private fun GmailHistory.toAddedMessageIds(): List<String> = history.flatMap { it.messagesAdded }.mapNotNull { it.message.id }

@@ -8,8 +8,6 @@ import noodle.ynab.infrastructure.api.model.YnabBudget
 import noodle.ynab.infrastructure.api.model.YnabTransaction
 import noodle.ynabsync.core.domain.YnabTransactionsRequest
 import noodle.ynabsync.core.port.YnabClient
-import noodle.ynabsync.infrastructure.api.toFinanceDomain
-import noodle.ynabsync.infrastructure.api.toYnabData
 import noodle.ynabsync.core.domain.YnabTransaction as YnabTransactionDomain
 
 class KtorYnabClient(
@@ -43,3 +41,36 @@ class KtorYnabClient(
         ynabApi.postTransactions(budgetId) { setBody(body) }
     }
 }
+
+private fun YnabAccount.toFinanceDomain() =
+    noodle.ynabsync.core.domain
+        .YnabAccount(id = id, name = name)
+
+private fun YnabAccount.Body.toFinanceDomain() =
+    noodle.ynabsync.core.domain.YnabAccount
+        .Body(accounts = accounts.map { it.toFinanceDomain() })
+
+private fun YnabAccount.Data.toFinanceDomain() =
+    noodle.ynabsync.core.domain.YnabAccount
+        .Data(data = data.toFinanceDomain())
+
+private fun YnabBudget.toFinanceDomain() =
+    noodle.ynabsync.core.domain
+        .YnabBudget(id = id, name = name)
+
+private fun YnabBudget.Body.toFinanceDomain() =
+    noodle.ynabsync.core.domain.YnabBudget
+        .Body(budgets = budgets.map { it.toFinanceDomain() })
+
+private fun YnabBudget.Data.toFinanceDomain() =
+    noodle.ynabsync.core.domain.YnabBudget
+        .Data(data = data.toFinanceDomain())
+
+private fun YnabTransactionsRequest.YnabTransaction.toYnabData() =
+    YnabTransaction(
+        id = id,
+        accountId = accountId,
+        amount = amount,
+        date = date,
+        payeeName = payeeName,
+    )
