@@ -18,6 +18,7 @@ spring-shell = "[3.4.0, 3.5.0)"
 auth0-jwt = "[4.4.0, 4.5.0)"
 cron-utils = "[9.2.1, 9.3.0)"
 ktlint-plugin = "[14.2.0, 14.3.0)"
+konsist = "0.17.3"
 
 [libraries]
 aws-lambda-core = { group = "com.amazonaws", name = "aws-lambda-java-core", version.ref = "aws-lambda-core" }
@@ -45,6 +46,7 @@ slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 spring-gradle = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot" }
 google-oauth2 = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "google-oauth2" }
 spring-shell-dependencies = { module = "org.springframework.shell:spring-shell-dependencies", version.ref = "spring-shell" }
+konsist = { group = "com.lemonappdev", name = "konsist", version.ref = "konsist" }
 
 [bundles]
 ktor-client = ["ktor-client-content-negotiation", "ktor-client-core", "ktor-client-java", "ktor-client-json", "ktor-client-logging", "ktor-serialization-kotlinx-json"]
