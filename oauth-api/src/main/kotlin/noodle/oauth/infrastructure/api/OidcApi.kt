@@ -4,8 +4,12 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.Parameters
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -18,10 +22,10 @@ public class OidcApi(
     httpClient: HttpClient,
     private val discoveryUrl: String,
     block: HttpClientConfig<*>.() -> Unit = {},
-) : KtorOAuth2TokenProvider() {
+) {
     private val initScope = CoroutineScope(Dispatchers.Default)
 
-    public override val httpClient: HttpClient =
+    private val httpClient: HttpClient =
         httpClient.config {
             defaultLogging()
             defaultJson()
@@ -33,7 +37,7 @@ public class OidcApi(
             getDiscoveryDocument().body<JsonObject>()
         }
 
-    public override val tokenEndpoint: kotlinx.coroutines.Deferred<String> =
+    private val tokenEndpoint: kotlinx.coroutines.Deferred<String> =
         initScope.async {
             val discoveryDocument = discoveryDocument.await()
             discoveryDocument["token_endpoint"]?.jsonPrimitive?.content ?: throw IllegalStateException()
@@ -52,6 +56,8 @@ public class OidcApi(
         }
 
     public suspend fun getDiscoveryDocument(): io.ktor.client.statement.HttpResponse = httpClient.get(discoveryUrl)
+
+    public suspend fun postToken(form: Parameters): HttpResponse = httpClient.post(tokenEndpoint.await()) { setBody(FormDataContent(form)) }
 
     public suspend fun revokeToken(block: HttpRequestBuilder.() -> Unit = {}): io.ktor.client.statement.HttpResponse =
         httpClient

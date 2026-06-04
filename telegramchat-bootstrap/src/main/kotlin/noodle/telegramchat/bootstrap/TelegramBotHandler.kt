@@ -19,9 +19,9 @@ import kotlinx.serialization.json.put
 import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.oauth.core.service.TokenService
+import noodle.oauth.infrastructure.api.OAuth2TokenClient
 import noodle.oauth.infrastructure.api.OidcApi
 import noodle.oauth.infrastructure.api.bearer
-import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
 import noodle.telegram.infrastructure.api.TelegramBotApi
 import noodle.telegram.infrastructure.api.model.TelegramWebhookEvent
 import noodle.telegramchat.core.domain.RespondChatCommand
@@ -75,7 +75,7 @@ public class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
     private val telegramSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("telegram")?.bitwardenSecret()!! }
 
-    private val googleOidcClientAsync = initScope.async { KtorGoogleOidcClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")) }
+    private val googleOidcClientAsync = initScope.async { OAuth2TokenClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")::postToken) }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()

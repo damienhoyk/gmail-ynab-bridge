@@ -16,9 +16,9 @@ import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.google.auth.infrastructure.api.GoogleOAuth2Api
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
+import noodle.oauth.infrastructure.api.OAuth2TokenClient
 import noodle.oauth.infrastructure.api.OidcApi
 import noodle.oauth.infrastructure.api.google.KtorGoogleLoginIdProvider
-import noodle.oauth.infrastructure.api.google.KtorGoogleOidcClient
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
@@ -54,7 +54,7 @@ public class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
         }
 
     private val engineAsync = initScope.async { Java.create() }
-    private val googleOidcClient: kotlinx.coroutines.Deferred<KtorGoogleOidcClient> = initScope.async { KtorGoogleOidcClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")) }
+    private val googleOidcClient: kotlinx.coroutines.Deferred<OAuth2TokenClient> = initScope.async { OAuth2TokenClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")::postToken) }
     private val googleLoginProviderAsync: kotlinx.coroutines.Deferred<KtorGoogleLoginIdProvider> = initScope.async { KtorGoogleLoginIdProvider(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
 
     private val redirectUri: String = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()

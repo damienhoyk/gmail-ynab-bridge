@@ -15,7 +15,7 @@ import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
-import noodle.oauth.infrastructure.api.ynab.KtorYnabAuthClient
+import noodle.oauth.infrastructure.api.OAuth2TokenClient
 import noodle.oauth.infrastructure.api.ynab.KtorYnabLoginIdProvider
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
@@ -54,11 +54,9 @@ public class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val engineAsync = initScope.async { Java.create() }
 
-    private val ynabAuthClient: kotlinx.coroutines.Deferred<KtorYnabAuthClient> =
+    private val ynabAuthClient: kotlinx.coroutines.Deferred<OAuth2TokenClient> =
         initScope.async {
-            KtorYnabAuthClient(
-                YnabAuthApi(HttpClient(engineAsync.await())),
-            )
+            OAuth2TokenClient(YnabAuthApi(HttpClient(engineAsync.await()))::postToken)
         }
     private val ynabLoginProviderAsync: kotlinx.coroutines.Deferred<KtorYnabLoginIdProvider> = initScope.async { KtorYnabLoginIdProvider(HttpClient(engineAsync.await())) }
 
