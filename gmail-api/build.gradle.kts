@@ -9,6 +9,7 @@ version = "0.0.1-SNAPSHOT"
 
 dependencies {
     implementation(platform(libs.ktor.dependencies))
+    implementation(project(":ktor"))
     implementation(libs.bundles.ktor.client)
     implementation(libs.jakarta.mail)
     implementation("io.ktor:ktor-client-auth")

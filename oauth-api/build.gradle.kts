@@ -11,6 +11,7 @@ dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
     implementation(project(":bitwarden-api"))
+    implementation(project(":ktor"))
     implementation(project(":oauth"))
     implementation("io.ktor:ktor-client-auth")
     implementation("software.amazon.awssdk:secretsmanager")

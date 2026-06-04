@@ -33,6 +33,7 @@ include(":ynab-auth-api")
 include(":ynabsync-api")
 
 // Common Libraries
+include(":ktor")
 include(":bitwarden-api")
 include(":dynamodb")
 
