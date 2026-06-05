@@ -17,12 +17,11 @@ import noodle.bitwarden.infrastructure.api.BitwardenSecret
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
-import noodle.oauth.infrastructure.api.OAuth2Client
 import noodle.oauth.infrastructure.api.ynab.KtorYnabLoginIdProvider
+import noodle.oauth.infrastructure.api.ynab.KtorYnabTokenProvider
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
-import noodle.oauth2.infrastructure.api.OAuth2TokenApi
 import noodle.ynab.auth.infrastructure.api.YnabAuthApi
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
@@ -57,11 +56,11 @@ public class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val engineAsync = initScope.async { Java.create() }
 
-    private val ynabAuthClient: Deferred<OAuth2Client> =
+    private val ynabTokenProviderAsync =
         initScope.async {
             val httpClient = HttpClient(engineAsync.await())
-            val oauth2TokenApi = OAuth2TokenApi(httpClient, YnabAuthApi.TOKEN_ENDPOINT)
-            OAuth2Client(oauth2TokenApi)
+            val ynabAuthApi = YnabAuthApi(httpClient)
+            KtorYnabTokenProvider(ynabAuthApi)
         }
     private val ynabLoginProviderAsync: Deferred<KtorYnabLoginIdProvider> = initScope.async { KtorYnabLoginIdProvider(HttpClient(engineAsync.await())) }
 
@@ -85,7 +84,7 @@ public class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             clientId = runBlocking { secretAsync.await().clientId!! },
             clientSecret = runBlocking { secretAsync.await().clientSecret!! },
             redirectUri = redirectUri,
-            authClient = { ynabAuthClient.await() },
+            authClient = { ynabTokenProviderAsync.await() },
             loginIdProvider = { ynabLoginProviderAsync.await() },
             tokenRepository = { tokenRepository.await() },
             userRepository = { userRepository.await() },

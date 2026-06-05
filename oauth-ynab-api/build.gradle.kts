@@ -10,6 +10,7 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(platform(libs.ktor.dependencies))
     implementation(project(":oauth"))
+    implementation(project(":oauth2-api"))
     implementation(project(":oauth-api"))
     implementation(project(":ynab-auth-api"))
     implementation(project(":ynab-api"))

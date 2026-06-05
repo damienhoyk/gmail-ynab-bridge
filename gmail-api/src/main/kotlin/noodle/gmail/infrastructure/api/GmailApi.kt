@@ -7,7 +7,7 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
+import io.ktor.http.ContentType.Application
 import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
 import noodle.ktor.defaultJson
@@ -17,6 +17,7 @@ public class GmailApi(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) {
+    private val urlString = "https://gmail.googleapis.com/gmail/v1/users/"
     private val httpClient =
         httpClient.config {
             defaultLogging()
@@ -28,8 +29,8 @@ public class GmailApi(
             )
 
             defaultRequest {
-                contentType(ContentType.Application.Json)
-                url("https://gmail.googleapis.com/gmail/v1/users/")
+                contentType(Application.Json)
+                url(urlString)
             }
 
             block()

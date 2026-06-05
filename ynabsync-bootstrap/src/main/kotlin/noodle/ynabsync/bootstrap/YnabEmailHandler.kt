@@ -14,11 +14,11 @@ import kotlinx.coroutines.runBlocking
 import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.oauth.core.service.TokenService
-import noodle.oauth.infrastructure.api.OAuth2Client
 import noodle.oauth.infrastructure.api.bearer
+import noodle.oauth.infrastructure.api.google.KtorGoogleTokenProvider
+import noodle.oauth.infrastructure.api.ynab.KtorYnabTokenProvider
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
-import noodle.oauth2.infrastructure.api.OAuth2TokenApi
-import noodle.oauth2.infrastructure.api.OidcDiscoveryApi
+import noodle.oauth2.infrastructure.api.OidcApi
 import noodle.ynab.auth.infrastructure.api.YnabAuthApi
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.service.YnabEmailService
@@ -63,12 +63,11 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val engineAsync = initScope.async { Java.create() }
 
     private val googleSecretAsync = initScope.async { bitwardenAsync.await().getSecret("google")?.bitwardenSecret()!! }
-    private val googleOidcClientAsync =
+    private val googleTokenProviderAsync =
         initScope.async {
             val httpClient = HttpClient(engineAsync.await())
-            val discoveryDocument = OidcDiscoveryApi(httpClient, "https://accounts.google.com/.well-known/openid-configuration").getDiscoveryDocument()
-            val oauth2TokenApi = OAuth2TokenApi(httpClient, discoveryDocument.tokenEndpoint ?: throw IllegalStateException("Missing token_endpoint in discovery document"))
-            OAuth2Client(oauth2TokenApi)
+            val oidcApi = OidcApi("https://accounts.google.com/.well-known/openid-configuration", httpClient)
+            KtorGoogleTokenProvider(oidcApi)
         }
     private val googleAuthTokenService =
         initScope.async {
@@ -77,16 +76,16 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
                 clientId = secret.clientId!!,
                 clientSecret = secret.clientSecret!!,
                 tokenRepository = tokenRepositoryAsync.await(),
-                authClient = googleOidcClientAsync.await(),
+                authClient = googleTokenProviderAsync.await(),
             )
         }
 
     private val ynabSecretAsync = initScope.async { bitwardenAsync.await().getSecret("ynab")?.bitwardenSecret()!! }
-    private val ynabAuthClientAsync =
+    private val ynabTokenProviderAsync =
         initScope.async {
             val httpClient = HttpClient(engineAsync.await())
-            val oauth2TokenApi = OAuth2TokenApi(httpClient, YnabAuthApi.TOKEN_ENDPOINT)
-            OAuth2Client(oauth2TokenApi)
+            val ynabAuthApi = YnabAuthApi(httpClient)
+            KtorYnabTokenProvider(ynabAuthApi)
         }
     private val ynabAuthTokenService =
         initScope.async {
@@ -95,7 +94,7 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
                 clientId = secret.clientId!!,
                 clientSecret = secret.clientSecret!!,
                 tokenRepository = tokenRepositoryAsync.await(),
-                authClient = ynabAuthClientAsync.await(),
+                authClient = ynabTokenProviderAsync.await(),
             )
         }
 

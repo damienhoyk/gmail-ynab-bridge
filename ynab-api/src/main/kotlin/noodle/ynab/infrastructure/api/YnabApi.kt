@@ -7,7 +7,7 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
+import io.ktor.http.ContentType.Application
 import io.ktor.http.contentType
 import noodle.ktor.defaultJson
 import noodle.ktor.defaultLogging
@@ -16,13 +16,14 @@ public class YnabApi(
     httpClient: HttpClient,
     block: HttpClientConfig<*>.() -> Unit = {},
 ) {
+    private val urlString = "https://api.ynab.com/v1/"
     private val httpClient =
         httpClient.config {
             defaultLogging()
             defaultJson()
             defaultRequest {
-                contentType(ContentType.Application.Json)
-                url("https://api.ynab.com/v1/")
+                contentType(Application.Json)
+                url(urlString)
             }
 
             block()

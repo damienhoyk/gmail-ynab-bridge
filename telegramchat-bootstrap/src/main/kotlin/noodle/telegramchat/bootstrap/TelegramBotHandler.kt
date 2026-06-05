@@ -18,10 +18,9 @@ import kotlinx.serialization.json.put
 import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.oauth.core.service.TokenService
-import noodle.oauth.infrastructure.api.OAuth2Client
 import noodle.oauth.infrastructure.api.bearer
-import noodle.oauth2.infrastructure.api.OAuth2TokenApi
-import noodle.oauth2.infrastructure.api.OidcDiscoveryApi
+import noodle.oauth.infrastructure.api.google.KtorGoogleTokenProvider
+import noodle.oauth2.infrastructure.api.OidcApi
 import noodle.telegram.infrastructure.api.TelegramBotApi
 import noodle.telegram.infrastructure.api.model.TelegramWebhookEvent
 import noodle.telegramchat.core.domain.RespondChatCommand
@@ -74,12 +73,11 @@ public class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
     private val telegramSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("telegram")?.bitwardenSecret()!! }
 
-    private val googleOidcClientAsync =
+    private val googleTokenProviderAsync =
         initScope.async {
             val httpClient = HttpClient(engineAsync.await())
-            val discoveryDocument = OidcDiscoveryApi(httpClient, "https://accounts.google.com/.well-known/openid-configuration").getDiscoveryDocument()
-            val oauth2TokenApi = OAuth2TokenApi(httpClient, discoveryDocument.tokenEndpoint ?: throw IllegalStateException("Missing token_endpoint in discovery document"))
-            OAuth2Client(oauth2TokenApi)
+            val oidcApi = OidcApi("https://accounts.google.com/.well-known/openid-configuration", httpClient)
+            KtorGoogleTokenProvider(oidcApi)
         }
     private val googleAuthTokenService =
         initScope.async {
@@ -88,7 +86,7 @@ public class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
                 clientId = secret.clientId!!,
                 clientSecret = secret.clientSecret!!,
                 tokenRepository = securityTokenRepository.await(),
-                authClient = googleOidcClientAsync.await(),
+                authClient = googleTokenProviderAsync.await(),
             )
         }
 

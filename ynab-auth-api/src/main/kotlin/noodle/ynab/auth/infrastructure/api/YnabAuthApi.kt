@@ -1,5 +1,30 @@
 package noodle.ynab.auth.infrastructure.api
 
-public object YnabAuthApi {
-    public const val TOKEN_ENDPOINT: String = "https://app.ynab.com/oauth/token"
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.forms.submitForm
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType.Application
+import io.ktor.http.Parameters
+import io.ktor.http.contentType
+import noodle.ktor.defaultLogging
+
+public class YnabAuthApi(
+    httpClient: HttpClient,
+    block: HttpClientConfig<*>.() -> Unit = {},
+) {
+    private val urlString = "https://app.ynab.com/oauth/"
+    private val httpClient =
+        httpClient.config {
+            defaultLogging()
+            defaultRequest {
+                contentType(Application.Json)
+                url(urlString)
+            }
+
+            block()
+        }
+
+    public suspend fun requestToken(parameters: Parameters): HttpResponse = httpClient.submitForm("token", parameters)
 }

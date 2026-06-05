@@ -18,13 +18,12 @@ import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.google.auth.infrastructure.api.GoogleOAuth2Api
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
-import noodle.oauth.infrastructure.api.OAuth2Client
 import noodle.oauth.infrastructure.api.google.KtorGoogleLoginIdProvider
+import noodle.oauth.infrastructure.api.google.KtorGoogleTokenProvider
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
-import noodle.oauth2.infrastructure.api.OAuth2TokenApi
-import noodle.oauth2.infrastructure.api.OidcDiscoveryApi
+import noodle.oauth2.infrastructure.api.OidcApi
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
@@ -57,12 +56,11 @@ public class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
         }
 
     private val engineAsync = initScope.async { Java.create() }
-    private val googleOidcClient: Deferred<OAuth2Client> =
+    private val googleTokenProviderAsync =
         initScope.async {
             val httpClient = HttpClient(engineAsync.await())
-            val discoveryDocument = OidcDiscoveryApi(httpClient, "https://accounts.google.com/.well-known/openid-configuration").getDiscoveryDocument()
-            val oauth2TokenApi = OAuth2TokenApi(httpClient, discoveryDocument.tokenEndpoint ?: throw IllegalStateException("Missing token_endpoint in discovery document"))
-            OAuth2Client(oauth2TokenApi)
+            val oidcApi = OidcApi("https://accounts.google.com/.well-known/openid-configuration", httpClient)
+            KtorGoogleTokenProvider(oidcApi)
         }
     private val googleLoginProviderAsync: Deferred<KtorGoogleLoginIdProvider> = initScope.async { KtorGoogleLoginIdProvider(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
 
@@ -86,7 +84,7 @@ public class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
             clientId = runBlocking { secretAsync.await().clientId!! },
             clientSecret = runBlocking { secretAsync.await().clientSecret!! },
             redirectUri = redirectUri,
-            authClient = { googleOidcClient.await() },
+            authClient = { googleTokenProviderAsync.await() },
             loginIdProvider = { googleLoginProviderAsync.await() },
             tokenRepository = { tokenRepository.await() },
             userRepository = { userRepository.await() },
