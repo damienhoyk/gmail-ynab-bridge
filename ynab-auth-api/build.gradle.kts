@@ -11,6 +11,7 @@ dependencies {
     implementation(platform(libs.ktor.dependencies))
     implementation(project(":ktor"))
     implementation(libs.bundles.ktor.client)
+    testImplementation("io.ktor:ktor-client-mock")
     testImplementation(libs.slf4j.simple)
     testImplementation(libs.slf4j.api)
 }
