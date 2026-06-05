@@ -9,6 +9,7 @@ import io.ktor.http.ContentType.Application
 import io.ktor.http.Parameters
 import io.ktor.http.ParametersBuilder
 import io.ktor.http.contentType
+import noodle.ktor.defaultJson
 import noodle.ktor.defaultLogging
 
 public class YnabAuthApi(
@@ -19,6 +20,7 @@ public class YnabAuthApi(
     private val httpClient =
         httpClient.config {
             defaultLogging()
+            defaultJson()
             defaultRequest {
                 contentType(Application.Json)
                 url(urlString)
