@@ -52,6 +52,7 @@ Translate core output ports to integration clients. Each adapter module depends 
 | `gmailsync-api` | `noodle.gmailsync.infrastructure.api` | Implements `gmailsync` `GmailClient`/`Factory` and `OAuth2Client` ports via `gmail-api` + `google-auth-api` |
 | `ynabsync-api` | `noodle.ynabsync.infrastructure.api` | Implements `ynabsync` `GmailClient`/`Factory` and `YnabClient`/`Factory` ports via `gmail-api` + `ynab-api` |
 | `telegramchat-api` | `noodle.telegramchat.infrastructure.api` | Implements `telegramchat` `TelegramBotClient` and `GmailClient`/`Factory` ports via `telegram-api` + `gmail-api` |
+| `oauth-api` | `noodle.oauth.infrastructure.api` | Shared `AuthConfig.bearer()` Ktor helpers that attach OAuth2 bearer tokens to outbound requests — one refreshing via `TokenService`, one using a static token; consumed by the qualified `oauth` adapters and the sync/chat bootstraps |
 | `oauth-google-api` | `noodle.oauth.infrastructure.api.google` | Implements `oauth` `OAuth2TokenProvider` and `LoginIdProvider` ports via `google-auth-api` + `oauth2-api` |
 | `oauth-ynab-api` | `noodle.oauth.infrastructure.api.ynab` | Implements `oauth` `OAuth2TokenProvider` and `LoginIdProvider` ports via `ynab-auth-api` |
 
