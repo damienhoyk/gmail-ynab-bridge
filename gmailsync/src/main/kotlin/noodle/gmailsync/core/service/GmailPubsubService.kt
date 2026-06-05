@@ -7,14 +7,14 @@ import noodle.gmailsync.core.domain.Outbox
 import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.port.BridgeRepository
 import noodle.gmailsync.core.port.GmailClientFactory
+import noodle.gmailsync.core.port.LoginIdProvider
 import noodle.gmailsync.core.port.MailboxRepository
-import noodle.gmailsync.core.port.OAuth2Client
 import noodle.gmailsync.core.port.OutboxRepository
 import org.slf4j.LoggerFactory
 
 public class GmailPubsubService(
     private val gmailClientFactory: suspend () -> GmailClientFactory,
-    private val googleTokenClient: suspend () -> OAuth2Client,
+    private val loginIdProvider: suspend () -> LoginIdProvider,
     private val bridgeRepository: suspend () -> BridgeRepository,
     private val mailboxRepository: suspend () -> MailboxRepository,
     private val outboxRepository: suspend () -> OutboxRepository,
@@ -31,7 +31,7 @@ public class GmailPubsubService(
             if (command.authorization.isNullOrEmpty()) return@coroutineScope 403
             if (command.bearerToken.isEmpty()) return@coroutineScope 400
 
-            val googleTokenClient = googleTokenClient()
+            val googleTokenClient = loginIdProvider()
             val tokenInfoAsync = async { googleTokenClient.getTokenInfo(command.bearerToken) }
 
             val mailboxRepository = mailboxRepository()
