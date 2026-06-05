@@ -58,7 +58,7 @@ class GoogleOAuth2ApiTests {
     @Test
     fun getTokenInfo() {
         runBlocking {
-            val httpResponse = client.getTokenInfo {}
+            val httpResponse = client.requestTokenInfo {}
             assertEquals(OK, httpResponse.status)
             val response = httpResponse.body<TokenInfoResponse>()
             assertEquals("user@example.com", response.email)

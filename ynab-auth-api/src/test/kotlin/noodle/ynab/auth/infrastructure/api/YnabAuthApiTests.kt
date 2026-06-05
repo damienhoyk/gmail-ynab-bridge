@@ -13,7 +13,6 @@ import io.ktor.http.HttpMethod.Companion.Post
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.headersOf
-import io.ktor.http.parameters
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
@@ -58,12 +57,10 @@ class YnabAuthApiTests {
     fun requestToken() {
         runBlocking {
             val response =
-                client.requestToken(
-                    parameters {
-                        append("grant_type", "authorization_code")
-                        append("code", "xyz")
-                    },
-                )
+                client.requestToken {
+                    append("grant_type", "authorization_code")
+                    append("code", "xyz")
+                }
             assertEquals(OK, response.status)
         }
     }
