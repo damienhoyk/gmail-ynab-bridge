@@ -5,6 +5,10 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.respondError
+import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod.Companion.Post
 import io.ktor.http.HttpStatusCode.Companion.NotFound
@@ -13,7 +17,6 @@ import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
 import noodle.google.auth.infrastructure.api.model.TokenInfoResponse
-import noodle.ktor.defaultJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -46,13 +49,18 @@ class GoogleOAuth2ApiTests {
 
     val client =
         GoogleOAuth2Api(HttpClient(engine)) {
-            defaultJson()
+            install(Logging) {
+                logger = Logger.DEFAULT
+                level = LogLevel.ALL
+            }
         }
 
     @Test
     fun getTokenInfo() {
         runBlocking {
-            val response = client.getTokenInfo {}.body<TokenInfoResponse>()
+            val httpResponse = client.getTokenInfo {}
+            assertEquals(OK, httpResponse.status)
+            val response = httpResponse.body<TokenInfoResponse>()
             assertEquals("user@example.com", response.email)
         }
     }

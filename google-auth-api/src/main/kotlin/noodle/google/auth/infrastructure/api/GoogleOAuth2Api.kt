@@ -8,6 +8,7 @@ import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType.Application
 import io.ktor.http.contentType
+import noodle.ktor.defaultJson
 import noodle.ktor.defaultLogging
 
 public class GoogleOAuth2Api(
@@ -17,6 +18,7 @@ public class GoogleOAuth2Api(
     private val httpClient =
         httpClient.config {
             defaultLogging()
+            defaultJson()
             defaultRequest {
                 contentType(Application.Json)
                 url("https://oauth2.googleapis.com/")

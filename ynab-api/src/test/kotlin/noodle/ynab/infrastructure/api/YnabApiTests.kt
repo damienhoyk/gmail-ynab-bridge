@@ -165,5 +165,6 @@ class YnabApiTests {
             assertEquals(transactionAmount, transaction.amount)
             assertEquals(transactionDate, transaction.date)
             assertEquals(transactionPayeeName, transaction.payeeName)
+            assertEquals(transactionId, result.data.transactionIds?.first())
         }
 }
