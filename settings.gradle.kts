@@ -36,6 +36,7 @@ include(":ynabsync-api")
 include(":ktor")
 include(":bitwarden-api")
 include(":dynamodb")
+include(":oauth2-api")
 
 // Bootstrap
 include(":gmailsync-bootstrap")

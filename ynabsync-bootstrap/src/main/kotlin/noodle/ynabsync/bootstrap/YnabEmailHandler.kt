@@ -14,10 +14,11 @@ import kotlinx.coroutines.runBlocking
 import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.oauth.core.service.TokenService
-import noodle.oauth.infrastructure.api.OAuth2TokenClient
-import noodle.oauth.infrastructure.api.OidcApi
+import noodle.oauth.infrastructure.api.OAuth2Client
 import noodle.oauth.infrastructure.api.bearer
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
+import noodle.oauth2.infrastructure.api.OAuth2TokenApi
+import noodle.oauth2.infrastructure.api.OidcDiscoveryApi
 import noodle.ynab.auth.infrastructure.api.YnabAuthApi
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.service.YnabEmailService
@@ -62,7 +63,13 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val engineAsync = initScope.async { Java.create() }
 
     private val googleSecretAsync = initScope.async { bitwardenAsync.await().getSecret("google")?.bitwardenSecret()!! }
-    private val googleOidcClientAsync = initScope.async { OAuth2TokenClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")::postToken) }
+    private val googleOidcClientAsync =
+        initScope.async {
+            val httpClient = HttpClient(engineAsync.await())
+            val discoveryDocument = OidcDiscoveryApi(httpClient, "https://accounts.google.com/.well-known/openid-configuration").getDiscoveryDocument()
+            val oauth2TokenApi = OAuth2TokenApi(httpClient, discoveryDocument.tokenEndpoint ?: throw IllegalStateException("Missing token_endpoint in discovery document"))
+            OAuth2Client(oauth2TokenApi)
+        }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
@@ -77,7 +84,9 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val ynabSecretAsync = initScope.async { bitwardenAsync.await().getSecret("ynab")?.bitwardenSecret()!! }
     private val ynabAuthClientAsync =
         initScope.async {
-            OAuth2TokenClient(YnabAuthApi(HttpClient(engineAsync.await()))::postToken)
+            val httpClient = HttpClient(engineAsync.await())
+            val oauth2TokenApi = OAuth2TokenApi(httpClient, YnabAuthApi.TOKEN_ENDPOINT)
+            OAuth2Client(oauth2TokenApi)
         }
     private val ynabAuthTokenService =
         initScope.async {

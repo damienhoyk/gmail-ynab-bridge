@@ -1,6 +1,6 @@
 [
   {
-    "name": "noodle.oauth.infrastructure.api.TokenResponse",
+    "name": "noodle.oauth2.infrastructure.api.OAuth2TokenResponse",
     "fields": [
       {
         "name": "Companion"
@@ -8,7 +8,7 @@
     ]
   },
   {
-    "name": "noodle.oauth.infrastructure.api.TokenResponse$Companion",
+    "name": "noodle.oauth2.infrastructure.api.OAuth2TokenResponse$Companion",
     "methods": [
       {
         "name": "serializer",

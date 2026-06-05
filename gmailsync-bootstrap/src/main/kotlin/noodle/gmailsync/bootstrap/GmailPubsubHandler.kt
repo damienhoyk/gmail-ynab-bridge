@@ -25,10 +25,11 @@ import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
 import noodle.google.auth.infrastructure.api.GoogleOAuth2Api
 import noodle.oauth.core.service.TokenService
-import noodle.oauth.infrastructure.api.OAuth2TokenClient
-import noodle.oauth.infrastructure.api.OidcApi
+import noodle.oauth.infrastructure.api.OAuth2Client
 import noodle.oauth.infrastructure.api.bearer
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
+import noodle.oauth2.infrastructure.api.OAuth2TokenApi
+import noodle.oauth2.infrastructure.api.OidcDiscoveryApi
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
@@ -69,7 +70,13 @@ public class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
 
     private val googleSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("google")?.bitwardenSecret()!! }
-    private val googleOidcClientAsync = initScope.async { OAuth2TokenClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")::postToken) }
+    private val googleOidcClientAsync =
+        initScope.async {
+            val httpClient = HttpClient(engineAsync.await())
+            val discoveryDocument = OidcDiscoveryApi(httpClient, "https://accounts.google.com/.well-known/openid-configuration").getDiscoveryDocument()
+            val oauth2TokenApi = OAuth2TokenApi(httpClient, discoveryDocument.tokenEndpoint ?: throw IllegalStateException("Missing token_endpoint in discovery document"))
+            OAuth2Client(oauth2TokenApi)
+        }
     private val googleOAuth2ClientAsync = initScope.async { KtorGoogleOAuth2Client(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
     private val googleAuthTokenService =
         initScope.async {

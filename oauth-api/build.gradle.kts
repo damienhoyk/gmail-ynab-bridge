@@ -13,6 +13,7 @@ dependencies {
     implementation(project(":bitwarden-api"))
     implementation(project(":ktor"))
     implementation(project(":oauth"))
+    implementation(project(":oauth2-api"))
     implementation("io.ktor:ktor-client-auth")
     implementation("software.amazon.awssdk:secretsmanager")
     implementation(libs.bundles.ktor.client)

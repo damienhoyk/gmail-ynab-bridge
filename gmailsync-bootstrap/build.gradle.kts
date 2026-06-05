@@ -34,6 +34,7 @@ dependencies {
     implementation(project(":oauth"))
     implementation(project(":oauth-google-api"))
     implementation(project(":oauth-api"))
+    implementation(project(":oauth2-api"))
     implementation(project(":oauth-persistence"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)

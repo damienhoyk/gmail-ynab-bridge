@@ -31,6 +31,7 @@ dependencies {
     implementation(project(":oauth"))
     implementation(project(":oauth-google-api"))
     implementation(project(":oauth-api"))
+    implementation(project(":oauth2-api"))
     implementation(project(":oauth-persistence"))
     implementation(project(":oauth-ynab-api"))
     implementation(project(":ynab-auth-api"))

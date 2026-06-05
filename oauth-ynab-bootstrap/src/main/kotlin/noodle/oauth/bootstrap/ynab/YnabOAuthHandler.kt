@@ -15,11 +15,12 @@ import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
-import noodle.oauth.infrastructure.api.OAuth2TokenClient
+import noodle.oauth.infrastructure.api.OAuth2Client
 import noodle.oauth.infrastructure.api.ynab.KtorYnabLoginIdProvider
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
+import noodle.oauth2.infrastructure.api.OAuth2TokenApi
 import noodle.ynab.auth.infrastructure.api.YnabAuthApi
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
@@ -54,9 +55,11 @@ public class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
 
     private val engineAsync = initScope.async { Java.create() }
 
-    private val ynabAuthClient: kotlinx.coroutines.Deferred<OAuth2TokenClient> =
+    private val ynabAuthClient: kotlinx.coroutines.Deferred<OAuth2Client> =
         initScope.async {
-            OAuth2TokenClient(YnabAuthApi(HttpClient(engineAsync.await()))::postToken)
+            val httpClient = HttpClient(engineAsync.await())
+            val oauth2TokenApi = OAuth2TokenApi(httpClient, YnabAuthApi.TOKEN_ENDPOINT)
+            OAuth2Client(oauth2TokenApi)
         }
     private val ynabLoginProviderAsync: kotlinx.coroutines.Deferred<KtorYnabLoginIdProvider> = initScope.async { KtorYnabLoginIdProvider(HttpClient(engineAsync.await())) }
 

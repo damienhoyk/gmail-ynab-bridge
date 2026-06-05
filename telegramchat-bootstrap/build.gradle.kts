@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":oauth"))
     implementation(project(":oauth-google-api"))
     implementation(project(":oauth-api"))
+    implementation(project(":oauth2-api"))
     implementation(project(":oauth-persistence"))
     implementation(project(":telegramchat"))
     implementation(project(":telegramchat-api"))

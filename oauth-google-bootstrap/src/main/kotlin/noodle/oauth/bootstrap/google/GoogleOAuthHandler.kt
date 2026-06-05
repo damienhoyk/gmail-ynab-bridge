@@ -16,12 +16,13 @@ import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.google.auth.infrastructure.api.GoogleOAuth2Api
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.service.AuthorizeService
-import noodle.oauth.infrastructure.api.OAuth2TokenClient
-import noodle.oauth.infrastructure.api.OidcApi
+import noodle.oauth.infrastructure.api.OAuth2Client
 import noodle.oauth.infrastructure.api.google.KtorGoogleLoginIdProvider
 import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
+import noodle.oauth2.infrastructure.api.OAuth2TokenApi
+import noodle.oauth2.infrastructure.api.OidcDiscoveryApi
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
@@ -54,7 +55,13 @@ public class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
         }
 
     private val engineAsync = initScope.async { Java.create() }
-    private val googleOidcClient: kotlinx.coroutines.Deferred<OAuth2TokenClient> = initScope.async { OAuth2TokenClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")::postToken) }
+    private val googleOidcClient: kotlinx.coroutines.Deferred<OAuth2Client> =
+        initScope.async {
+            val httpClient = HttpClient(engineAsync.await())
+            val discoveryDocument = OidcDiscoveryApi(httpClient, "https://accounts.google.com/.well-known/openid-configuration").getDiscoveryDocument()
+            val oauth2TokenApi = OAuth2TokenApi(httpClient, discoveryDocument.tokenEndpoint ?: throw IllegalStateException("Missing token_endpoint in discovery document"))
+            OAuth2Client(oauth2TokenApi)
+        }
     private val googleLoginProviderAsync: kotlinx.coroutines.Deferred<KtorGoogleLoginIdProvider> = initScope.async { KtorGoogleLoginIdProvider(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
 
     private val redirectUri: String = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()

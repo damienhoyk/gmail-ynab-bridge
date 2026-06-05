@@ -12,16 +12,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.oauth.core.service.TokenService
-import noodle.oauth.infrastructure.api.OAuth2TokenClient
-import noodle.oauth.infrastructure.api.OidcApi
+import noodle.oauth.infrastructure.api.OAuth2Client
 import noodle.oauth.infrastructure.api.bearer
+import noodle.oauth2.infrastructure.api.OAuth2TokenApi
+import noodle.oauth2.infrastructure.api.OidcDiscoveryApi
 import noodle.telegram.infrastructure.api.TelegramBotApi
 import noodle.telegram.infrastructure.api.model.TelegramWebhookEvent
 import noodle.telegramchat.core.domain.RespondChatCommand
@@ -75,7 +75,13 @@ public class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
     private val telegramSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("telegram")?.bitwardenSecret()!! }
 
-    private val googleOidcClientAsync = initScope.async { OAuth2TokenClient(OidcApi(HttpClient(engineAsync.await()), "https://accounts.google.com/.well-known/openid-configuration")::postToken) }
+    private val googleOidcClientAsync =
+        initScope.async {
+            val httpClient = HttpClient(engineAsync.await())
+            val discoveryDocument = OidcDiscoveryApi(httpClient, "https://accounts.google.com/.well-known/openid-configuration").getDiscoveryDocument()
+            val oauth2TokenApi = OAuth2TokenApi(httpClient, discoveryDocument.tokenEndpoint ?: throw IllegalStateException("Missing token_endpoint in discovery document"))
+            OAuth2Client(oauth2TokenApi)
+        }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
