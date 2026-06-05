@@ -8,6 +8,7 @@ import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Parameters
+import io.ktor.http.ParametersBuilder
 import kotlinx.coroutines.runBlocking
 import noodle.ktor.defaultJson
 import noodle.ktor.defaultLogging
@@ -28,8 +29,9 @@ public class OidcApi(
 
     public suspend fun getDiscoveryDocument(block: HttpRequestBuilder.() -> Unit = {}): HttpResponse = httpClient.get(discoveryUrl, block)
 
-    public suspend fun requestToken(parameters: Parameters): HttpResponse? =
+    public suspend fun requestToken(parameters: ParametersBuilder.() -> Unit): HttpResponse? =
         discoveryDocument.tokenEndpoint?.let {
-            httpClient.submitForm(it, parameters)
+            httpClient
+                .submitForm(it, Parameters.build { parameters() })
         }
 }

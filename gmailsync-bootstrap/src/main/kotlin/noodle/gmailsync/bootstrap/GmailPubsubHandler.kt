@@ -19,7 +19,7 @@ import noodle.gmail.infrastructure.api.model.pubsub.PubsubNotification
 import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.service.GmailPubsubService
 import noodle.gmailsync.infrastructure.api.KtorGmailClientFactory
-import noodle.gmailsync.infrastructure.api.KtorGoogleOAuth2Client
+import noodle.gmailsync.infrastructure.api.KtorGoogleLoginIdProvider
 import noodle.gmailsync.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
@@ -75,7 +75,7 @@ public class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
             val oidcApi = OidcApi("https://accounts.google.com/.well-known/openid-configuration", httpClient)
             KtorGoogleTokenProvider(oidcApi)
         }
-    private val googleOAuth2ClientAsync = initScope.async { KtorGoogleOAuth2Client(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
+    private val googleLoginProviderAsync = initScope.async { KtorGoogleLoginIdProvider(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
     private val googleAuthTokenService =
         initScope.async {
             val secret = googleSecretAsync.await()
@@ -108,7 +108,7 @@ public class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
     private val service =
         GmailPubsubService(
             gmailClientFactory = { gmailClientFactory.await() },
-            googleTokenClient = { googleOAuth2ClientAsync.await() },
+            loginIdProvider = { googleLoginProviderAsync.await() },
             mailboxRepository = { mailboxRepositoryAsync.await() },
             bridgeRepository = { bridgeRepositoryAsync.await() },
             outboxRepository = { outboxRepositoryAsync.await() },

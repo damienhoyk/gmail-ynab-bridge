@@ -7,6 +7,7 @@ import io.ktor.client.request.forms.submitForm
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType.Application
 import io.ktor.http.Parameters
+import io.ktor.http.ParametersBuilder
 import io.ktor.http.contentType
 import noodle.ktor.defaultLogging
 
@@ -26,5 +27,7 @@ public class YnabAuthApi(
             block()
         }
 
-    public suspend fun requestToken(parameters: Parameters): HttpResponse = httpClient.submitForm("token", parameters)
+    public suspend fun requestToken(parameters: ParametersBuilder.() -> Unit): HttpResponse =
+        httpClient
+            .submitForm("token", Parameters.build { parameters() })
 }
