@@ -6,12 +6,14 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.java.Java
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.infrastructure.api.Bitwarden
+import noodle.bitwarden.infrastructure.api.BitwardenSecret
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.google.auth.infrastructure.api.GoogleOAuth2Api
 import noodle.oauth.core.domain.AuthorizeCommand
@@ -36,7 +38,7 @@ public class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
     private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.create() }
     private val urlConnectionClient = UrlConnectionHttpClient.builder()
 
-    private val dynamoDbClientAsync: kotlinx.coroutines.Deferred<DynamoDbClient> =
+    private val dynamoDbClientAsync: Deferred<DynamoDbClient> =
         initScope.async {
             DynamoDbClient
                 .builder()
@@ -45,7 +47,7 @@ public class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
                 .build()
         }
 
-    private val secretsManagerClientAsync: kotlinx.coroutines.Deferred<SecretsManagerClient> =
+    private val secretsManagerClientAsync: Deferred<SecretsManagerClient> =
         initScope.async {
             SecretsManagerClient
                 .builder()
@@ -55,29 +57,29 @@ public class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
         }
 
     private val engineAsync = initScope.async { Java.create() }
-    private val googleOidcClient: kotlinx.coroutines.Deferred<OAuth2Client> =
+    private val googleOidcClient: Deferred<OAuth2Client> =
         initScope.async {
             val httpClient = HttpClient(engineAsync.await())
             val discoveryDocument = OidcDiscoveryApi(httpClient, "https://accounts.google.com/.well-known/openid-configuration").getDiscoveryDocument()
             val oauth2TokenApi = OAuth2TokenApi(httpClient, discoveryDocument.tokenEndpoint ?: throw IllegalStateException("Missing token_endpoint in discovery document"))
             OAuth2Client(oauth2TokenApi)
         }
-    private val googleLoginProviderAsync: kotlinx.coroutines.Deferred<KtorGoogleLoginIdProvider> = initScope.async { KtorGoogleLoginIdProvider(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
+    private val googleLoginProviderAsync: Deferred<KtorGoogleLoginIdProvider> = initScope.async { KtorGoogleLoginIdProvider(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
 
     private val redirectUri: String = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
     private val secretId: String = System.getenv("SECRET_ID")?.trim() ?: throw IllegalStateException()
 
-    private val bitwardenAsync: kotlinx.coroutines.Deferred<Bitwarden> = initScope.async { Bitwarden(secretsManagerClientAsync.await()) }
+    private val bitwardenAsync: Deferred<Bitwarden> = initScope.async { Bitwarden(secretsManagerClientAsync.await()) }
 
-    private val secretAsync: kotlinx.coroutines.Deferred<noodle.bitwarden.infrastructure.api.BitwardenSecret> =
+    private val secretAsync: Deferred<BitwardenSecret> =
         initScope.async {
             val bitwarden = bitwardenAsync.await()
             bitwarden.getSecret(secretId)?.bitwardenSecret()!!
         }
 
-    private val tokenRepository: kotlinx.coroutines.Deferred<DynamoDbTokenRepository> = initScope.async { DynamoDbTokenRepository(dynamoDbClientAsync.await()) }
-    private val userRepository: kotlinx.coroutines.Deferred<DynamoDbUserRepository> = initScope.async { DynamoDbUserRepository(dynamoDbClientAsync.await()) }
-    private val loginRepository: kotlinx.coroutines.Deferred<DynamoDbLoginRepository> = initScope.async { DynamoDbLoginRepository(dynamoDbClientAsync.await()) }
+    private val tokenRepository: Deferred<DynamoDbTokenRepository> = initScope.async { DynamoDbTokenRepository(dynamoDbClientAsync.await()) }
+    private val userRepository: Deferred<DynamoDbUserRepository> = initScope.async { DynamoDbUserRepository(dynamoDbClientAsync.await()) }
+    private val loginRepository: Deferred<DynamoDbLoginRepository> = initScope.async { DynamoDbLoginRepository(dynamoDbClientAsync.await()) }
 
     private val service: AuthorizeService =
         AuthorizeService(

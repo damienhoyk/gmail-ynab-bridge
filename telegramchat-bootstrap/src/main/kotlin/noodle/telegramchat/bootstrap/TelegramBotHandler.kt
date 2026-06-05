@@ -30,14 +30,13 @@ import noodle.telegramchat.infrastructure.api.KtorGmailClientFactory
 import noodle.telegramchat.infrastructure.api.KtorTelegramBotClient
 import noodle.telegramchat.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbMailboxRepository
+import noodle.telegramchat.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbUserRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
-import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository as SecurityTokenRepository
-import noodle.telegramchat.infrastructure.persistence.DynamoDbTokenRepository as TelegramTokenRepository
 
 public class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -143,11 +142,16 @@ public class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
         }
 
     private val securityTokenRepository =
-        initScope.async { SecurityTokenRepository(client = dynamoDbClientAsync.await()) }
+        initScope.async {
+            noodle.oauth.infrastructure.persistence
+                .DynamoDbTokenRepository(client = dynamoDbClientAsync.await())
+        }
     private val telegramUserRepository =
         initScope.async { DynamoDbUserRepository(client = dynamoDbClientAsync.await()) }
     private val telegramTokenRepository =
-        initScope.async { TelegramTokenRepository(client = dynamoDbClientAsync.await()) }
+        initScope.async {
+            DynamoDbTokenRepository(client = dynamoDbClientAsync.await())
+        }
     private val telegramLoginRepository =
         initScope.async { DynamoDbLoginRepository(client = dynamoDbClientAsync.await()) }
     private val telegramMailboxRepository =

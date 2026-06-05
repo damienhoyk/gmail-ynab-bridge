@@ -2,18 +2,18 @@ package noodle.ynabsync.infrastructure.api
 
 import io.ktor.client.call.body
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import noodle.ynab.infrastructure.api.YnabApi
 import noodle.ynab.infrastructure.api.model.YnabAccount
 import noodle.ynab.infrastructure.api.model.YnabBudget
 import noodle.ynab.infrastructure.api.model.YnabTransaction
 import noodle.ynabsync.core.domain.YnabTransactionsRequest
 import noodle.ynabsync.core.port.YnabClient
-import noodle.ynabsync.core.domain.YnabTransaction as YnabTransactionDomain
 
 public class KtorYnabClient(
     private val ynabApi: YnabApi,
 ) : YnabClient {
-    public suspend fun getUser(): io.ktor.client.statement.HttpResponse = ynabApi.getUser()
+    public suspend fun getUser(): HttpResponse = ynabApi.getUser()
 
     public suspend fun getAccounts(budgetId: String = "default"): noodle.ynabsync.core.domain.YnabAccount.Data = ynabApi.getAccounts(budgetId) {}.body<YnabAccount.Data>().toFinanceDomain()
 
@@ -21,7 +21,7 @@ public class KtorYnabClient(
 
     override suspend fun postTransactions(
         budgetId: String,
-        transactions: List<YnabTransactionDomain>,
+        transactions: List<noodle.ynabsync.core.domain.YnabTransaction>,
     ) {
         val transactionData =
             transactions.map {

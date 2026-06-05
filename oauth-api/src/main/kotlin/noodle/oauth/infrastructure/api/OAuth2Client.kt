@@ -20,8 +20,8 @@ public class OAuth2Client(
             .domain()
 }
 
-internal fun OAuth2TokenResponse.domain(): noodle.oauth.core.domain.TokenResponse =
-    noodle.oauth.core.domain.TokenResponse(
+internal fun OAuth2TokenResponse.domain(): TokenResponse =
+    TokenResponse(
         accessToken = accessToken,
         idToken = idToken,
         refreshToken = refreshToken,
