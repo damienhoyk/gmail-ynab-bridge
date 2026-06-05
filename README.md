@@ -6,15 +6,16 @@ A serverless bridge that monitors Gmail for financial notification emails, parse
 
 ## Architecture
 
-The project follows hexagonal (ports-and-adapters) architecture across five layers:
+The project follows hexagonal (ports-and-adapters) architecture across six layers:
 
 - **Core** — domain entities, use-case services, and output port interfaces; no outbound dependencies
+- **Drivers** — transport/framework setup and base abstractions (Ktor `HttpClient` config, DynamoDB base classes) — knows a transport technology, not any application domain
 - **Integration clients** — Ktor HTTP clients for external APIs; no application domain knowledge
 - **Application adapters** — implement core output ports by delegating to integration clients
 - **Persistence** — DynamoDB implementations of core repository ports
 - **Bootstrap** — AWS Lambda handlers; the only layer that imports peers to wire the full dependency graph
 
-Each application (`oauth`, `gmailsync`, `ynabsync`, `telegramchat`) is fully isolated at the core layer and shares nothing except common libraries.
+Each application (`oauth`, `gmailsync`, `ynabsync`, `telegramchat`) is fully isolated at the core layer and shares nothing except common libraries. Konsist architecture tests enforce these layer boundaries.
 
 ---
 
@@ -40,7 +41,7 @@ Ktor HTTP wrappers for external APIs. Each knows one external service and nothin
 | `ynab-auth-api` | `noodle.ynab.auth.infrastructure.api` | YNAB OAuth2 token endpoint client |
 | `google-auth-api` | `noodle.google.auth.infrastructure.api` | Google OAuth2 token endpoint client |
 | `telegram-api` | `noodle.telegram.infrastructure.api` | Telegram Bot API client — `sendMessage`, `sendChatAction`, webhook models |
-| `oauth-api` | `noodle.oauth.infrastructure.api` | Shared OAuth2 bearer token provider and OIDC client |
+| `oauth2-api` | `noodle.oauth2.infrastructure.api` | Provider-agnostic OAuth2 — stateless OIDC discovery (`OidcApi`, `OidcDiscoveryDocument`) and the `OAuth2TokenResponse` model; depends only on the `ktor` driver |
 
 ### Application adapters
 
@@ -48,11 +49,11 @@ Translate core output ports to integration clients. Each adapter module depends 
 
 | Module | Package | Responsibility |
 |---|---|---|
-| `gmailsync-api` | `noodle.gmailsync.infrastructure.api` | Implements `gmailsync` `GmailClient`/`Factory` and `OAuth2Client` ports via `gmail-api` + `google-auth-api`; `GmailEmailMappers` |
-| `ynabsync-api` | `noodle.ynabsync.infrastructure.api` | Implements `ynabsync` `GmailClient`/`Factory` and `YnabClient`/`Factory` ports; `GmailFinanceMappers`, `YnabFinanceMappers` |
-| `telegramchat-api` | `noodle.telegramchat.infrastructure.api` | Implements `telegramchat` `TelegramBotClient` and `GmailClient`/`Factory` ports; `GmailChatMappers` |
-| `oauth-google-api` | `noodle.oauth.infrastructure.api.google` | Implements `oauth` `GoogleAuthClient` port via `google-auth-api` + OIDC |
-| `oauth-ynab-api` | `noodle.oauth.infrastructure.api.ynab` | Implements `oauth` `YnabAuthClient` port via `ynab-auth-api` |
+| `gmailsync-api` | `noodle.gmailsync.infrastructure.api` | Implements `gmailsync` `GmailClient`/`Factory` and `OAuth2Client` ports via `gmail-api` + `google-auth-api` |
+| `ynabsync-api` | `noodle.ynabsync.infrastructure.api` | Implements `ynabsync` `GmailClient`/`Factory` and `YnabClient`/`Factory` ports via `gmail-api` + `ynab-api` |
+| `telegramchat-api` | `noodle.telegramchat.infrastructure.api` | Implements `telegramchat` `TelegramBotClient` and `GmailClient`/`Factory` ports via `telegram-api` + `gmail-api` |
+| `oauth-google-api` | `noodle.oauth.infrastructure.api.google` | Implements `oauth` `OAuth2TokenProvider` and `LoginIdProvider` ports via `google-auth-api` + `oauth2-api` |
+| `oauth-ynab-api` | `noodle.oauth.infrastructure.api.ynab` | Implements `oauth` `OAuth2TokenProvider` and `LoginIdProvider` ports via `ynab-auth-api` |
 
 ### Persistence
 
@@ -69,11 +70,11 @@ DynamoDB implementations of core repository ports.
 
 Shared infrastructure utilities. No application domain knowledge; extracted when two or more modules need the same transport or tooling.
 
-| Module | Package | Responsibility |
-|---|---|---|
-| `bitwarden` | `noodle.bitwarden` | Fetches encrypted credentials from AWS Secrets Manager via the Bitwarden SDK |
-| `dynamodb` | `noodle.dynamodb` | `DynamoDbRepository` and `DynamoDbSortRepository` base abstractions (CRUD + range-key queries) |
-| `serialization` | `noodle.serialization` | Ktor JSON serialization configuration extensions |
+| Type | Module | Package | Responsibility |
+|---|---|---|---|
+| Driver | `ktor` | `noodle.ktor` | Shared Ktor `HttpClient` config fragments (logging, JSON serialization, Authorization-header sanitization) routed through all API clients |
+| Driver | `dynamodb` | `noodle.dynamodb` | `DynamoDbRepository` and `DynamoDbSortRepository` base abstractions (CRUD + range-key queries) |
+| Integration | `bitwarden-api` | `noodle.bitwarden.infrastructure.api` | Fetches encrypted credentials from AWS Secrets Manager via the Bitwarden SDK, wrapping the payload in a `BitwardenSecret` value class |
 
 ### Bootstrap
 
@@ -92,12 +93,17 @@ AWS Lambda handlers compiled to GraalVM native images. Each bootstrap is the com
 ## Build
 
 ```
-./gradlew build          # compile and assemble all modules
-./gradlew check          # compile, test, and lint all modules
-./gradlew kF             # format all Kotlin source files (ktlint)
+./gradlew build                           # compile and assemble all modules
+./gradlew check                           # compile, test, and lint all modules
+./gradlew kF                              # format all Kotlin source files (ktlint)
+./gradlew :architecture-test:test         # run Konsist hexagonal boundary tests
 ```
 
 Convention plugins and a shared version catalog live in `buildSrc/` and `gradle/libs.versions.toml` respectively. Build cache and configuration cache are enabled in `gradle.properties`.
+
+The `architecture-test` module (package `noodle.architecture`) uses Konsist to enforce hexagonal layer boundaries: core must not import infrastructure or bootstrap; domain must not import services; nothing may import bootstrap; no cross-application infrastructure coupling.
+
+Kotlin **Strict explicitApi** mode is enabled repo-wide via the shared `kotlin-jvm` convention plugin (`buildSrc/src/main/kotlin/kotlin-jvm.gradle.kts`): every public declaration requires an explicit visibility modifier.
 
 ---
 
