@@ -1,10 +1,23 @@
 package noodle.gmail.infrastructure.api.model
 
+import kotlinx.serialization.json.Json
 import noodle.gmail.infrastructure.api.model.GmailMessage
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
+private val json = Json { ignoreUnknownKeys = true }
+
 class GmailMessageTests {
+    @Test
+    fun gmailMessageList() {
+        val raw = """{"messages": [{"id": "m1"}], "resultSizeEstimate": 1}"""
+        val result = json.decodeFromString<GmailMessage.List>(raw)
+        Assertions.assertEquals(1, result.resultSizeEstimate)
+        Assertions.assertEquals("m1", result.messages.first().id)
+        assertNull(result.nextPageToken)
+    }
+
     @Test
     fun flatten() {
         val parts2 =

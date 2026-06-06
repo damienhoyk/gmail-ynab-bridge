@@ -42,7 +42,7 @@ public class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
     private val decoder = Base64.getUrlDecoder()
     private val mapper = Json { ignoreUnknownKeys = true }
 
-    private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.create() }
+    private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.builder().build() }
     private val urlConnectionClient = UrlConnectionHttpClient.builder()
 
     private val dynamoDbClientAsync =

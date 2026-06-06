@@ -37,7 +37,7 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val log = LoggerFactory.getLogger(javaClass)
     private val initScope = CoroutineScope(Dispatchers.Default)
 
-    private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.create() }
+    private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.builder().build() }
     private val urlConnectionClient = UrlConnectionHttpClient.builder()
 
     private val dynamoDbClientAsync =

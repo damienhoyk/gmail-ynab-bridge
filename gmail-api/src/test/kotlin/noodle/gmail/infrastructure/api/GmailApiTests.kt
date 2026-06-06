@@ -19,17 +19,17 @@ import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
 import noodle.gmail.infrastructure.api.model.GmailHistory
+import noodle.gmail.infrastructure.api.model.GmailLabel
 import noodle.gmail.infrastructure.api.model.GmailMessage
 import noodle.gmail.infrastructure.api.model.GmailProfile
 import noodle.gmail.infrastructure.api.model.GmailWatch
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.condition.DisabledInNativeImage
 import java.util.UUID
 import kotlin.io.encoding.Base64.Default.UrlSafe
 
-@DisabledInNativeImage
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GmailApiTests {
     val gmail = "damien.hoyk@gmail.com"
@@ -132,6 +132,7 @@ class GmailApiTests {
 
                     Get to "/gmail/v1/users/me/labels" ->
                         """
+                        {"labels": [{"id": "INBOX", "name": "Inbox"}, {"id": "SENT", "name": "Sent"}]}
                         """.trimIndent()
 
                     Post to "/gmail/v1/users/me/watch" ->
@@ -182,6 +183,18 @@ class GmailApiTests {
         }
 
     @Test
+    fun getLabels() =
+        runBlocking {
+            val labels = googleGmailClient.getLabels().body<GmailLabel.List>()
+            assertEquals(2, labels.labels.size)
+            assertEquals("INBOX", labels.labels[0].id)
+            assertEquals("Inbox", labels.labels[0].name)
+            assertEquals("SENT", labels.labels[1].id)
+            assertEquals("Sent", labels.labels[1].name)
+            assertEquals(mapOf("INBOX" to "Inbox", "SENT" to "Sent"), labels.toMap())
+        }
+
+    @Test
     fun getHistory() =
         runBlocking {
             val history = googleGmailClient.getHistory().body<GmailHistory>()
@@ -192,6 +205,7 @@ class GmailApiTests {
                     .first()
             assertEquals(newHistoryId, history.historyId.toString())
             assertEquals(messageId, message.message.id)
+            assertNull(history.nextPageToken)
         }
 
     @Test
@@ -199,6 +213,9 @@ class GmailApiTests {
         runBlocking {
             val message =
                 googleGmailClient.getMessage(messageId = messageId).body<GmailMessage>()
+            assertEquals(messageId, message.id)
+            assertEquals(messageId, message.threadId)
+            assertEquals("text", message.snippet)
             assertEquals(senderEmail, message.from?.address)
             assertEquals(emailText, message.text)
         }
@@ -215,5 +232,6 @@ class GmailApiTests {
             val result = googleGmailClient.postWatch().body<GmailWatch>()
             assertEquals(historyId, result.historyId.toString())
             assertEquals(expiration, result.expiration)
+            assertNull(result.error)
         }
 }

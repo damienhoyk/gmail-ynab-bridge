@@ -1,0 +1,266 @@
+[
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabUser",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabUser$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabUser$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabUser$Body",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabUser$Body$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabUser$Body$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabUser$Data",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabUser$Data$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabUser$Data$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabBudget",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabBudget$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabBudget$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabBudget$Body",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabBudget$Body$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabBudget$Body$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabBudget$Data",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabBudget$Data$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabBudget$Data$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabAccount",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabAccount$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabAccount$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabAccount$Body",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabAccount$Body$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabAccount$Body$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabAccount$Data",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabAccount$Data$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabAccount$Data$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabTransaction",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabTransaction$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabTransaction$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabTransaction$Body",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabTransaction$Body$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabTransaction$Body$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabTransaction$Data",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabTransaction$Data$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.ynab.infrastructure.api.model.YnabTransaction$Data$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  }
+]

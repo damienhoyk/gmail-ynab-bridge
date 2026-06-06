@@ -1,0 +1,2 @@
+- [API test conventions](project_api_test_conventions.md) — gold-standard *ApiTests shape: per-field asserts, no status asserts, testImplementation for cross-module models
+- [OAuth token clients](project_oauth_token_clients.md) — YnabAuthApi/GoogleOAuth2Api locations + config; supersedes stale "reduced to const" note

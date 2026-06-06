@@ -25,10 +25,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.condition.DisabledInNativeImage
 import java.util.UUID
 
-@DisabledInNativeImage
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class YnabApiTests {
     val userId = UUID.randomUUID().toString()

@@ -1,0 +1,288 @@
+[
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailProfile",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailProfile$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailProfile$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailHistory",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailHistory$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailHistory$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailHistory$Change",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailHistory$Change$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailHistory$Change$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailHistory$Message",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailHistory$Message$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailHistory$Message$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailLabel",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailLabel$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailLabel$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailLabel$List",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailLabel$List$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailLabel$List$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage$Data",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage$Data$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage$Data$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage$List",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage$List$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage$List$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage$Part",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage$Part$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailMessage$Part$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailWatch",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailWatch$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailWatch$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailWatch$Error",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailWatch$Error$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailWatch$Error$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailEvent",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailEvent$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.gmail.infrastructure.api.model.GmailEvent$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  }
+]
