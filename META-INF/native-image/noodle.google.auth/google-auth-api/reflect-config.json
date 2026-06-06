@@ -1,0 +1,24 @@
+[
+  {
+    "name": "noodle.google.auth.infrastructure.api.model.TokenInfoResponse",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.google.auth.infrastructure.api.model.TokenInfoResponse$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.google.auth.infrastructure.api.model.TokenInfoResponse$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  }
+]
