@@ -9,6 +9,7 @@ import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod.Companion.Post
 import io.ktor.http.HttpStatusCode.Companion.NotFound
@@ -64,5 +65,14 @@ class GoogleOAuth2ApiTests {
         runBlocking {
             val response = client.requestTokenInfo {}.body<TokenInfoResponse>()
             assertEquals("user@example.com", response.email)
+            val request = engine.requestHistory.last()
+            assertEquals(
+                ContentType.Application.FormUrlEncoded,
+                request.body.contentType?.withoutParameters(),
+            )
+            assertEquals(
+                ContentType.Application.Json.toString(),
+                request.headers[HttpHeaders.Accept],
+            )
         }
 }

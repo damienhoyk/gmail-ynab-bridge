@@ -9,7 +9,8 @@ import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.http.HttpHeaders.ContentType
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod.Companion.Post
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.HttpStatusCode.Companion.OK
@@ -46,7 +47,7 @@ class YnabAuthApiTests {
                     respond(
                         content = ByteReadChannel(text),
                         status = OK,
-                        headers = headersOf(ContentType, "application/json"),
+                        headers = headersOf(HttpHeaders.ContentType, "application/json"),
                     )
                 else -> respondError(HttpStatusCode.NotFound)
             }
@@ -74,5 +75,14 @@ class YnabAuthApiTests {
             assertNull(result.idToken)
             assertNull(result.refreshToken)
             assertNull(result.error)
+            val request = engine.requestHistory.last()
+            assertEquals(
+                ContentType.Application.FormUrlEncoded,
+                request.body.contentType?.withoutParameters(),
+            )
+            assertEquals(
+                ContentType.Application.Json.toString(),
+                request.headers[HttpHeaders.Accept],
+            )
         }
 }
