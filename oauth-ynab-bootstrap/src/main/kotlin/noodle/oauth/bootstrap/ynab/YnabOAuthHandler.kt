@@ -34,7 +34,7 @@ public class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
     private val initScope = CoroutineScope(Default)
     private val log = LoggerFactory.getLogger(javaClass)
 
-    private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.create() }
+    private val credentialsProviderAsync = initScope.async { DefaultCredentialsProvider.builder().build() }
     private val urlConnectionClient = UrlConnectionHttpClient.builder()
 
     private val dynamoDbClientAsync: Deferred<DynamoDbClient> =
