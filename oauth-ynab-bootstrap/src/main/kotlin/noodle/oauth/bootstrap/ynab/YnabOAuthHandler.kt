@@ -23,6 +23,7 @@ import noodle.oauth.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
 import noodle.oauth.infrastructure.persistence.DynamoDbUserRepository
 import noodle.ynab.auth.infrastructure.api.YnabAuthApi
+import noodle.ynab.infrastructure.api.YnabApi
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
@@ -62,7 +63,10 @@ public class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             val ynabAuthApi = YnabAuthApi(httpClient)
             KtorYnabTokenProvider(ynabAuthApi)
         }
-    private val ynabLoginProviderAsync: Deferred<KtorYnabLoginIdProvider> = initScope.async { KtorYnabLoginIdProvider(HttpClient(engineAsync.await())) }
+    private val ynabLoginProviderAsync: Deferred<KtorYnabLoginIdProvider> =
+        initScope.async {
+            KtorYnabLoginIdProvider(YnabApi(HttpClient(engineAsync.await())))
+        }
 
     private val redirectUri: String = System.getenv("REDIRECT_URI")?.trim() ?: throw IllegalStateException()
     private val secretId: String = System.getenv("SECRET_ID")?.trim() ?: throw IllegalStateException()

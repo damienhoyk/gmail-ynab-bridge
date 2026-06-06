@@ -15,7 +15,6 @@ dependencies {
     implementation(project(":ynab-auth-api"))
     implementation(project(":ynab-api"))
     implementation(libs.bundles.ktor.client)
-    implementation("io.ktor:ktor-client-auth")
     testImplementation("io.ktor:ktor-client-mock")
     testImplementation(libs.slf4j.simple)
     testImplementation(libs.slf4j.api)
