@@ -1,6 +1,7 @@
 package noodle.ynab.auth.infrastructure.api
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.respondError
@@ -15,9 +16,15 @@ import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
+import noodle.oauth2.infrastructure.api.OAuth2TokenResponse
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.condition.DisabledInNativeImage
 
+@DisabledInNativeImage
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class YnabAuthApiTests {
     val engine =
         MockEngine {
@@ -54,14 +61,18 @@ class YnabAuthApiTests {
         }
 
     @Test
-    fun requestToken() {
+    fun requestToken() =
         runBlocking {
-            val response =
-                client.requestToken {
-                    append("grant_type", "authorization_code")
-                    append("code", "xyz")
-                }
-            assertEquals(OK, response.status)
+            val result =
+                client
+                    .requestToken {
+                        append("grant_type", "authorization_code")
+                        append("code", "xyz")
+                    }.body<OAuth2TokenResponse>()
+            assertEquals("abc", result.accessToken)
+            assertEquals(3600, result.expiresIn)
+            assertNull(result.idToken)
+            assertNull(result.refreshToken)
+            assertNull(result.error)
         }
-    }
 }
