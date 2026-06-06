@@ -21,9 +21,7 @@ import noodle.google.auth.infrastructure.api.model.TokenInfoResponse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.condition.DisabledInNativeImage
 
-@DisabledInNativeImage
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GoogleOAuth2ApiTests {
     val engine =
