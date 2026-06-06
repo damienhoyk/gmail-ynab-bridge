@@ -23,6 +23,7 @@ class YnabTransactionTests {
             """.trimIndent()
         val result = json.decodeFromString<YnabTransaction.Data>(raw)
         assertNull(result.data.transactionIds)
+        assertEquals(emptyList<YnabTransaction>(), result.data.transactions)
         val transaction = result.data.transaction!!
         assertEquals("txn-444", transaction.id)
         assertNull(transaction.accountId)
