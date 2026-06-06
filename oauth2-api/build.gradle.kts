@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-jvm")
+    id("kotlin-native-test")
 }
 
 group = "noodle.oauth2"
@@ -15,4 +16,14 @@ dependencies {
     testImplementation("io.ktor:ktor-client-mock")
     testImplementation(libs.slf4j.simple)
     testImplementation(libs.slf4j.api)
+}
+
+graalvmNative {
+    binaries {
+        named("test") {
+            configurationFileDirectories.from(
+                rootProject.file("META-INF/native-image/noodle.oauth2/oauth2-api"),
+            )
+        }
+    }
 }

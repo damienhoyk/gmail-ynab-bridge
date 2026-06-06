@@ -1,0 +1,46 @@
+[
+  {
+    "name": "noodle.oauth2.infrastructure.api.OAuth2TokenResponse",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.oauth2.infrastructure.api.OAuth2TokenResponse$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.oauth2.infrastructure.api.OAuth2TokenResponse$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.oauth2.infrastructure.api.OidcDiscoveryDocument",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "noodle.oauth2.infrastructure.api.OidcDiscoveryDocument$Companion",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "methods": [
+      { "name": "serializer", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "noodle.oauth2.infrastructure.api.OidcDiscoveryDocument$$serializer",
+    "allDeclaredConstructors": true,
+    "fields": [
+      { "name": "INSTANCE" }
+    ],
+    "allDeclaredMethods": true
+  }
+]
