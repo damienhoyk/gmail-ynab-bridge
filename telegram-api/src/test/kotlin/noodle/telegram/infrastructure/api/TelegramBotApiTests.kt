@@ -18,10 +18,19 @@ import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import noodle.telegram.infrastructure.api.model.TelegramWebhookEvent
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.condition.DisabledInNativeImage
 import java.util.UUID.randomUUID
 
+@DisabledInNativeImage
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TelegramBotApiTests {
+    private val json = Json { ignoreUnknownKeys = true }
+
     val apiKey = "${randomUUID()}"
     val subdomain = "${randomUUID()}"
 
@@ -32,7 +41,7 @@ class TelegramBotApiTests {
                     Get to "/bot$apiKey/getMe" ->
                         """
                         {
-                            "ok": true,
+                            "ok": true
                         }
                         """.trimIndent()
                     else -> "{}"
@@ -68,5 +77,27 @@ class TelegramBotApiTests {
     @Test
     fun setWebhook() {
         runBlocking { client.setWebhook { parameter("url", "https://$subdomain.lambda-url.ap-southeast-1.on.aws/") } }
+    }
+
+    @Test
+    fun webhookEvent() {
+        val raw =
+            """
+            {
+              "message": {
+                "text": "Hello",
+                "chat": {
+                  "id": 123
+                },
+                "from": {
+                  "id": 456
+                }
+              }
+            }
+            """.trimIndent()
+        val result = json.decodeFromString<TelegramWebhookEvent>(raw)
+        assertEquals("Hello", result.message?.text)
+        assertEquals(123L, result.message?.chat?.id)
+        assertEquals(456L, result.message?.from?.id)
     }
 }

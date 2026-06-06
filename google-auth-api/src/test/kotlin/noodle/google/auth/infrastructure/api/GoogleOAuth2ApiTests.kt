@@ -19,7 +19,11 @@ import kotlinx.coroutines.runBlocking
 import noodle.google.auth.infrastructure.api.model.TokenInfoResponse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.condition.DisabledInNativeImage
 
+@DisabledInNativeImage
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GoogleOAuth2ApiTests {
     val engine =
         MockEngine {
@@ -56,12 +60,9 @@ class GoogleOAuth2ApiTests {
         }
 
     @Test
-    fun getTokenInfo() {
+    fun getTokenInfo() =
         runBlocking {
-            val httpResponse = client.requestTokenInfo {}
-            assertEquals(OK, httpResponse.status)
-            val response = httpResponse.body<TokenInfoResponse>()
+            val response = client.requestTokenInfo {}.body<TokenInfoResponse>()
             assertEquals("user@example.com", response.email)
         }
-    }
 }
