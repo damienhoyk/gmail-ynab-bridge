@@ -19,14 +19,12 @@ import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.serializer
 import noodle.telegram.infrastructure.api.model.TelegramWebhookEvent
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.condition.DisabledInNativeImage
 import java.util.UUID.randomUUID
-import kotlin.reflect.typeOf
 
 @DisabledInNativeImage
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -43,7 +41,7 @@ class TelegramBotApiTests {
                     Get to "/bot$apiKey/getMe" ->
                         """
                         {
-                            "ok": true,
+                            "ok": true
                         }
                         """.trimIndent()
                     else -> "{}"
@@ -97,7 +95,7 @@ class TelegramBotApiTests {
               }
             }
             """.trimIndent()
-        val result = json.decodeFromString(serializer(typeOf<TelegramWebhookEvent>()), raw) as TelegramWebhookEvent
+        val result = json.decodeFromString<TelegramWebhookEvent>(raw)
         assertEquals("Hello", result.message?.text)
         assertEquals(123L, result.message?.chat?.id)
         assertEquals(456L, result.message?.from?.id)
