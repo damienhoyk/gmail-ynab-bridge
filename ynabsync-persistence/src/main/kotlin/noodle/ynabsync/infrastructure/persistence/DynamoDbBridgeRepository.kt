@@ -15,10 +15,10 @@ public class DynamoDbBridgeRepository(
     override val sortKey: String = "destination"
 
     override suspend fun getAccounts(
-        source: String,
+        mailAddress: String,
         destination: String,
     ): Map<String, String> {
-        val item = get(source, destination).item()
+        val item = get(mailAddress, destination).item()
         return item["accounts"]?.m()?.mapValues { it.value.s() } ?: emptyMap()
     }
 }

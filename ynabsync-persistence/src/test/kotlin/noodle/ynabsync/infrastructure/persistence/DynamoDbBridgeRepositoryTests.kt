@@ -17,14 +17,14 @@ import java.util.UUID
 @TestInstance(PER_CLASS)
 class DynamoDbBridgeRepositoryTests {
     private val repository = DynamoDbBridgeRepository(environment = "test")
-    private val source = "test-${UUID.randomUUID()}@gmail.com"
+    private val mailAddress = "test-${UUID.randomUUID()}@gmail.com"
     private val destination = UUID.randomUUID().toString()
 
     @Order(1)
     @Test
     fun put(): Unit =
         runBlocking {
-            repository.put(source, destination) {
+            repository.put(mailAddress, destination) {
                 put("accounts", fromM(mapOf("acc-1" to fromS("ynab-1"))))
             }
         }
@@ -32,13 +32,13 @@ class DynamoDbBridgeRepositoryTests {
     @Test
     fun getAccounts(): Unit =
         runBlocking {
-            val result = repository.getAccounts(source, destination)
+            val result = repository.getAccounts(mailAddress, destination)
             assertEquals(mapOf("acc-1" to "ynab-1"), result)
         }
 
     @AfterAll
     fun tearDown(): Unit =
         runBlocking {
-            repository.delete(source, destination)
+            repository.delete(mailAddress, destination)
         }
 }
