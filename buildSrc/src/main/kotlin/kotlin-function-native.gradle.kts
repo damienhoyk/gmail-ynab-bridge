@@ -20,9 +20,10 @@ graalvmNative {
                     file("../META-INF/native-image/com.bitwarden/sdk-secrets"),
                     file("../META-INF/native-image/io.ktor/ktor-client-content-negotiation"),
                     file("../META-INF/native-image/io.ktor/ktor-client-core"),
-                    file("../META-INF/native-image/noodle.gmailsync/gmailsync"),
-                    file("../META-INF/native-image/noodle.ynabsync/ynabsync"),
-                    file("../META-INF/native-image/noodle.oauth/oauth"),
+                    file("../META-INF/native-image/noodle.gmail/gmail-api"),
+                    file("../META-INF/native-image/noodle.ynab/ynab-api"),
+                    file("../META-INF/native-image/noodle.google.auth/google-auth-api"),
+                    file("../META-INF/native-image/noodle.oauth2/oauth2-api"),
                     file("../META-INF/native-image/org.joda/joda-time")
             )
 
