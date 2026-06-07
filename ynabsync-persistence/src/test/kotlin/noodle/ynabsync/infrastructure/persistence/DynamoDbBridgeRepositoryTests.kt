@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.TestMethodOrder
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromM
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
 import java.util.UUID
 
 @TestMethodOrder(OrderAnnotation::class)
@@ -22,14 +24,16 @@ class DynamoDbBridgeRepositoryTests {
     @Test
     fun put(): Unit =
         runBlocking {
-            repository.put(source, destination)
+            repository.put(source, destination) {
+                put("accounts", fromM(mapOf("acc-1" to fromS("ynab-1"))))
+            }
         }
 
     @Test
     fun getAccounts(): Unit =
         runBlocking {
             val result = repository.getAccounts(source, destination)
-            assertEquals(emptyMap<String, String>(), result)
+            assertEquals(mapOf("acc-1" to "ynab-1"), result)
         }
 
     @AfterAll
