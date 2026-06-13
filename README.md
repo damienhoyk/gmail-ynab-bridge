@@ -55,7 +55,7 @@ Translate core output ports to integration clients. Each adapter module depends 
 | `telegramchat-api` | `noodle.telegramchat.infrastructure.api` | Implements `telegramchat` `TelegramBotClient` and `GmailClient`/`Factory` ports via `telegram-api` + `gmail-api`; uses read-only bearer tokens from `ktor` driver's `AuthConfig.bearer()` |
 | `tokenrefresher-google-api` | `noodle.tokenrefresher.infrastructure.api.google` | Implements `tokenrefresher` `TokenProvider` port via `google-auth-api` + `oauth2-api` |
 | `tokenrefresher-ynab-api` | `noodle.tokenrefresher.infrastructure.api.ynab` | Implements `tokenrefresher` `TokenProvider` port via `ynab-auth-api` |
-| `oauth-api` | `noodle.oauth.infrastructure.api` | Shared `AuthConfig.bearer()` Ktor helper that attaches OAuth2 bearer tokens to outbound requests; consumed by `oauth` adapters and all sync/chat bootstraps (as static token readers, not refreshers) |
+| `oauth-api` | `noodle.oauth.infrastructure.api` | Retains the lazy `AuthConfig.bearer(service, loginId)` helper that refreshes OAuth2 tokens via `TokenService` on 401. Now unused after sync/chat apps moved to the `ktor` driver's static `bearer(accessToken)`; retained pending oauth retirement. |
 | `oauth-google-api` | `noodle.oauth.infrastructure.api.google` | Implements `oauth` `OAuth2TokenProvider` and `LoginIdProvider` ports via `google-auth-api` + `oauth2-api` |
 | `oauth-ynab-api` | `noodle.oauth.infrastructure.api.ynab` | Implements `oauth` `OAuth2TokenProvider` and `LoginIdProvider` ports via `ynab-auth-api` |
 
