@@ -44,6 +44,13 @@ include(":oauth-google-bootstrap")
 include(":telegramchat-bootstrap")
 include(":ynabsync-bootstrap")
 include(":oauth-ynab-bootstrap")
+include(":tokenrefresher-bootstrap")
+
+// Token Refresher
+include(":tokenrefresher")
+include(":tokenrefresher-google-api")
+include(":tokenrefresher-ynab-api")
+include(":tokenrefresher-persistence")
 
 // Architecture tests
 include(":architecture-test")
