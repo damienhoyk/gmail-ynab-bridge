@@ -8,6 +8,20 @@ plugins {
 group = "noodle.tokenrefresher"
 version = "0.0.1-SNAPSHOT"
 
+graalvmNative {
+    testSupport = true // kotlin-function-native does not set this; must be explicit
+    binaries {
+        named("test") {
+            configurationFileDirectories.from(
+                rootProject.file("META-INF/native-image/com.aws/aws-lambda-java-events"),
+                rootProject.file("META-INF/native-image/com.aws/aws-lambda-java-serialization"),
+                rootProject.file("META-INF/native-image/com.aws/aws-java-sdk-dynamodb"),
+            )
+            buildArgs.addAll(listOf("--initialize-at-build-time=kotlin,kotlinx.serialization,kotlinx.coroutines"))
+        }
+    }
+}
+
 dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(platform(libs.ktor.dependencies))
