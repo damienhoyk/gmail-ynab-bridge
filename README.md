@@ -1,6 +1,6 @@
 # gmail-ynab-bridge
 
-A serverless bridge that monitors Gmail for financial notification emails, parses them into YNAB transactions, and delivers status updates to a Telegram bot. Deployed as GraalVM native AWS Lambda functions backed by DynamoDB, with OAuth2 support for both Google and YNAB.
+A serverless bridge that monitors Gmail for financial notification emails, parses them into YNAB transactions, and delivers status updates to a Telegram bot. Deployed as GraalVM native AWS Lambda functions backed by DynamoDB. OAuth2 tokens are proactively refreshed on a schedule; sync and chat apps consume fresh tokens from the token repository without managing OAuth flows themselves.
 
 ---
 
@@ -15,7 +15,7 @@ The project follows hexagonal (ports-and-adapters) architecture across six layer
 - **Persistence** — DynamoDB implementations of core repository ports
 - **Bootstrap** — AWS Lambda handlers; the only layer that imports peers to wire the full dependency graph
 
-Each application (`oauth`, `gmailsync`, `ynabsync`, `telegramchat`) is fully isolated at the core layer and shares nothing except common libraries. Konsist architecture tests enforce these layer boundaries.
+Each application (`oauth`, `gmailsync`, `ynabsync`, `telegramchat`, `tokenrefresher`) is fully isolated at the core layer and shares nothing except common libraries. Konsist architecture tests enforce these layer boundaries.
 
 ---
 
@@ -29,6 +29,7 @@ Each application (`oauth`, `gmailsync`, `ynabsync`, `telegramchat`) is fully iso
 | `gmailsync` | `noodle.gmailsync.core` | Gmail Pub/Sub notification processing; domain: `Bridge`, `Mailbox`, `Outbox`; service: `GmailPubsubService` |
 | `ynabsync` | `noodle.ynabsync.core` | Email-to-YNAB transaction mapping; domain: `YnabTransaction`, `TransactionMatcher`, `Bridge`, `Configuration`; service: `YnabEmailService` |
 | `telegramchat` | `noodle.telegramchat.core` | Telegram bot command handling for OAuth flows and Gmail watch setup; domain: `User`, `Login`, `StateToken`, `GmailWatch`; service: `TelegramBotService` |
+| `tokenrefresher` | `noodle.tokenrefresher.core` | Proactive OAuth2 token refresh; domain: `RefreshedToken`; service: `TokenRefreshService` |
 
 ### Integration clients
 
@@ -49,10 +50,12 @@ Translate core output ports to integration clients. Each adapter module depends 
 
 | Module | Package | Responsibility |
 |---|---|---|
-| `gmailsync-api` | `noodle.gmailsync.infrastructure.api` | Implements `gmailsync` `GmailClient`/`Factory` and `OAuth2Client` ports via `gmail-api` + `google-auth-api` |
-| `ynabsync-api` | `noodle.ynabsync.infrastructure.api` | Implements `ynabsync` `GmailClient`/`Factory` and `YnabClient`/`Factory` ports via `gmail-api` + `ynab-api` |
-| `telegramchat-api` | `noodle.telegramchat.infrastructure.api` | Implements `telegramchat` `TelegramBotClient` and `GmailClient`/`Factory` ports via `telegram-api` + `gmail-api` |
-| `oauth-api` | `noodle.oauth.infrastructure.api` | Shared `AuthConfig.bearer()` Ktor helpers that attach OAuth2 bearer tokens to outbound requests — one refreshing via `TokenService`, one using a static token; consumed by the qualified `oauth` adapters and the sync/chat bootstraps |
+| `gmailsync-api` | `noodle.gmailsync.infrastructure.api` | Implements `gmailsync` `GmailClient`/`Factory` ports via `gmail-api`; uses read-only bearer token from `ktor` driver's `AuthConfig.bearer()` |
+| `ynabsync-api` | `noodle.ynabsync.infrastructure.api` | Implements `ynabsync` `YnabClient`/`Factory` ports via `ynab-api`; uses read-only bearer token from `ktor` driver's `AuthConfig.bearer()` |
+| `telegramchat-api` | `noodle.telegramchat.infrastructure.api` | Implements `telegramchat` `TelegramBotClient` and `GmailClient`/`Factory` ports via `telegram-api` + `gmail-api`; uses read-only bearer tokens from `ktor` driver's `AuthConfig.bearer()` |
+| `tokenrefresher-google-api` | `noodle.tokenrefresher.infrastructure.api.google` | Implements `tokenrefresher` `TokenProvider` port via `google-auth-api` + `oauth2-api` |
+| `tokenrefresher-ynab-api` | `noodle.tokenrefresher.infrastructure.api.ynab` | Implements `tokenrefresher` `TokenProvider` port via `ynab-auth-api` |
+| `oauth-api` | `noodle.oauth.infrastructure.api` | Shared `AuthConfig.bearer()` Ktor helper that attaches OAuth2 bearer tokens to outbound requests; consumed by `oauth` adapters and all sync/chat bootstraps (as static token readers, not refreshers) |
 | `oauth-google-api` | `noodle.oauth.infrastructure.api.google` | Implements `oauth` `OAuth2TokenProvider` and `LoginIdProvider` ports via `google-auth-api` + `oauth2-api` |
 | `oauth-ynab-api` | `noodle.oauth.infrastructure.api.ynab` | Implements `oauth` `OAuth2TokenProvider` and `LoginIdProvider` ports via `ynab-auth-api` |
 
@@ -66,6 +69,7 @@ DynamoDB implementations of core repository ports.
 | `gmailsync-persistence` | `noodle.gmailsync.infrastructure.persistence` | `DynamoDbBridgeRepository`, `DynamoDbMailboxRepository`, `DynamoDbOutboxRepository` |
 | `ynabsync-persistence` | `noodle.ynabsync.infrastructure.persistence` | `DynamoDbBridgeRepository`, `DynamoDbMatcherRepository`, `DynamoDbOutboxRepository` |
 | `telegramchat-persistence` | `noodle.telegramchat.infrastructure.persistence` | `DynamoDbUserRepository`, `DynamoDbLoginRepository`, `DynamoDbTokenRepository`, `DynamoDbMailboxRepository` |
+| `tokenrefresher-persistence` | `noodle.tokenrefresher.infrastructure.persistence` | `DynamoDbTokenRepository` — read and update OAuth tokens in the shared `token` table; paginated scan with bounded concurrency ≤5 |
 
 ### Common libraries
 
@@ -73,7 +77,7 @@ Shared infrastructure utilities. No application domain knowledge; extracted when
 
 | Type | Module | Package | Responsibility |
 |---|---|---|---|
-| Driver | `ktor` | `noodle.ktor` | Shared Ktor `HttpClient` config fragments (logging, JSON serialization, Authorization-header sanitization) routed through all API clients |
+| Driver | `ktor` | `noodle.ktor` | Shared Ktor `HttpClient` config fragments (logging, JSON serialization, Authorization-header sanitization); generic `bearer(accessToken)` helper for attaching OAuth2 tokens to outbound requests |
 | Driver | `dynamodb` | `noodle.dynamodb` | `DynamoDbRepository` and `DynamoDbSortRepository` base abstractions (CRUD + range-key queries) |
 | Integration | `bitwarden-api` | `noodle.bitwarden.infrastructure.api` | Fetches encrypted credentials from AWS Secrets Manager via the Bitwarden SDK, wrapping the payload in a `BitwardenSecret` value class |
 
@@ -88,6 +92,7 @@ AWS Lambda handlers compiled to GraalVM native images. Each bootstrap is the com
 | `gmailsync-bootstrap` | `noodle.gmailsync.bootstrap` | API Gateway (Pub/Sub push) | Gmail Pub/Sub notification handler — wires `GmailPubsubService` + all adapters |
 | `ynabsync-bootstrap` | `noodle.ynabsync.bootstrap` | DynamoDB Streams | YNAB email sync handler — wires `YnabEmailService` + all adapters |
 | `telegramchat-bootstrap` | `noodle.telegramchat.bootstrap` | API Gateway (webhook) | Telegram bot webhook handler — wires `TelegramBotService` + all adapters |
+| `tokenrefresher-bootstrap` | `noodle.tokenrefresher.bootstrap` | EventBridge Scheduler (`rate(15 minutes)`) | Proactive token refresher — scans `token` table, refreshes each token's refresh-token via Google/YNAB APIs, updates rotated tokens; bounded concurrency ≤5, reserved concurrency = 1 |
 
 ---
 
