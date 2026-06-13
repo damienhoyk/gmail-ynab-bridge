@@ -3,7 +3,6 @@ package noodle.ynabsync.bootstrap
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent
-import io.ktor.client.HttpClient
 import io.ktor.client.engine.java.Java
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,19 +10,12 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import noodle.bitwarden.infrastructure.api.Bitwarden
-import noodle.bitwarden.infrastructure.api.bitwardenSecret
-import noodle.oauth.core.service.TokenService
-import noodle.oauth.infrastructure.api.bearer
-import noodle.oauth.infrastructure.api.google.KtorGoogleTokenProvider
-import noodle.oauth.infrastructure.api.ynab.KtorYnabTokenProvider
-import noodle.oauth.infrastructure.persistence.DynamoDbTokenRepository
-import noodle.oauth2.infrastructure.api.OidcApi
-import noodle.ynab.auth.infrastructure.api.YnabAuthApi
+import noodle.ktor.bearer
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.service.YnabEmailService
 import noodle.ynabsync.infrastructure.api.KtorGmailClientFactory
 import noodle.ynabsync.infrastructure.api.KtorYnabClientFactory
+import noodle.ynabsync.infrastructure.persistence.DynamoDbAccessTokenRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbBridgeRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbMatcherRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbOutboxRepository
@@ -31,7 +23,6 @@ import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 
 public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -49,68 +40,21 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
                 .build()
         }
 
-    private val secretsManagerClientAsync =
-        initScope.async {
-            SecretsManagerClient
-                .builder()
-                .credentialsProvider(credentialsProviderAsync.await())
-                .httpClientBuilder(urlConnectionClient)
-                .build()
-        }
-
-    private val bitwardenAsync = initScope.async { Bitwarden(secretsManagerClientAsync.await()) }
-
     private val engineAsync = initScope.async { Java.create() }
-
-    private val googleSecretAsync = initScope.async { bitwardenAsync.await().getSecret("google")?.bitwardenSecret()!! }
-    private val googleTokenProviderAsync =
-        initScope.async {
-            val httpClient = HttpClient(engineAsync.await())
-            val oidcApi = OidcApi("https://accounts.google.com/.well-known/openid-configuration", httpClient)
-            KtorGoogleTokenProvider(oidcApi)
-        }
-    private val googleAuthTokenService =
-        initScope.async {
-            val secret = googleSecretAsync.await()
-            TokenService(
-                clientId = secret.clientId!!,
-                clientSecret = secret.clientSecret!!,
-                tokenRepository = tokenRepositoryAsync.await(),
-                authClient = googleTokenProviderAsync.await(),
-            )
-        }
-
-    private val ynabSecretAsync = initScope.async { bitwardenAsync.await().getSecret("ynab")?.bitwardenSecret()!! }
-    private val ynabTokenProviderAsync =
-        initScope.async {
-            val httpClient = HttpClient(engineAsync.await())
-            val ynabAuthApi = YnabAuthApi(httpClient)
-            KtorYnabTokenProvider(ynabAuthApi)
-        }
-    private val ynabAuthTokenService =
-        initScope.async {
-            val secret = ynabSecretAsync.await()
-            TokenService(
-                clientId = secret.clientId!!,
-                clientSecret = secret.clientSecret!!,
-                tokenRepository = tokenRepositoryAsync.await(),
-                authClient = ynabTokenProviderAsync.await(),
-            )
-        }
 
     private val gmailClientFactory =
         initScope.async {
-            val tokenService = googleAuthTokenService.await()
+            val accessTokenRepository = accessTokenRepositoryAsync.await()
             KtorGmailClientFactory(
-                installAuth = { loginId -> bearer(tokenService, loginId) },
+                installAuth = { loginId -> bearer(runBlocking { accessTokenRepository.getAccessToken(loginId)!! }) },
                 engine = engineAsync.await(),
             )
         }
     private val ynabClientFactory =
         initScope.async {
-            val tokenService = ynabAuthTokenService.await()
+            val accessTokenRepository = accessTokenRepositoryAsync.await()
             KtorYnabClientFactory(
-                installAuth = { loginId -> bearer(tokenService, loginId) },
+                installAuth = { loginId -> bearer(runBlocking { accessTokenRepository.getAccessToken(loginId)!! }) },
                 engine = engineAsync.await(),
             )
         }
@@ -118,7 +62,8 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val bridgeRepositoryAsync = initScope.async { DynamoDbBridgeRepository(client = dynamoDbClientAsync.await()) }
     private val matcherRepositoryAsync = initScope.async { DynamoDbMatcherRepository(client = dynamoDbClientAsync.await()) }
     private val outboxRepositoryAsync = initScope.async { DynamoDbOutboxRepository(client = dynamoDbClientAsync.await()) }
-    private val tokenRepositoryAsync = initScope.async { DynamoDbTokenRepository(client = dynamoDbClientAsync.await()) }
+    private val accessTokenRepositoryAsync =
+        initScope.async { DynamoDbAccessTokenRepository(client = dynamoDbClientAsync.await()) }
 
     private val service =
         YnabEmailService(

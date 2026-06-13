@@ -22,8 +22,3 @@ public fun AuthConfig.bearer(
             BearerTokens(value, null)
         }
     }
-
-public fun AuthConfig.bearer(accessToken: String): Unit =
-    bearer {
-        loadTokens { BearerTokens(accessToken, null) }
-    }
