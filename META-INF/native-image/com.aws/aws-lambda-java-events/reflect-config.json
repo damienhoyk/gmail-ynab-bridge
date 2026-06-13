@@ -76,11 +76,5 @@
     "allDeclaredFields": true,
     "allDeclaredMethods": true,
     "allDeclaredConstructors": true
-  },
-  {
-    "name": "com.amazonaws.services.lambda.runtime.events.ScheduledEvent",
-    "allDeclaredFields": true,
-    "allDeclaredMethods": true,
-    "allDeclaredConstructors": true
   }
 ]

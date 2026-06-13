@@ -1,8 +1,7 @@
 package noodle.tokenrefresher.bootstrap
 
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.lambda.runtime.RequestHandler
-import com.amazonaws.services.lambda.runtime.events.ScheduledEvent
+import com.amazonaws.services.lambda.runtime.RequestStreamHandler
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.java.Java
 import kotlinx.coroutines.CoroutineScope
@@ -23,8 +22,10 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
+import java.io.InputStream
+import java.io.OutputStream
 
-public class TokenRefreshHandler : RequestHandler<ScheduledEvent, String> {
+public class TokenRefreshHandler : RequestStreamHandler {
     private val log = LoggerFactory.getLogger(javaClass)
     private val initScope = CoroutineScope(Default)
 
@@ -94,17 +95,19 @@ public class TokenRefreshHandler : RequestHandler<ScheduledEvent, String> {
         }
 
     public override fun handleRequest(
-        event: ScheduledEvent,
-        context: Context?,
-    ): String =
+        input: InputStream,
+        output: OutputStream,
+        context: Context,
+    ) {
         runBlocking {
             try {
                 service.await().execute()
                 log.info("Token refresh completed successfully")
-                "ok"
             } catch (e: Exception) {
                 log.error("Token refresh failed", e)
                 throw e
             }
         }
+        output.write("\"ok\"".toByteArray())
+    }
 }
