@@ -56,7 +56,14 @@ public class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
         initScope.async {
             val accessTokenRepository = accessTokenRepositoryAsync.await()
             KtorGmailClientFactory(
-                installAuth = { loginId -> bearer(runBlocking { accessTokenRepository.getAccessToken(loginId)!! }) },
+                installAuth = { loginId ->
+                    bearer(
+                        runBlocking {
+                            accessTokenRepository.getAccessToken(loginId)
+                                ?: error("No access token for loginId=$loginId; tokenrefresher may not have populated row (id=$loginId, type=access)")
+                        },
+                    )
+                },
                 engine = engineAsync.await(),
             )
         }

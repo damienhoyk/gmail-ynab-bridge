@@ -28,7 +28,6 @@ dependencies {
     implementation(project(":dynamodb"))
     implementation(project(":google-auth-api"))
     implementation(project(":ktor"))
-    implementation(project(":ynab-auth-api"))
     implementation(project(":ynabsync"))
     implementation(project(":ynabsync-persistence"))
     implementation(project(":ynabsync-api"))

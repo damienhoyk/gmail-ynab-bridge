@@ -46,7 +46,14 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
         initScope.async {
             val accessTokenRepository = accessTokenRepositoryAsync.await()
             KtorGmailClientFactory(
-                installAuth = { loginId -> bearer(runBlocking { accessTokenRepository.getAccessToken(loginId)!! }) },
+                installAuth = { loginId ->
+                    bearer(
+                        runBlocking {
+                            accessTokenRepository.getAccessToken(loginId)
+                                ?: error("No access token for loginId=$loginId; tokenrefresher may not have populated row (id=$loginId, type=access)")
+                        },
+                    )
+                },
                 engine = engineAsync.await(),
             )
         }
@@ -54,7 +61,14 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
         initScope.async {
             val accessTokenRepository = accessTokenRepositoryAsync.await()
             KtorYnabClientFactory(
-                installAuth = { loginId -> bearer(runBlocking { accessTokenRepository.getAccessToken(loginId)!! }) },
+                installAuth = { loginId ->
+                    bearer(
+                        runBlocking {
+                            accessTokenRepository.getAccessToken(loginId)
+                                ?: error("No access token for loginId=$loginId; tokenrefresher may not have populated row (id=$loginId, type=access)")
+                        },
+                    )
+                },
                 engine = engineAsync.await(),
             )
         }
