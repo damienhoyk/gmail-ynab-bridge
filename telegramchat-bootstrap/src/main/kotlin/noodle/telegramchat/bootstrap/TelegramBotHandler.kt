@@ -17,16 +17,14 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
-import noodle.oauth.core.service.TokenService
-import noodle.oauth.infrastructure.api.bearer
-import noodle.oauth.infrastructure.api.google.KtorGoogleTokenProvider
-import noodle.oauth2.infrastructure.api.OidcApi
+import noodle.ktor.bearer
 import noodle.telegram.infrastructure.api.TelegramBotApi
 import noodle.telegram.infrastructure.api.model.TelegramWebhookEvent
 import noodle.telegramchat.core.domain.RespondChatCommand
 import noodle.telegramchat.core.service.TelegramBotService
 import noodle.telegramchat.infrastructure.api.KtorGmailClientFactory
 import noodle.telegramchat.infrastructure.api.KtorTelegramBotClient
+import noodle.telegramchat.infrastructure.persistence.DynamoDbAccessTokenRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.telegramchat.infrastructure.persistence.DynamoDbTokenRepository
@@ -73,28 +71,21 @@ public class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
     private val telegramSecretAsync =
         initScope.async { bitwardenAsync.await().getSecret("telegram")?.bitwardenSecret()!! }
 
-    private val googleTokenProviderAsync =
-        initScope.async {
-            val httpClient = HttpClient(engineAsync.await())
-            val oidcApi = OidcApi("https://accounts.google.com/.well-known/openid-configuration", httpClient)
-            KtorGoogleTokenProvider(oidcApi)
-        }
-    private val googleAuthTokenService =
-        initScope.async {
-            val secret = googleSecretAsync.await()
-            TokenService(
-                clientId = secret.clientId!!,
-                clientSecret = secret.clientSecret!!,
-                tokenRepository = securityTokenRepository.await(),
-                authClient = googleTokenProviderAsync.await(),
-            )
-        }
+    private val accessTokenRepositoryAsync =
+        initScope.async { DynamoDbAccessTokenRepository(client = dynamoDbClientAsync.await()) }
 
     private val gmailClientFactory =
         initScope.async {
-            val tokenService = googleAuthTokenService.await()
+            val accessTokenRepository = accessTokenRepositoryAsync.await()
             KtorGmailClientFactory(
-                installAuth = { loginId -> bearer(tokenService, loginId) },
+                installAuth = { loginId ->
+                    bearer(
+                        runBlocking {
+                            accessTokenRepository.getAccessToken(loginId)
+                                ?: error("No access token for loginId=$loginId; tokenrefresher may not have populated row (id=$loginId, type=access)")
+                        },
+                    )
+                },
                 engine = engineAsync.await(),
             )
         }
@@ -139,11 +130,6 @@ public class TelegramBotHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
             )
         }
 
-    private val securityTokenRepository =
-        initScope.async {
-            noodle.oauth.infrastructure.persistence
-                .DynamoDbTokenRepository(client = dynamoDbClientAsync.await())
-        }
     private val telegramUserRepository =
         initScope.async { DynamoDbUserRepository(client = dynamoDbClientAsync.await()) }
     private val telegramTokenRepository =
