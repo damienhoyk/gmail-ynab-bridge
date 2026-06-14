@@ -9,14 +9,14 @@ import noodle.tokenrefresher.core.port.TokenRepository
 
 public class RefreshTokensService(
     private val tokens: TokenRepository,
-    private val providers: Map<String, OAuth2TokenProvider>,
+    private val provider: suspend (String) -> OAuth2TokenProvider?,
 ) {
-    public suspend fun refreshOne(t: RefreshableToken) {
-        val provider = providers[providerOf(t.id)] ?: return
-        val resp = provider.refresh(t.refreshToken)
-        if (resp.accessToken.isNullOrBlank()) return
-        tokens.updateAccess(t.id, resp.accessToken)
-        resp.refreshToken?.takeIf { it.isNotBlank() }?.let { tokens.updateRefresh(t.id, it) }
+    public suspend fun refreshOne(token: RefreshableToken) {
+        val provider = provider(token.id.substringAfter('@')) ?: return
+        val response = provider.refresh(token.refreshToken)
+        if (response.accessToken.isNullOrBlank()) return
+        tokens.updateAccess(token.id, response.accessToken)
+        response.refreshToken?.takeIf { it.isNotBlank() }?.let { tokens.updateRefresh(token.id, it) }
     }
 
     public suspend fun execute(): Unit =
@@ -24,12 +24,5 @@ public class RefreshTokensService(
             coroutineScope {
                 page.map { t -> async { runCatching { refreshOne(t) } } }.awaitAll()
             }
-        }
-
-    private fun providerOf(id: String): String =
-        when {
-            id.endsWith("@gmail.com") -> "google"
-            id.endsWith("@app.ynab.com") -> "ynab"
-            else -> "unknown"
         }
 }

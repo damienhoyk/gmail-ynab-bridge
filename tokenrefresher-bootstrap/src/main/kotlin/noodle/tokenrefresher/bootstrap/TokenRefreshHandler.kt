@@ -11,7 +11,6 @@ import kotlinx.coroutines.runBlocking
 import noodle.bitwarden.infrastructure.api.Bitwarden
 import noodle.bitwarden.infrastructure.api.bitwardenSecret
 import noodle.oauth2.infrastructure.api.OidcApi
-import noodle.tokenrefresher.core.port.OAuth2TokenProvider
 import noodle.tokenrefresher.core.service.RefreshTokensService
 import noodle.tokenrefresher.infrastructure.api.google.KtorGoogleTokenRefresher
 import noodle.tokenrefresher.infrastructure.api.ynab.KtorYnabTokenRefresher
@@ -74,23 +73,18 @@ public class TokenRefreshHandler : RequestStreamHandler {
             KtorYnabTokenRefresher(ynabAuthApi, secret.clientId ?: error("ynab clientId secret missing"), secret.clientSecret ?: error("ynab clientSecret secret missing"))
         }
 
-    private val providersAsync =
-        initScope.async {
-            mapOf(
-                "google" to (googleTokenRefresherAsync.await() as OAuth2TokenProvider),
-                "ynab" to (ynabTokenRefresherAsync.await() as OAuth2TokenProvider),
-            )
-        }
-
     private val tokenRepositoryAsync =
         initScope.async { DynamoDbTokenRepository(dynamoDbClientAsync.await()) }
 
     private val service =
         initScope.async {
-            RefreshTokensService(
-                tokens = tokenRepositoryAsync.await(),
-                providers = providersAsync.await(),
-            )
+            RefreshTokensService(tokenRepositoryAsync.await()) {
+                when (it) {
+                    "gmail.com" -> googleTokenRefresherAsync.await()
+                    "app.ynab.com" -> ynabTokenRefresherAsync.await()
+                    else -> null
+                }
+            }
         }
 
     public override fun handleRequest(
