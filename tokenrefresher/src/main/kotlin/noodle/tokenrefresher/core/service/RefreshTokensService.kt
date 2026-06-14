@@ -22,7 +22,7 @@ public class RefreshTokensService(
     public suspend fun execute(): Unit =
         tokens.findRefreshable().collect { page ->
             coroutineScope {
-                page.map { t -> async { runCatching { refreshOne(t) } } }.awaitAll()
+                page.map { async { runCatching { refreshOne(it) } } }.awaitAll()
             }
         }
 }

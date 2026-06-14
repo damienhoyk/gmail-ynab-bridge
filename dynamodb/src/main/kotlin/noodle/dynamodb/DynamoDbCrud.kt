@@ -1,6 +1,9 @@
 package noodle.dynamodb
 
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
@@ -9,6 +12,8 @@ import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse
 import software.amazon.awssdk.services.dynamodb.model.PutItemResponse
 import software.amazon.awssdk.services.dynamodb.model.ReturnValue
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest
+import software.amazon.awssdk.services.dynamodb.model.ScanResponse
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse
 import java.time.Instant.now
 
@@ -34,6 +39,18 @@ public abstract class DynamoDbCrud {
         withContext(IO) {
             client.getItem { it.tableName(table).key(key) }
         }
+
+    public fun scan(
+        block: ScanRequest.Builder.() -> Unit = {},
+    ): Flow<ScanResponse> =
+        generateSequence({
+            client.scan { it.tableName(table).apply(block) }
+        }) { previous ->
+            previous.lastEvaluatedKey().ifEmpty { null }?.let { startKey ->
+                client.scan { it.tableName(table).exclusiveStartKey(startKey).apply(block) }
+            }
+        }.asFlow()
+            .flowOn(IO)
 
     public suspend fun update(
         key: Key,
