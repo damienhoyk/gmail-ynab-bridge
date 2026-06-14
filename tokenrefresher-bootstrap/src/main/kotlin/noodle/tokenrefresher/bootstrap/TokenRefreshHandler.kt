@@ -90,7 +90,6 @@ public class TokenRefreshHandler : RequestStreamHandler {
             RefreshTokensService(
                 tokens = tokenRepositoryAsync.await(),
                 providers = providersAsync.await(),
-                maxConcurrency = 5,
             )
         }
 
