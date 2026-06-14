@@ -64,7 +64,10 @@ class GmailPubsubServiceTest {
 
     private val outboxRepository =
         object : OutboxRepository {
-            override suspend fun putOutbox(outbox: Outbox) {
+            override suspend fun putOutbox(
+                outbox: Outbox,
+                duration: kotlin.time.Duration,
+            ) {
                 savedOutboxes.add(outbox)
             }
         }

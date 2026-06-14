@@ -11,6 +11,7 @@ import noodle.gmailsync.core.port.LoginIdProvider
 import noodle.gmailsync.core.port.MailboxRepository
 import noodle.gmailsync.core.port.OutboxRepository
 import org.slf4j.LoggerFactory
+import kotlin.time.Duration.Companion.days
 
 public class GmailPubsubService(
     private val gmailClientFactory: suspend () -> GmailClientFactory,
@@ -64,7 +65,7 @@ public class GmailPubsubService(
             launch { mailboxRepository.putMailbox(mailbox.copy(state = command.state)) }
             messageIds.forEach { messageId ->
                 destinations.forEach { destination ->
-                    launch { outboxRepository.putOutbox(Outbox(destination = destination, sourceAddress = command.email, messageId = messageId)) }
+                    launch { outboxRepository.putOutbox(Outbox(destination = destination, sourceAddress = command.email, messageId = messageId), 30.days) }
                 }
             }
 

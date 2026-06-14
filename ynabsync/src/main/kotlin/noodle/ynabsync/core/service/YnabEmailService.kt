@@ -23,8 +23,6 @@ public class YnabEmailService(
     public companion object {
         private val TTL_SUCCESS = 24.hours
         private val TTL_NOT_FOUND = 1.hours
-        private val TTL_ERROR = 120.hours
-        private val TTL_NO_MATCH = 1.hours
     }
 
     public suspend fun execute(command: SyncYnabCommand) {
@@ -47,13 +45,11 @@ public class YnabEmailService(
                 else -> throw IllegalStateException("unknown mail provider")
             }
 
-        val ttl =
-            when (message.status) {
-                200 -> TTL_SUCCESS
-                404 -> TTL_NOT_FOUND
-                else -> TTL_ERROR
-            }
-        outboxRepository.updateTtl(destination, source, ttl)
+        if (message.status == 404) {
+            log.error("Failed to get message [{}]", source)
+            outboxRepository.updateTtl(destination, source, TTL_NOT_FOUND)
+            return
+        }
 
         if (message.status != 200) {
             log.error("Failed to get message [{}] status=[{}]", source, message.status)
@@ -95,7 +91,6 @@ public class YnabEmailService(
                 mailId,
                 text.take(50),
             )
-            outboxRepository.updateTtl(destination, source, TTL_NO_MATCH)
             return
         }
 
@@ -103,7 +98,6 @@ public class YnabEmailService(
             accounts[transaction.accountId]
                 ?: run {
                     log.error("No account mapping for [{}]", transaction.accountId)
-                    outboxRepository.updateTtl(destination, source, TTL_ERROR)
                     return
                 }
 
