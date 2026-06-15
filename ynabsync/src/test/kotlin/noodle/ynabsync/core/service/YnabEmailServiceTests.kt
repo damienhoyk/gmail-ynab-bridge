@@ -1,7 +1,7 @@
 package noodle.ynabsync.core.service
 
 import kotlinx.coroutines.runBlocking
-import noodle.ynabsync.core.domain.Bridge
+import noodle.ynabsync.core.domain.Account
 import noodle.ynabsync.core.domain.GmailMessage
 import noodle.ynabsync.core.domain.MailMessageRequest
 import noodle.ynabsync.core.domain.SyncYnabCommand
@@ -9,7 +9,7 @@ import noodle.ynabsync.core.domain.TransactionMatcher
 import noodle.ynabsync.core.domain.TransactionMatcher.RegexGroup
 import noodle.ynabsync.core.domain.YnabTransaction
 import noodle.ynabsync.core.domain.YnabUrn
-import noodle.ynabsync.core.port.BridgeRepository
+import noodle.ynabsync.core.port.AccountRepository
 import noodle.ynabsync.core.port.GmailClient
 import noodle.ynabsync.core.port.GmailClientFactory
 import noodle.ynabsync.core.port.MatcherRepository
@@ -24,7 +24,7 @@ import kotlin.time.Duration.Companion.hours
 class YnabEmailServiceTests {
     private val testMailAddress = "test@gmail.com"
     private val testUserId = "test-user-123"
-    private val testDestination = "$testUserId@app.ynab.com"
+    private val testDestination = "urn:app.ynab.com:$testUserId"
     private val testMailId = "mail-id-456"
     private val testSource = "source-789"
     private val testBankAccount = "1995"
@@ -37,13 +37,14 @@ class YnabEmailServiceTests {
         runBlocking {
             // Arrange
             val fakeYnabClient = FakeYnabClient()
-            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient)
+            val capturedLoginId = mutableListOf<String>()
+            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient, capturedLoginId)
             val fakeGmailClient = FakeGmailClient()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
-            val fakeBridgeRepository =
-                FakeBridgeRepository(
+            val fakeAccountRepository =
+                FakeAccountRepository(
                     listOf(
-                        Bridge(testBankAccount, testYnabUrn),
+                        Account(testBankAccount, testYnabUrn),
                     ),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
@@ -53,7 +54,7 @@ class YnabEmailServiceTests {
                 YnabEmailService(
                     ynabClientFactory = { fakeYnabClientFactory },
                     gmailClientFactory = { fakeGmailClientFactory },
-                    bridgeRepository = { fakeBridgeRepository },
+                    accountRepository = { fakeAccountRepository },
                     matcherRepository = { fakeMatcherRepository },
                     outboxRepository = { fakeOutboxRepository },
                 )
@@ -75,24 +76,25 @@ class YnabEmailServiceTests {
             assertEquals(testBudgetId, budgetId)
             assertEquals(testYnabAccountId, txns[0].accountId)
 
+            assertEquals("$testUserId@app.ynab.com", capturedLoginId.single())
+
             assertEquals(testDestination, fakeOutboxRepository.lastUpdateTtlDestination)
             assertEquals(testSource, fakeOutboxRepository.lastUpdateTtlSource)
             assertEquals(24.hours, fakeOutboxRepository.lastUpdateTtlDuration)
         }
 
     @Test
-    fun filtersBridgesFromDifferentYnabUser(): Unit =
+    fun noAccountsForBankAccountReturnsWithoutPosting(): Unit =
         runBlocking {
-            // Arrange - bridge with a different YNAB user ID
-            val otherUserUrn = YnabUrn("other-user", "other-budget", "other-account")
+            // Arrange - no account mapping for the bank account in transaction
             val fakeYnabClient = FakeYnabClient()
-            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient)
+            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient, mutableListOf())
             val fakeGmailClient = FakeGmailClient()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
-            val fakeBridgeRepository =
-                FakeBridgeRepository(
+            val fakeAccountRepository =
+                FakeAccountRepository(
                     listOf(
-                        Bridge(testBankAccount, otherUserUrn),
+                        Account("9999", testYnabUrn),
                     ),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
@@ -102,49 +104,7 @@ class YnabEmailServiceTests {
                 YnabEmailService(
                     ynabClientFactory = { fakeYnabClientFactory },
                     gmailClientFactory = { fakeGmailClientFactory },
-                    bridgeRepository = { fakeBridgeRepository },
-                    matcherRepository = { fakeMatcherRepository },
-                    outboxRepository = { fakeOutboxRepository },
-                )
-
-            val command =
-                SyncYnabCommand(
-                    destination = testDestination,
-                    mailId = testMailId,
-                    mailAddress = testMailAddress,
-                    source = testSource,
-                )
-
-            // Act
-            service.execute(command)
-
-            // Assert - no post should have been made
-            assertEquals(null, fakeYnabClient.lastPostTransactionsBudgetId)
-            assertEquals(null, fakeYnabClient.lastPostTransactionsInput)
-        }
-
-    @Test
-    fun logsAndReturnsWhenNoBridgeFound(): Unit =
-        runBlocking {
-            // Arrange
-            val fakeYnabClient = FakeYnabClient()
-            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient)
-            val fakeGmailClient = FakeGmailClient()
-            val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
-            val fakeBridgeRepository =
-                FakeBridgeRepository(
-                    listOf(
-                        Bridge("different-bank-account", testYnabUrn),
-                    ),
-                )
-            val fakeMatcherRepository = FakeMatcherRepository()
-            val fakeOutboxRepository = FakeOutboxRepository()
-
-            val service =
-                YnabEmailService(
-                    ynabClientFactory = { fakeYnabClientFactory },
-                    gmailClientFactory = { fakeGmailClientFactory },
-                    bridgeRepository = { fakeBridgeRepository },
+                    accountRepository = { fakeAccountRepository },
                     matcherRepository = { fakeMatcherRepository },
                     outboxRepository = { fakeOutboxRepository },
                 )
@@ -170,13 +130,13 @@ class YnabEmailServiceTests {
         runBlocking {
             // Arrange
             val fakeYnabClient = FakeYnabClient()
-            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient)
+            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient, mutableListOf())
             val fakeGmailClient = FakeGmailClient()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
-            val fakeBridgeRepository =
-                FakeBridgeRepository(
+            val fakeAccountRepository =
+                FakeAccountRepository(
                     listOf(
-                        Bridge(testBankAccount, testYnabUrn),
+                        Account(testBankAccount, testYnabUrn),
                     ),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
@@ -186,7 +146,7 @@ class YnabEmailServiceTests {
                 YnabEmailService(
                     ynabClientFactory = { fakeYnabClientFactory },
                     gmailClientFactory = { fakeGmailClientFactory },
-                    bridgeRepository = { fakeBridgeRepository },
+                    accountRepository = { fakeAccountRepository },
                     matcherRepository = { fakeMatcherRepository },
                     outboxRepository = { fakeOutboxRepository },
                 )
@@ -211,20 +171,19 @@ class YnabEmailServiceTests {
     @Test
     fun sameUserSameBankAccountDifferentUrnFanOut(): Unit =
         runBlocking {
-            // Arrange - two bridge rows with the SAME user, SAME bankAccount, but DIFFERENT account IDs
+            // Arrange - two accounts with the SAME bankAccount but DIFFERENT account URNs
             // This should fan-out: the transaction posts to BOTH YNAB accounts
             val otherYnabAccountId = "ynab-acc-888"
             val otherUrn = YnabUrn(testUserId, testBudgetId, otherYnabAccountId)
             val fakeYnabClient = FakeYnabClient()
-            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient)
+            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient, mutableListOf())
             val fakeGmailClient = FakeGmailClient()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
-            val fakeBridgeRepository =
-                FakeBridgeRepository(
+            val fakeAccountRepository =
+                FakeAccountRepository(
                     listOf(
-                        // Same bank account, same YNAB user, but different account IDs — fan-out!
-                        Bridge(testBankAccount, testYnabUrn),
-                        Bridge(testBankAccount, otherUrn),
+                        Account(testBankAccount, testYnabUrn),
+                        Account(testBankAccount, otherUrn),
                     ),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
@@ -234,7 +193,7 @@ class YnabEmailServiceTests {
                 YnabEmailService(
                     ynabClientFactory = { fakeYnabClientFactory },
                     gmailClientFactory = { fakeGmailClientFactory },
-                    bridgeRepository = { fakeBridgeRepository },
+                    accountRepository = { fakeAccountRepository },
                     matcherRepository = { fakeMatcherRepository },
                     outboxRepository = { fakeOutboxRepository },
                 )
@@ -267,18 +226,17 @@ class YnabEmailServiceTests {
     @Test
     fun sameUserSameBankAccountSameUrnIdempotentDedup(): Unit =
         runBlocking {
-            // Arrange - two bridge rows with the SAME user, SAME bankAccount, IDENTICAL URN (idempotent duplicate)
+            // Arrange - two accounts with the SAME bankAccount and IDENTICAL URN (idempotent duplicate)
             // The dedup logic should ensure the transaction posts EXACTLY ONCE
             val fakeYnabClient = FakeYnabClient()
-            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient)
+            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient, mutableListOf())
             val fakeGmailClient = FakeGmailClient()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
-            val fakeBridgeRepository =
-                FakeBridgeRepository(
+            val fakeAccountRepository =
+                FakeAccountRepository(
                     listOf(
-                        // Same bank account, same URN — idempotent duplicate, should dedup
-                        Bridge(testBankAccount, testYnabUrn),
-                        Bridge(testBankAccount, testYnabUrn),
+                        Account(testBankAccount, testYnabUrn),
+                        Account(testBankAccount, testYnabUrn),
                     ),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
@@ -288,7 +246,7 @@ class YnabEmailServiceTests {
                 YnabEmailService(
                     ynabClientFactory = { fakeYnabClientFactory },
                     gmailClientFactory = { fakeGmailClientFactory },
-                    bridgeRepository = { fakeBridgeRepository },
+                    accountRepository = { fakeAccountRepository },
                     matcherRepository = { fakeMatcherRepository },
                     outboxRepository = { fakeOutboxRepository },
                 )
@@ -316,13 +274,13 @@ class YnabEmailServiceTests {
         runBlocking {
             // Arrange
             val fakeYnabClient = FakeYnabClient()
-            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient)
+            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient, mutableListOf())
             val fakeGmailClient = FakeGmailClient404()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
-            val fakeBridgeRepository =
-                FakeBridgeRepository(
+            val fakeAccountRepository =
+                FakeAccountRepository(
                     listOf(
-                        Bridge(testBankAccount, testYnabUrn),
+                        Account(testBankAccount, testYnabUrn),
                     ),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
@@ -332,7 +290,7 @@ class YnabEmailServiceTests {
                 YnabEmailService(
                     ynabClientFactory = { fakeYnabClientFactory },
                     gmailClientFactory = { fakeGmailClientFactory },
-                    bridgeRepository = { fakeBridgeRepository },
+                    accountRepository = { fakeAccountRepository },
                     matcherRepository = { fakeMatcherRepository },
                     outboxRepository = { fakeOutboxRepository },
                 )
@@ -362,8 +320,12 @@ class YnabEmailServiceTests {
 
     private class FakeYnabClientFactory(
         private val client: YnabClient,
+        private val capturedLoginIds: MutableList<String>,
     ) : YnabClientFactory {
-        override suspend fun create(loginId: String): YnabClient = client
+        override suspend fun create(loginId: String): YnabClient {
+            capturedLoginIds.add(loginId)
+            return client
+        }
     }
 
     private class FakeYnabClient : YnabClient {
@@ -407,10 +369,10 @@ class YnabEmailServiceTests {
             )
     }
 
-    private class FakeBridgeRepository(
-        private val bridges: List<Bridge>,
-    ) : BridgeRepository {
-        override suspend fun getBridges(mailAddress: String): List<Bridge> = bridges
+    private class FakeAccountRepository(
+        private val accounts: List<Account>,
+    ) : AccountRepository {
+        override suspend fun getAccounts(owner: String): List<Account> = accounts
     }
 
     private class FakeMatcherRepository : MatcherRepository {

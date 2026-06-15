@@ -16,7 +16,7 @@ import noodle.ynabsync.core.service.YnabEmailService
 import noodle.ynabsync.infrastructure.api.KtorGmailClientFactory
 import noodle.ynabsync.infrastructure.api.KtorYnabClientFactory
 import noodle.ynabsync.infrastructure.persistence.DynamoDbAccessTokenRepository
-import noodle.ynabsync.infrastructure.persistence.DynamoDbBridgeRepository
+import noodle.ynabsync.infrastructure.persistence.DynamoDbAccountRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbMatcherRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbOutboxRepository
 import org.slf4j.LoggerFactory
@@ -73,7 +73,7 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
             )
         }
 
-    private val bridgeRepositoryAsync = initScope.async { DynamoDbBridgeRepository(client = dynamoDbClientAsync.await()) }
+    private val accountRepositoryAsync = initScope.async { DynamoDbAccountRepository(client = dynamoDbClientAsync.await()) }
     private val matcherRepositoryAsync = initScope.async { DynamoDbMatcherRepository(client = dynamoDbClientAsync.await()) }
     private val outboxRepositoryAsync = initScope.async { DynamoDbOutboxRepository(client = dynamoDbClientAsync.await()) }
     private val accessTokenRepositoryAsync =
@@ -83,7 +83,7 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
         YnabEmailService(
             ynabClientFactory = { ynabClientFactory.await() },
             gmailClientFactory = { gmailClientFactory.await() },
-            bridgeRepository = { bridgeRepositoryAsync.await() },
+            accountRepository = { accountRepositoryAsync.await() },
             matcherRepository = { matcherRepositoryAsync.await() },
             outboxRepository = { outboxRepositoryAsync.await() },
         )
@@ -115,7 +115,7 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
             return
         }
 
-        if (!destination.endsWith("@app.ynab.com", ignoreCase = true)) {
+        if (!destination.startsWith("urn:app.ynab.com:", ignoreCase = true)) {
             log.debug("Filter destination [{}]", destination)
             return
         }

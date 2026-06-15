@@ -1,6 +1,6 @@
 package noodle.ynabsync.core.domain
 
-public data class Bridge(
+public data class Account(
     val bankAccount: String,
-    val destination: YnabUrn,
+    val ynabAccount: YnabUrn,
 )

@@ -57,7 +57,11 @@ class GmailPubsubServiceTest {
         object : BridgeRepository {
             override suspend fun queryBridge(source: String) =
                 when (source) {
-                    email -> listOf(Bridge(source, "dest1"))
+                    email ->
+                        listOf(
+                            Bridge(source, "urn:app.ynab.com:user-123"),
+                            Bridge(source, "urn:app.ynab.com:user-123"),
+                        )
                     else -> emptyList()
                 }
         }
@@ -151,7 +155,7 @@ class GmailPubsubServiceTest {
             assertEquals(201, result)
             assertEquals(nextState, savedMailboxes.firstOrNull()?.state)
             assertEquals(1, savedOutboxes.size)
-            assertEquals("dest1", savedOutboxes[0].destination)
+            assertEquals("urn:app.ynab.com:user-123", savedOutboxes[0].destination)
             assertEquals("msg1", savedOutboxes[0].source.substringBefore(":"))
         }
 }

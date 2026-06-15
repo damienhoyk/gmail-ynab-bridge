@@ -39,7 +39,7 @@ public class GmailPubsubService(
             val mailboxAsync = async { mailboxRepository.getMailbox(command.email) }
 
             val bridgeRepository = bridgeRepository()
-            val destinationsAsync = async { bridgeRepository.queryBridge(command.email).map { it.destination } }
+            val destinationsAsync = async { bridgeRepository.queryBridge(command.email).map { it.destination }.distinct() }
 
             val gmailClientFactory = gmailClientFactory()
             val googleGmailClient = gmailClientFactory.create(command.email)

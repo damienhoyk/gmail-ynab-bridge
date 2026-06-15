@@ -3,7 +3,7 @@ package noodle.ynabsync.core.service
 import noodle.ynabsync.core.domain.MailMessageRequest
 import noodle.ynabsync.core.domain.MailMessageRequest.Format
 import noodle.ynabsync.core.domain.SyncYnabCommand
-import noodle.ynabsync.core.port.BridgeRepository
+import noodle.ynabsync.core.port.AccountRepository
 import noodle.ynabsync.core.port.GmailClientFactory
 import noodle.ynabsync.core.port.MatcherRepository
 import noodle.ynabsync.core.port.OutboxRepository
@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.hours
 public class YnabEmailService(
     public val ynabClientFactory: suspend () -> YnabClientFactory,
     public val gmailClientFactory: suspend () -> GmailClientFactory,
-    public val bridgeRepository: suspend () -> BridgeRepository,
+    public val accountRepository: suspend () -> AccountRepository,
     public val matcherRepository: suspend () -> MatcherRepository,
     public val outboxRepository: suspend () -> OutboxRepository,
 ) {
@@ -68,19 +68,13 @@ public class YnabEmailService(
                 return
             }
 
-        log.info("Getting bridge for [{}|{}] ...", mailAddress, destination)
+        val userId = destination.removePrefix("urn:app.ynab.com:").substringBefore(":")
+        val client = ynabClientFactory.create("$userId@app.ynab.com")
 
-        val bridgeRepository = bridgeRepository()
-        val client = ynabClientFactory.create(destination)
-        val userId = destination.substringBefore("@")
-        val bridges = bridgeRepository.getBridges(mailAddress)
+        val accountRepository = accountRepository()
+        val accounts = accountRepository.getAccounts(destination)
 
-        val accountsByBank =
-            bridges
-                .filter { it.destination.userId == userId }
-                .groupBy({ it.bankAccount }, { it.destination })
-
-        log.info("Bridge has [{}] accounts", accountsByBank.size)
+        val accountsByBank = accounts.groupBy({ it.bankAccount }, { it.ynabAccount })
 
         log.info("Getting matchers for [{}] ...", senderEmail)
 
@@ -100,18 +94,16 @@ public class YnabEmailService(
             return
         }
 
-        val urns =
+        val ynabAccounts =
             accountsByBank[transaction.accountId]
                 ?: run {
                     log.error("No account mapping for [{}]", transaction.accountId)
                     return
                 }
 
-        val distinctUrns = urns.distinct()
+        log.info("Sending request to [{}] for [{}] distinct accounts", destination, ynabAccounts.distinct().size)
 
-        log.info("Sending request to [{}] for [{}] distinct accounts", destination, distinctUrns.size)
-
-        distinctUrns.forEach { urn ->
+        ynabAccounts.distinct().forEach { urn ->
             val ynabTransaction = transaction.copy(accountId = urn.accountId)
             client.postTransactions(budgetId = urn.budgetId, transactions = listOf(ynabTransaction))
         }
