@@ -17,20 +17,20 @@ import java.util.UUID
 class DynamoDbAccessTokenRepositoryTests {
     private val repository = DynamoDbAccessTokenRepository(environment = "test")
     private val id = UUID.randomUUID().toString()
-    private val token = UUID.randomUUID().toString()
+    private val accessToken = UUID.randomUUID().toString()
 
     @Order(1)
     @Test
-    fun seedAccessToken(): Unit =
+    fun put(): Unit =
         runBlocking {
-            repository.put(id, "access") { put("value", fromS(token)) }
+            repository.put(id, "access") { put("value", fromS(accessToken)) }
         }
 
     @Test
     fun getAccessToken(): Unit =
         runBlocking {
             val value = repository.getAccessToken(id)
-            assertEquals(token, value)
+            assertEquals(accessToken, value)
         }
 
     @AfterAll
