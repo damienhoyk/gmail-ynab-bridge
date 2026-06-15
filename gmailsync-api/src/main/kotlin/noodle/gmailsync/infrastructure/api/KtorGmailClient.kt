@@ -22,4 +22,11 @@ public class KtorGmailClient(
     }
 }
 
-private fun GmailHistory.toAddedMessageIds(): List<String> = history.flatMap { it.messagesAdded }.mapNotNull { it.message.id }
+// Use asSequence() before flatMap/mapNotNull to avoid allocating intermediate lists,
+// improving performance by preventing unnecessary memory copies.
+private fun GmailHistory.toAddedMessageIds(): List<String> =
+    history
+        .asSequence()
+        .flatMap { it.messagesAdded }
+        .mapNotNull { it.message.id }
+        .toList()
