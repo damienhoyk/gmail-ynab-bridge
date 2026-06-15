@@ -72,9 +72,15 @@ public class YnabEmailService(
 
         val bridgeRepository = bridgeRepository()
         val client = ynabClientFactory.create(destination)
-        val accounts = bridgeRepository.getAccounts(mailAddress, destination)
+        val userId = destination.substringBefore("@")
+        val bridges = bridgeRepository.getBridges(mailAddress)
 
-        log.info("Bridge has [{}] accounts", accounts.size)
+        val accountsByBank =
+            bridges
+                .filter { it.destination.userId == userId }
+                .groupBy({ it.bankAccount }, { it.destination })
+
+        log.info("Bridge has [{}] accounts", accountsByBank.size)
 
         log.info("Getting matchers for [{}] ...", senderEmail)
 
@@ -94,18 +100,21 @@ public class YnabEmailService(
             return
         }
 
-        val accountId =
-            accounts[transaction.accountId]
+        val urns =
+            accountsByBank[transaction.accountId]
                 ?: run {
                     log.error("No account mapping for [{}]", transaction.accountId)
                     return
                 }
 
-        val ynabTransaction = transaction.copy(accountId = accountId)
+        val distinctUrns = urns.distinct()
 
-        log.info("Sending request to [{}]", destination)
+        log.info("Sending request to [{}] for [{}] distinct accounts", destination, distinctUrns.size)
 
-        client.postTransactions(transactions = listOf(ynabTransaction))
+        distinctUrns.forEach { urn ->
+            val ynabTransaction = transaction.copy(accountId = urn.accountId)
+            client.postTransactions(budgetId = urn.budgetId, transactions = listOf(ynabTransaction))
+        }
 
         outboxRepository.updateTtl(destination, source, TTL_SUCCESS)
     }
