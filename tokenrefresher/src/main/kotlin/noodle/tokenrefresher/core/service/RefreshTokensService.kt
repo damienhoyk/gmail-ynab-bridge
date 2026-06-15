@@ -15,7 +15,7 @@ public class RefreshTokensService(
         val provider = provider(token.id.substringAfter('@')) ?: return
         val response = provider.refresh(token.refreshToken)
         if (response.accessToken.isNullOrBlank()) return
-        tokens.updateAccess(token.id, response.accessToken)
+        tokens.updateAccess(token.id, response.accessToken, response.expiresIn)
         response.refreshToken?.takeIf { it.isNotBlank() }?.let { tokens.updateRefresh(token.id, it) }
     }
 

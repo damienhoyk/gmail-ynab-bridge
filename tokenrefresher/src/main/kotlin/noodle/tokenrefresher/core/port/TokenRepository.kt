@@ -9,6 +9,7 @@ public interface TokenRepository {
     public suspend fun updateAccess(
         id: String,
         value: String,
+        expiresIn: Long,
     )
 
     public suspend fun updateRefresh(
