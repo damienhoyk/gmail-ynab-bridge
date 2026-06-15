@@ -13,5 +13,6 @@ public interface TokenRepository {
         id: String,
         type: String,
         value: String,
+        expiresIn: Long? = null,
     ): Token
 }

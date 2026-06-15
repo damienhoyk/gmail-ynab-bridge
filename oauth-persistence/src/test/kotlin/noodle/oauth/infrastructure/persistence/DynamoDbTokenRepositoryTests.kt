@@ -3,6 +3,9 @@ package noodle.oauth.infrastructure.persistence
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -10,6 +13,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.TestMethodOrder
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromS
+import java.time.Instant
 import java.util.UUID
 
 @TestMethodOrder(OrderAnnotation::class)
@@ -51,6 +55,46 @@ class DynamoDbTokenRepositoryTests {
             val newValue = UUID.randomUUID().toString()
             val token = repository.updateTokenValue(id, "access", newValue)
             assertEquals(newValue, token.value)
+        }
+
+    @Order(5)
+    @Test
+    fun updateTokenValueWithExpiresIn(): Unit =
+        runBlocking {
+            val newValue = UUID.randomUUID().toString()
+            val expiresInSeconds = 3600L
+            val beforeWrite = Instant.now().epochSecond
+            val token = repository.updateTokenValue(id, "access", newValue, expiresInSeconds)
+            val afterWrite = Instant.now().epochSecond
+
+            assertEquals(newValue, token.value)
+
+            // Verify expiresAt was written to DynamoDB
+            val item = repository.get(id, "access").item()
+            val expiresAtAttr = item["expiresAt"]
+            assertNotNull(expiresAtAttr, "expiresAt attribute should be present when expiresIn is provided")
+
+            val expiresAt = expiresAtAttr?.n()?.toLong()!!
+            val expectedMin = beforeWrite + expiresInSeconds
+            val expectedMax = afterWrite + expiresInSeconds
+            assertTrue(
+                expiresAt in expectedMin..expectedMax,
+                "expiresAt ($expiresAt) should be approximately now + expiresIn, within range [$expectedMin, $expectedMax]",
+            )
+        }
+
+    @Order(6)
+    @Test
+    fun updateTokenValueWithoutExpiresIn(): Unit =
+        runBlocking {
+            val newValue = UUID.randomUUID().toString()
+            val token = repository.updateTokenValue(id, "refresh", newValue, null)
+            assertEquals(newValue, token.value)
+
+            // Verify expiresAt was NOT written to DynamoDB
+            val item = repository.get(id, "refresh").item()
+            val expiresAtAttr = item["expiresAt"]
+            assertNull(expiresAtAttr, "expiresAt attribute should be absent when expiresIn is null")
         }
 
     @AfterAll

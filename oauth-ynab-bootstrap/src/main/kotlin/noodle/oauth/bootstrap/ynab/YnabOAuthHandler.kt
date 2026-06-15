@@ -93,6 +93,7 @@ public class YnabOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> {
             tokenRepository = { tokenRepository.await() },
             userRepository = { userRepository.await() },
             loginRepository = { loginRepository.await() },
+            refreshTokenTtlSeconds = 5_184_000,
         )
 
     public override fun handleRequest(

@@ -23,6 +23,7 @@ public class AuthorizeService(
     public val tokenRepository: suspend () -> TokenRepository,
     public val userRepository: suspend () -> UserRepository,
     public val loginRepository: suspend () -> LoginRepository,
+    public val refreshTokenTtlSeconds: Long,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -80,10 +81,10 @@ public class AuthorizeService(
 
             coroutineScope {
                 launch {
-                    oAuthToken.accessToken?.let { tokenRepository.updateTokenValue(loginId, "access", it) }
+                    oAuthToken.accessToken?.let { tokenRepository.updateTokenValue(loginId, "access", it, oAuthToken.expiresIn?.toLong()) }
                 }
                 launch {
-                    oAuthToken.refreshToken?.let { tokenRepository.updateTokenValue(loginId, "refresh", it) }
+                    oAuthToken.refreshToken?.let { tokenRepository.updateTokenValue(loginId, "refresh", it, refreshTokenTtlSeconds) }
                 }
             }
 
