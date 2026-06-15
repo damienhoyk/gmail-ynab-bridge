@@ -1,8 +1,10 @@
 package noodle.tokenrefresher.infrastructure.persistence
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import noodle.dynamodb.DynamoDbSortRepository
 import noodle.tokenrefresher.core.domain.RefreshableToken
 import noodle.tokenrefresher.core.port.TokenRepository
@@ -38,17 +40,23 @@ public class DynamoDbTokenRepository(
                 ),
             )
         }.map { page ->
-            page.items().mapNotNull { accessItem ->
-                val id = accessItem["id"]?.s() ?: return@mapNotNull null
-                val refreshResponse = runBlocking { get(id, "refresh") }
-                val refreshValue = refreshResponse.item()?.get("value")?.s()
+            coroutineScope {
+                page
+                    .items()
+                    .mapNotNull { accessItem ->
+                        val id = accessItem["id"]?.s() ?: return@mapNotNull null
+                        async { Pair(id, get(id, "refresh")) }
+                    }.awaitAll()
+                    .mapNotNull { (id, refreshResponse) ->
+                        val refreshValue = refreshResponse.item()?.get("value")?.s()
 
-                if (refreshValue.isNullOrBlank()) {
-                    log.warn("Token [{}] has no refresh value; skipping", id)
-                    return@mapNotNull null
-                }
+                        if (refreshValue.isNullOrBlank()) {
+                            log.warn("Token [{}] has no refresh value; skipping", id)
+                            return@mapNotNull null
+                        }
 
-                RefreshableToken(id, refreshValue)
+                        RefreshableToken(id, refreshValue)
+                    }
             }
         }
 

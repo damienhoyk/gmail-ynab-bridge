@@ -89,7 +89,7 @@ public class GoogleOAuthHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
             tokenRepository = { tokenRepository.await() },
             userRepository = { userRepository.await() },
             loginRepository = { loginRepository.await() },
-            refreshTokenTtlSeconds = System.getenv("REFRESH_TOKEN_TTL_SECONDS")?.trim()?.toLong() ?: 15_552_000,
+            refreshTokenTtlSeconds = System.getenv("REFRESH_TOKEN_TTL_SECONDS")?.trim()?.toLongOrNull() ?: 15_552_000,
         )
 
     public override fun handleRequest(
