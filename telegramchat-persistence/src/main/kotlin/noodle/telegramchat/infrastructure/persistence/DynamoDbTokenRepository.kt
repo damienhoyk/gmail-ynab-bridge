@@ -19,10 +19,10 @@ public class DynamoDbTokenRepository(
     override val sortKey: String = "type"
 
     override suspend fun putToken(token: StateToken) {
-        val ttl = (now() + token.duration).epochSeconds
+        val expiresAt = (now() + token.duration).epochSeconds
         put(token.id, "state") {
             put("value", fromS(token.userId))
-            put("ttl", fromN(ttl.toString()))
+            put("expiresAt", fromN(expiresAt.toString()))
         }
     }
 }
