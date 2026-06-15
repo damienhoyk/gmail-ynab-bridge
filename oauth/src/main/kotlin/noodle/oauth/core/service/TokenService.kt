@@ -14,6 +14,7 @@ public class TokenService(
     private val clientSecret: String,
     private val tokenRepository: TokenRepository,
     private val authClient: OAuth2TokenProvider,
+    private val refreshTokenTtlSeconds: Long,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -35,10 +36,10 @@ public class TokenService(
 
         coroutineScope {
             launch {
-                oAuthToken.accessToken?.let { tokenRepository.updateTokenValue(loginId, "access", it) }
+                oAuthToken.accessToken?.let { tokenRepository.updateTokenValue(loginId, "access", it, oAuthToken.expiresIn?.toLong()) }
             }
             launch {
-                oAuthToken.refreshToken?.let { tokenRepository.updateTokenValue(loginId, "refresh", it) }
+                oAuthToken.refreshToken?.let { tokenRepository.updateTokenValue(loginId, "refresh", it, refreshTokenTtlSeconds) }
             }
         }
 
