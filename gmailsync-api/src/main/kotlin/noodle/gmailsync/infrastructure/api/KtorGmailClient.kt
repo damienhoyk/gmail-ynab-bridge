@@ -22,4 +22,9 @@ public class KtorGmailClient(
     }
 }
 
-private fun GmailHistory.toAddedMessageIds(): List<String> = history.flatMap { it.messagesAdded }.mapNotNull { it.message.id }
+private fun GmailHistory.toAddedMessageIds(): List<String> =
+    history
+        .asSequence()
+        .flatMap { it.messagesAdded }
+        .mapNotNull { it.message.id }
+        .toList()
