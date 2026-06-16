@@ -27,9 +27,19 @@ Each application (`oauth`, `gmailsync`, `ynabsync`, `telegramchat`, `tokenrefres
 |---|---|---|
 | `oauth` | `noodle.oauth.core` | OAuth2 token lifecycle for Google and YNAB; domain: `User`, `Login`, `Token`; services: `TokenService`, `AuthorizeService` |
 | `gmailsync` | `noodle.gmailsync.core` | Gmail Pub/Sub notification processing; domain: `Bridge`, `Mailbox`, `Outbox`; service: `GmailPubsubService` |
-| `ynabsync` | `noodle.ynabsync.core` | Email-to-YNAB transaction mapping; domain: `YnabTransaction`, `TransactionMatcher`, `Bridge`, `Configuration`; service: `YnabEmailService` |
+| `ynabsync` | `noodle.ynabsync.core` | Email-to-YNAB transaction mapping; domain: `YnabTransaction`, `TransactionMatcher`, `BankAccount`, `Configuration`; service: `YnabEmailService` |
 | `telegramchat` | `noodle.telegramchat.core` | Telegram bot command handling for OAuth flows and Gmail watch setup; domain: `User`, `Login`, `StateToken`, `GmailWatch`; service: `TelegramBotService` |
 | `tokenrefresher` | `noodle.tokenrefresher.core` | Proactive OAuth2 token refresh; domain: `RefreshedToken`; service: `TokenRefreshService` |
+
+### Resource identifiers (ynabsync)
+
+`ynabsync` locates YNAB resources via URI-based identifiers. The persistence adapter (`DynamoDbAccountRepository`) parses and validates URIs using `java.net.URI`, matching scheme (`noodle.ynabsync`) and host (`app.ynab.com`) case-insensitively (RFC 3986); malformed sort keys are logged and skipped without throwing.
+
+| Identifier | Form | Example | Uses |
+|---|---|---|---|
+| Bank account | `noodle.ynabsync://<email>/account/<number>` | `noodle.ynabsync://user@gmail.com/account/9062` | `bank-account.partition` (partition key) |
+| YNAB account | `noodle.ynabsync://<userId>@app.ynab.com/budget/<budgetId>/account/<accountId>` | `noodle.ynabsync://abc-123@app.ynab.com/budget/def-456/account/ghi-789` | `bank-account.sort` (sort key; parsed in `DynamoDbAccountRepository`) |
+| User | `noodle.ynabsync://<userId>@app.ynab.com` | `noodle.ynabsync://abc-123@app.ynab.com` | `bridge.destination` (outbox routing) |
 
 ### Integration clients
 
@@ -67,7 +77,7 @@ DynamoDB implementations of core repository ports.
 |---|---|---|
 | `oauth-persistence` | `noodle.oauth.infrastructure.persistence` | `DynamoDbUserRepository`, `DynamoDbLoginRepository`, `DynamoDbTokenRepository` |
 | `gmailsync-persistence` | `noodle.gmailsync.infrastructure.persistence` | `DynamoDbBridgeRepository`, `DynamoDbMailboxRepository`, `DynamoDbOutboxRepository` |
-| `ynabsync-persistence` | `noodle.ynabsync.infrastructure.persistence` | `DynamoDbBridgeRepository`, `DynamoDbMatcherRepository`, `DynamoDbOutboxRepository` |
+| `ynabsync-persistence` | `noodle.ynabsync.infrastructure.persistence` | `DynamoDbAccountRepository`, `DynamoDbMatcherRepository`, `DynamoDbOutboxRepository` |
 | `telegramchat-persistence` | `noodle.telegramchat.infrastructure.persistence` | `DynamoDbUserRepository`, `DynamoDbLoginRepository`, `DynamoDbTokenRepository`, `DynamoDbMailboxRepository` |
 | `tokenrefresher-persistence` | `noodle.tokenrefresher.infrastructure.persistence` | `DynamoDbTokenRepository` — read and update OAuth tokens in the shared `token` table; paginated scan with bounded concurrency ≤5 |
 

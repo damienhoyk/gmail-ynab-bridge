@@ -1,15 +1,14 @@
 package noodle.ynabsync.core.service
 
 import kotlinx.coroutines.runBlocking
-import noodle.ynabsync.core.domain.Account
+import noodle.ynabsync.core.domain.BankAccount
 import noodle.ynabsync.core.domain.GmailMessage
 import noodle.ynabsync.core.domain.MailMessageRequest
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.domain.TransactionMatcher
 import noodle.ynabsync.core.domain.TransactionMatcher.RegexGroup
 import noodle.ynabsync.core.domain.YnabTransaction
-import noodle.ynabsync.core.domain.YnabUrn
-import noodle.ynabsync.core.port.AccountRepository
+import noodle.ynabsync.core.port.BankAccountRepository
 import noodle.ynabsync.core.port.GmailClient
 import noodle.ynabsync.core.port.GmailClientFactory
 import noodle.ynabsync.core.port.MatcherRepository
@@ -24,13 +23,20 @@ import kotlin.time.Duration.Companion.hours
 class YnabEmailServiceTests {
     private val testMailAddress = "test@gmail.com"
     private val testUserId = "test-user-123"
-    private val testDestination = "urn:app.ynab.com:$testUserId"
+    private val testDestination = "noodle.ynabsync://$testUserId@app.ynab.com"
     private val testMailId = "mail-id-456"
     private val testSource = "source-789"
     private val testBankAccount = "1995"
     private val testBudgetId = "my-budget"
     private val testYnabAccountId = "ynab-acc-999"
-    private val testYnabUrn = YnabUrn(testUserId, testBudgetId, testYnabAccountId)
+    private val testBankAccountData =
+        BankAccount(
+            email = testMailAddress,
+            number = testBankAccount,
+            userId = testUserId,
+            budgetId = testBudgetId,
+            accountId = testYnabAccountId,
+        )
 
     @Test
     fun happyPath(): Unit =
@@ -42,10 +48,8 @@ class YnabEmailServiceTests {
             val fakeGmailClient = FakeGmailClient()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
             val fakeAccountRepository =
-                FakeAccountRepository(
-                    listOf(
-                        Account(testBankAccount, testYnabUrn),
-                    ),
+                FakeBankAccountRepository(
+                    mapOf(testMailAddress to mapOf(testBankAccount to listOf(testBankAccountData))),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
             val fakeOutboxRepository = FakeOutboxRepository()
@@ -86,16 +90,14 @@ class YnabEmailServiceTests {
     @Test
     fun noAccountsForBankAccountReturnsWithoutPosting(): Unit =
         runBlocking {
-            // Arrange - no account mapping for the bank account in transaction
+            // Arrange - account mapping exists but yields no results for the bank account
             val fakeYnabClient = FakeYnabClient()
             val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient, mutableListOf())
             val fakeGmailClient = FakeGmailClient()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
             val fakeAccountRepository =
-                FakeAccountRepository(
-                    listOf(
-                        Account("9999", testYnabUrn),
-                    ),
+                FakeBankAccountRepository(
+                    mapOf(testMailAddress to mapOf(testBankAccount to listOf())),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
             val fakeOutboxRepository = FakeOutboxRepository()
@@ -126,6 +128,47 @@ class YnabEmailServiceTests {
         }
 
     @Test
+    fun returnsEarlyWhenTransactionHasNullAccountId(): Unit =
+        runBlocking {
+            // Arrange - transaction will have null accountId
+            val fakeYnabClient = FakeYnabClient()
+            val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient, mutableListOf())
+            val fakeGmailClient = FakeGmailClientWithNullAccountId()
+            val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
+            val fakeAccountRepository =
+                FakeBankAccountRepository(
+                    mapOf(testMailAddress to mapOf(testBankAccount to listOf(testBankAccountData))),
+                )
+            val fakeMatcherRepository = FakeMatcherRepositoryWithNullAccountId()
+            val fakeOutboxRepository = FakeOutboxRepository()
+
+            val service =
+                YnabEmailService(
+                    ynabClientFactory = { fakeYnabClientFactory },
+                    gmailClientFactory = { fakeGmailClientFactory },
+                    accountRepository = { fakeAccountRepository },
+                    matcherRepository = { fakeMatcherRepository },
+                    outboxRepository = { fakeOutboxRepository },
+                )
+
+            val command =
+                SyncYnabCommand(
+                    destination = testDestination,
+                    mailId = testMailId,
+                    mailAddress = testMailAddress,
+                    source = testSource,
+                )
+
+            // Act
+            service.execute(command)
+
+            // Assert - should return early without posting or updating outbox
+            assertEquals(null, fakeYnabClient.lastPostTransactionsBudgetId)
+            assertEquals(null, fakeYnabClient.lastPostTransactionsInput)
+            assertEquals(null, fakeOutboxRepository.lastUpdateTtlDestination)
+        }
+
+    @Test
     fun updatesOutboxWithSuccessTtlOnSuccess(): Unit =
         runBlocking {
             // Arrange
@@ -134,10 +177,8 @@ class YnabEmailServiceTests {
             val fakeGmailClient = FakeGmailClient()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
             val fakeAccountRepository =
-                FakeAccountRepository(
-                    listOf(
-                        Account(testBankAccount, testYnabUrn),
-                    ),
+                FakeBankAccountRepository(
+                    mapOf(testMailAddress to mapOf(testBankAccount to listOf(testBankAccountData))),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
             val fakeOutboxRepository = FakeOutboxRepository()
@@ -174,17 +215,21 @@ class YnabEmailServiceTests {
             // Arrange - two accounts with the SAME bankAccount but DIFFERENT account URNs
             // This should fan-out: the transaction posts to BOTH YNAB accounts
             val otherYnabAccountId = "ynab-acc-888"
-            val otherUrn = YnabUrn(testUserId, testBudgetId, otherYnabAccountId)
+            val otherBankAccount =
+                BankAccount(
+                    email = testMailAddress,
+                    number = testBankAccount,
+                    userId = testUserId,
+                    budgetId = testBudgetId,
+                    accountId = otherYnabAccountId,
+                )
             val fakeYnabClient = FakeYnabClient()
             val fakeYnabClientFactory = FakeYnabClientFactory(fakeYnabClient, mutableListOf())
             val fakeGmailClient = FakeGmailClient()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
             val fakeAccountRepository =
-                FakeAccountRepository(
-                    listOf(
-                        Account(testBankAccount, testYnabUrn),
-                        Account(testBankAccount, otherUrn),
-                    ),
+                FakeBankAccountRepository(
+                    mapOf(testMailAddress to mapOf(testBankAccount to listOf(testBankAccountData, otherBankAccount))),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
             val fakeOutboxRepository = FakeOutboxRepository()
@@ -233,11 +278,8 @@ class YnabEmailServiceTests {
             val fakeGmailClient = FakeGmailClient()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
             val fakeAccountRepository =
-                FakeAccountRepository(
-                    listOf(
-                        Account(testBankAccount, testYnabUrn),
-                        Account(testBankAccount, testYnabUrn),
-                    ),
+                FakeBankAccountRepository(
+                    mapOf(testMailAddress to mapOf(testBankAccount to listOf(testBankAccountData, testBankAccountData))),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
             val fakeOutboxRepository = FakeOutboxRepository()
@@ -278,10 +320,8 @@ class YnabEmailServiceTests {
             val fakeGmailClient = FakeGmailClient404()
             val fakeGmailClientFactory = FakeGmailClientFactory(fakeGmailClient)
             val fakeAccountRepository =
-                FakeAccountRepository(
-                    listOf(
-                        Account(testBankAccount, testYnabUrn),
-                    ),
+                FakeBankAccountRepository(
+                    mapOf(testMailAddress to mapOf(testBankAccount to listOf(testBankAccountData))),
                 )
             val fakeMatcherRepository = FakeMatcherRepository()
             val fakeOutboxRepository = FakeOutboxRepository()
@@ -369,10 +409,23 @@ class YnabEmailServiceTests {
             )
     }
 
-    private class FakeAccountRepository(
-        private val accounts: List<Account>,
-    ) : AccountRepository {
-        override suspend fun getAccounts(owner: String): List<Account> = accounts
+    private class FakeGmailClientWithNullAccountId : GmailClient {
+        override suspend fun getMessage(request: MailMessageRequest): GmailMessage =
+            GmailMessage(
+                id = "msg-id",
+                text = "Some transaction text with no account number",
+                senderEmail = "bank@example.com",
+                status = 200,
+            )
+    }
+
+    private class FakeBankAccountRepository(
+        private val data: Map<String, Map<String, List<BankAccount>>>,
+    ) : BankAccountRepository {
+        override suspend fun getAccounts(
+            email: String,
+            number: String,
+        ): List<BankAccount> = data[email]?.get(number) ?: emptyList()
     }
 
     private class FakeMatcherRepository : MatcherRepository {
@@ -384,6 +437,20 @@ class YnabEmailServiceTests {
                             .toRegex(),
                     outgoing = true,
                     order = setOf(RegexGroup.AMOUNT, RegexGroup.ACCOUNT, RegexGroup.DATE, RegexGroup.PAYEE),
+                    inputDatePattern = "dd/MM/yy",
+                ),
+            )
+    }
+
+    private class FakeMatcherRepositoryWithNullAccountId : MatcherRepository {
+        override suspend fun queryMatcher(source: String): List<TransactionMatcher> =
+            listOf(
+                TransactionMatcher(
+                    regex =
+                        "A transaction of SGD ([0-9.]+) on (\\d{2}/\\d{2}/\\d{2}) at (.+?)\\."
+                            .toRegex(),
+                    outgoing = true,
+                    order = setOf(RegexGroup.AMOUNT, RegexGroup.DATE, RegexGroup.PAYEE),
                     inputDatePattern = "dd/MM/yy",
                 ),
             )

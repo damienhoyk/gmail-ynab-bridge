@@ -59,8 +59,8 @@ class GmailPubsubServiceTest {
                 when (source) {
                     email ->
                         listOf(
-                            Bridge(source, "urn:app.ynab.com:user-123"),
-                            Bridge(source, "urn:app.ynab.com:user-123"),
+                            Bridge(source, "noodle.ynabsync://user-123@app.ynab.com"),
+                            Bridge(source, "noodle.ynabsync://user-123@app.ynab.com"),
                         )
                     else -> emptyList()
                 }
@@ -155,7 +155,7 @@ class GmailPubsubServiceTest {
             assertEquals(201, result)
             assertEquals(nextState, savedMailboxes.firstOrNull()?.state)
             assertEquals(1, savedOutboxes.size)
-            assertEquals("urn:app.ynab.com:user-123", savedOutboxes[0].destination)
+            assertEquals("noodle.ynabsync://user-123@app.ynab.com", savedOutboxes[0].destination)
             assertEquals("msg1", savedOutboxes[0].source.substringBefore(":"))
         }
 }

@@ -3,18 +3,20 @@ package noodle.ynabsync.core.service
 import noodle.ynabsync.core.domain.MailMessageRequest
 import noodle.ynabsync.core.domain.MailMessageRequest.Format
 import noodle.ynabsync.core.domain.SyncYnabCommand
-import noodle.ynabsync.core.port.AccountRepository
+import noodle.ynabsync.core.port.BankAccountRepository
 import noodle.ynabsync.core.port.GmailClientFactory
 import noodle.ynabsync.core.port.MatcherRepository
 import noodle.ynabsync.core.port.OutboxRepository
 import noodle.ynabsync.core.port.YnabClientFactory
 import org.slf4j.LoggerFactory
+import java.net.URI
+import java.net.URISyntaxException
 import kotlin.time.Duration.Companion.hours
 
 public class YnabEmailService(
     public val ynabClientFactory: suspend () -> YnabClientFactory,
     public val gmailClientFactory: suspend () -> GmailClientFactory,
-    public val accountRepository: suspend () -> AccountRepository,
+    public val accountRepository: suspend () -> BankAccountRepository,
     public val matcherRepository: suspend () -> MatcherRepository,
     public val outboxRepository: suspend () -> OutboxRepository,
 ) {
@@ -68,13 +70,23 @@ public class YnabEmailService(
                 return
             }
 
-        val userId = destination.removePrefix("urn:app.ynab.com:").substringBefore(":")
+        val userId =
+            try {
+                val uri = URI(destination)
+                if (uri.scheme?.equals("noodle.ynabsync", ignoreCase = true) != true || uri.host?.equals("app.ynab.com", ignoreCase = true) != true) {
+                    log.error("Invalid destination URI scheme/host [{}]", destination)
+                    return
+                }
+                uri.userInfo
+                    ?: run {
+                        log.error("No userInfo in destination URI [{}]", destination)
+                        return
+                    }
+            } catch (e: URISyntaxException) {
+                log.error("Failed to parse destination URI [{}]", destination, e)
+                return
+            }
         val client = ynabClientFactory.create("$userId@app.ynab.com")
-
-        val accountRepository = accountRepository()
-        val accounts = accountRepository.getAccounts(destination)
-
-        val accountsByBank = accounts.groupBy({ it.bankAccount }, { it.ynabAccount })
 
         log.info("Getting matchers for [{}] ...", senderEmail)
 
@@ -94,18 +106,25 @@ public class YnabEmailService(
             return
         }
 
-        val ynabAccounts =
-            accountsByBank[transaction.accountId]
+        val bankAccountNumber =
+            transaction.accountId
                 ?: run {
-                    log.error("No account mapping for [{}]", transaction.accountId)
+                    log.error("Transaction has no accountId")
                     return
                 }
 
+        val accountRepository = accountRepository()
+        val ynabAccounts = accountRepository.getAccounts(mailAddress, bankAccountNumber)
+        if (ynabAccounts.isEmpty()) {
+            log.error("No account mapping for [{}]", bankAccountNumber)
+            return
+        }
+
         log.info("Sending request to [{}] for [{}] distinct accounts", destination, ynabAccounts.distinct().size)
 
-        ynabAccounts.distinct().forEach { urn ->
-            val ynabTransaction = transaction.copy(accountId = urn.accountId)
-            client.postTransactions(budgetId = urn.budgetId, transactions = listOf(ynabTransaction))
+        ynabAccounts.distinct().forEach { account ->
+            val ynabTransaction = transaction.copy(accountId = account.accountId)
+            client.postTransactions(budgetId = account.budgetId, transactions = listOf(ynabTransaction))
         }
 
         outboxRepository.updateTtl(destination, source, TTL_SUCCESS)

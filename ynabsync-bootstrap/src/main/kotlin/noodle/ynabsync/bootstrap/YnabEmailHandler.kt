@@ -16,13 +16,15 @@ import noodle.ynabsync.core.service.YnabEmailService
 import noodle.ynabsync.infrastructure.api.KtorGmailClientFactory
 import noodle.ynabsync.infrastructure.api.KtorYnabClientFactory
 import noodle.ynabsync.infrastructure.persistence.DynamoDbAccessTokenRepository
-import noodle.ynabsync.infrastructure.persistence.DynamoDbAccountRepository
+import noodle.ynabsync.infrastructure.persistence.DynamoDbBankAccountRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbMatcherRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbOutboxRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import java.net.URI
+import java.net.URISyntaxException
 
 public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -73,7 +75,7 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
             )
         }
 
-    private val accountRepositoryAsync = initScope.async { DynamoDbAccountRepository(client = dynamoDbClientAsync.await()) }
+    private val accountRepositoryAsync = initScope.async { DynamoDbBankAccountRepository(client = dynamoDbClientAsync.await()) }
     private val matcherRepositoryAsync = initScope.async { DynamoDbMatcherRepository(client = dynamoDbClientAsync.await()) }
     private val outboxRepositoryAsync = initScope.async { DynamoDbOutboxRepository(client = dynamoDbClientAsync.await()) }
     private val accessTokenRepositoryAsync =
@@ -115,7 +117,13 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
             return
         }
 
-        if (!destination.startsWith("urn:app.ynab.com:", ignoreCase = true)) {
+        try {
+            val uri = URI(destination)
+            if (uri.scheme?.equals("noodle.ynabsync", ignoreCase = true) != true || uri.host?.equals("app.ynab.com", ignoreCase = true) != true) {
+                log.debug("Filter destination [{}]", destination)
+                return
+            }
+        } catch (e: URISyntaxException) {
             log.debug("Filter destination [{}]", destination)
             return
         }
