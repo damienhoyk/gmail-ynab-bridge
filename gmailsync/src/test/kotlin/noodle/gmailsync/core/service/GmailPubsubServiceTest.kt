@@ -11,17 +11,21 @@ import org.junit.jupiter.api.Test
 
 class GmailPubsubServiceTest {
     private val email = "test@example.com"
+    private val sub = "user-12345"
+    private val subHandle = "noodle.oauth://$sub@google.com"
     private val state = 12345L
     private val nextState = 67890L
 
     private val savedMailboxes = mutableListOf<Mailbox>()
     private val savedOutboxes = mutableListOf<Outbox>()
+    private var capturedGmailLoginId: String? = null
 
-    private val googleTokenClient =
-        object : LoginIdProvider {
-            override suspend fun getTokenInfo(token: String): String? =
-                when (token) {
-                    "valid-token" -> email
+    private val loginRepository =
+        object : LoginRepository {
+            override suspend fun resolve(email: String): String? =
+                when (email) {
+                    "test@example.com" -> subHandle
+                    "invalid@example.com" -> "noodle.oauth://invalid-user@google.com"
                     else -> null
                 }
         }
@@ -30,7 +34,7 @@ class GmailPubsubServiceTest {
         object : MailboxRepository {
             override suspend fun getMailbox(address: String) =
                 when (address) {
-                    "test@example.com" -> Mailbox(address, state)
+                    email -> Mailbox(address, state)
                     else -> Mailbox(address, null)
                 }
 
@@ -50,7 +54,10 @@ class GmailPubsubServiceTest {
 
     private val gmailClientFactory =
         object : GmailClientFactory {
-            override suspend fun create(loginId: String) = gmailClient
+            override suspend fun create(loginId: String): GmailClient {
+                capturedGmailLoginId = loginId
+                return gmailClient
+            }
         }
 
     private val bridgeRepository =
@@ -79,7 +86,7 @@ class GmailPubsubServiceTest {
     private val service =
         GmailPubsubService(
             gmailClientFactory = { gmailClientFactory },
-            loginIdProvider = { googleTokenClient },
+            loginRepository = { loginRepository },
             bridgeRepository = { bridgeRepository },
             mailboxRepository = { mailboxRepository },
             outboxRepository = { outboxRepository },
@@ -128,7 +135,7 @@ class GmailPubsubServiceTest {
     @Test
     fun `should return 500 when mailbox state is null`() =
         runBlocking {
-            val command = SyncMailboxCommand(email = "invalid@example.com", authorization = "Bearer valid-token", state = nextState)
+            val command = SyncMailboxCommand(email = "invalid@example.com", authorization = "Bearer invalid-sub-token", state = nextState)
 
             val result = service.execute(command)
 
@@ -136,9 +143,9 @@ class GmailPubsubServiceTest {
         }
 
     @Test
-    fun `should return 403 when token info has no email`() =
+    fun `should return 403 when email cannot be resolved to sub handle`() =
         runBlocking {
-            val command = SyncMailboxCommand(email = email, authorization = "Bearer forbidden-token", state = nextState)
+            val command = SyncMailboxCommand(email = "unknown@example.com", authorization = "Bearer valid-token", state = nextState)
 
             val result = service.execute(command)
 
@@ -156,6 +163,7 @@ class GmailPubsubServiceTest {
             assertEquals(nextState, savedMailboxes.firstOrNull()?.state)
             assertEquals(1, savedOutboxes.size)
             assertEquals("noodle.ynabsync://user-123@app.ynab.com", savedOutboxes[0].destination)
-            assertEquals("msg1", savedOutboxes[0].source.substringBefore(":"))
+            assertEquals("msg1:$email", savedOutboxes[0].source)
+            assertEquals(subHandle, capturedGmailLoginId)
         }
 }

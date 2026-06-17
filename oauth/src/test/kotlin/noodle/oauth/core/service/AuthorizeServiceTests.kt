@@ -3,6 +3,7 @@ package noodle.oauth.core.service
 import kotlinx.coroutines.runBlocking
 import noodle.oauth.core.domain.AuthorizeCommand
 import noodle.oauth.core.domain.Login
+import noodle.oauth.core.domain.LoginIdentity
 import noodle.oauth.core.domain.OAuth2TokenRequest
 import noodle.oauth.core.domain.Token
 import noodle.oauth.core.domain.TokenResponse
@@ -50,7 +51,11 @@ class AuthorizeServiceTests {
 
     private val fakeLoginIdProvider =
         object : LoginIdProvider {
-            override suspend fun getLoginId(tokenResponse: TokenResponse): String? = "test-login-id@gmail.com"
+            override suspend fun getLoginId(tokenResponse: TokenResponse): LoginIdentity? =
+                LoginIdentity(
+                    id = "noodle.oauth://user123@google.com",
+                    aliases = listOf("noodle.oauth://user@example.com"),
+                )
         }
 
     private val fakeUserRepository =
@@ -58,15 +63,18 @@ class AuthorizeServiceTests {
             override suspend fun putUser(user: User) {}
         }
 
-    private val fakeLoginRepository =
+    private fun createFakeLoginRepository(recordedLogins: MutableList<Login>): LoginRepository =
         object : LoginRepository {
-            override suspend fun putLogin(login: Login) {}
+            override suspend fun putLogin(login: Login) {
+                recordedLogins.add(login)
+            }
         }
 
     @Test
     fun executeWritesAccessTokenWithExpiresIn() {
         runBlocking {
             val recordedUpdates = mutableListOf<TokenUpdate>()
+            val recordedLogins = mutableListOf<Login>()
             val service =
                 AuthorizeService(
                     clientId = "test-client-id",
@@ -76,7 +84,7 @@ class AuthorizeServiceTests {
                     loginIdProvider = { fakeLoginIdProvider },
                     tokenRepository = { createFakeTokenRepository(recordedUpdates) },
                     userRepository = { fakeUserRepository },
-                    loginRepository = { fakeLoginRepository },
+                    loginRepository = { createFakeLoginRepository(recordedLogins) },
                     refreshTokenTtlSeconds = 5_184_000,
                 )
 
@@ -95,6 +103,7 @@ class AuthorizeServiceTests {
     fun executeWritesRefreshTokenWithConfiguredTtl() {
         runBlocking {
             val recordedUpdates = mutableListOf<TokenUpdate>()
+            val recordedLogins = mutableListOf<Login>()
             val refreshTtl = 7_776_000L
             val service =
                 AuthorizeService(
@@ -105,7 +114,7 @@ class AuthorizeServiceTests {
                     loginIdProvider = { fakeLoginIdProvider },
                     tokenRepository = { createFakeTokenRepository(recordedUpdates) },
                     userRepository = { fakeUserRepository },
-                    loginRepository = { fakeLoginRepository },
+                    loginRepository = { createFakeLoginRepository(recordedLogins) },
                     refreshTokenTtlSeconds = refreshTtl,
                 )
 
@@ -124,6 +133,7 @@ class AuthorizeServiceTests {
     fun executeWithNullTokens() {
         runBlocking {
             val recordedUpdates = mutableListOf<TokenUpdate>()
+            val recordedLogins = mutableListOf<Login>()
             val nullTokenProvider =
                 object : OAuth2TokenProvider {
                     override suspend fun getToken(request: OAuth2TokenRequest): TokenResponse =
@@ -143,7 +153,7 @@ class AuthorizeServiceTests {
                     loginIdProvider = { fakeLoginIdProvider },
                     tokenRepository = { createFakeTokenRepository(recordedUpdates) },
                     userRepository = { fakeUserRepository },
-                    loginRepository = { fakeLoginRepository },
+                    loginRepository = { createFakeLoginRepository(recordedLogins) },
                     refreshTokenTtlSeconds = 5_184_000,
                 )
 
@@ -152,6 +162,37 @@ class AuthorizeServiceTests {
 
             assertEquals(200, statusCode)
             assertEquals(0, recordedUpdates.size, "No token updates should be recorded when tokens are null")
+        }
+    }
+
+    @Test
+    fun executeWritesAliasLoginRow() {
+        runBlocking {
+            val recordedUpdates = mutableListOf<TokenUpdate>()
+            val recordedLogins = mutableListOf<Login>()
+            val service =
+                AuthorizeService(
+                    clientId = "test-client-id",
+                    clientSecret = "test-client-secret",
+                    redirectUri = "http://localhost/callback",
+                    authClient = { fakeOAuth2TokenProvider },
+                    loginIdProvider = { fakeLoginIdProvider },
+                    tokenRepository = { createFakeTokenRepository(recordedUpdates) },
+                    userRepository = { fakeUserRepository },
+                    loginRepository = { createFakeLoginRepository(recordedLogins) },
+                    refreshTokenTtlSeconds = 5_184_000,
+                )
+
+            val command = AuthorizeCommand("test-code", "test-state")
+            val statusCode = service.execute(command)
+
+            assertEquals(200, statusCode)
+
+            val mainLogin = recordedLogins.find { it.id == "noodle.oauth://user123@google.com" }
+            assertEquals(1, recordedLogins.count { it.id == "noodle.oauth://user123@google.com" })
+
+            val aliasLogin = recordedLogins.find { it.id == "noodle.oauth://user@example.com" }
+            assertEquals("noodle.oauth://user123@google.com", aliasLogin?.userId, "Alias login should point back to main login")
         }
     }
 

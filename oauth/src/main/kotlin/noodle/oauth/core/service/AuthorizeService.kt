@@ -54,9 +54,9 @@ public class AuthorizeService(
             val oAuthToken = authClient.getToken(request)
 
             val loginIdProvider = loginIdProvider()
-            val loginId = loginIdProvider.getLoginId(oAuthToken)
+            val identity = loginIdProvider.getLoginId(oAuthToken)
 
-            if (loginId.isNullOrBlank()) {
+            if (identity == null) {
                 log.error("🐳 loginId is null")
                 return@runBlocking 500
             }
@@ -72,19 +72,20 @@ public class AuthorizeService(
             log.info("🪪 Updating user login mapping for [{}] ...", userId)
 
             val loginRepository = loginRepository()
-            loginRepository.putLogin(Login(loginId, userId))
+            loginRepository.putLogin(Login(identity.id, userId))
+            identity.aliases.forEach { alias -> loginRepository.putLogin(Login(alias, identity.id)) }
 
             val userRepository = userRepository()
-            userRepository.putUser(User(userId, loginId))
+            userRepository.putUser(User(userId, identity.id))
 
-            log.info("🎫 Storing tokens for authorization [{}] ...", loginId)
+            log.info("🎫 Storing tokens for authorization [{}] ...", identity.id)
 
             coroutineScope {
                 launch {
-                    oAuthToken.accessToken?.let { tokenRepository.updateTokenValue(loginId, "access", it, oAuthToken.expiresIn?.toLong()) }
+                    oAuthToken.accessToken?.let { tokenRepository.updateTokenValue(identity.id, "access", it, oAuthToken.expiresIn?.toLong()) }
                 }
                 launch {
-                    oAuthToken.refreshToken?.let { tokenRepository.updateTokenValue(loginId, "refresh", it, refreshTokenTtlSeconds) }
+                    oAuthToken.refreshToken?.let { tokenRepository.updateTokenValue(identity.id, "refresh", it, refreshTokenTtlSeconds) }
                 }
             }
 

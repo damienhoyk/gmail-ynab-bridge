@@ -100,24 +100,24 @@ public class TelegramBotService(
                 val userId = login?.userId ?: return@coroutineScope 400
                 val user = userRepository.queryUser(userId)
 
-                val emails = user.map { it.loginId }.filter { it.endsWith("@gmail.com") }
+                val googleLogins = user.map { it.loginId }.filter { it.endsWith("@google.com") }
 
-                log.info("found [{}] emails for user", emails.count())
+                log.info("found [{}] Google logins for user", googleLogins.count())
 
                 val mailboxRepository = mailboxRepository()
 
                 supervisorScope {
-                    emails
-                        .map { gmail ->
+                    googleLogins
+                        .map {
                             async {
-                                val gmailClient = gmailClientFactory.create(gmail)
-                                val state = gmailClient.getProfile()?.historyId
+                                val gmailClient = gmailClientFactory.create(it)
+                                val profile = gmailClient.getProfile() ?: error("no gmail profile for [$it]")
                                 val labelId = gmailClient.getLabelId(labelName)
                                 val labelIds = listOfNotNull(labelId)
 
-                                mailboxRepository.updateMailbox(Mailbox(gmail, state))
+                                mailboxRepository.updateMailbox(Mailbox(profile.emailAddress, profile.historyId))
                                 gmailClient.postWatch(WatchMailboxRequest(topicName, labelIds))
-                                gmail
+                                profile.emailAddress
                             }.runCatching { await() }
                         }.map { result ->
                             result

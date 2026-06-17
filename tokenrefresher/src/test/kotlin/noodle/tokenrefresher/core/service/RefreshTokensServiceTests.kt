@@ -248,4 +248,60 @@ class RefreshTokensServiceTests {
             assertEquals(false, updateAccessCalled, "updateAccess should not be called when accessToken is blank")
             assertEquals(false, updateRefreshCalled, "updateRefresh should not be called when accessToken is blank")
         }
+
+    @Test
+    fun `refreshOne resolves Google provider from noodle oauth URI with google_com host`(): Unit =
+        runBlocking {
+            val testId = "noodle.oauth://sub123@google.com"
+            val refreshToken = "refresh-token-123"
+            val newAccessToken = "new-access-token"
+            val expiresIn = 3600L
+
+            var updateAccessCalled = false
+            var updateAccessId: String? = null
+
+            val fakeRepository =
+                object : TokenRepository {
+                    override fun findRefreshable(): Flow<List<RefreshableToken>> = flowOf()
+
+                    override suspend fun updateAccess(
+                        id: String,
+                        value: String,
+                        expiresIn: Long,
+                    ) {
+                        updateAccessCalled = true
+                        updateAccessId = id
+                    }
+
+                    override suspend fun updateRefresh(
+                        id: String,
+                        value: String,
+                    ) {
+                        // no-op for this test
+                    }
+                }
+
+            val fakeTokenResponse =
+                TokenResponse(
+                    accessToken = newAccessToken,
+                    refreshToken = null,
+                    expiresIn = expiresIn,
+                )
+
+            val fakeProvider: suspend (String) -> OAuth2TokenProvider? = { providedDomain ->
+                if (providedDomain == "google.com") {
+                    object : OAuth2TokenProvider {
+                        override suspend fun refresh(refreshToken: String): TokenResponse = fakeTokenResponse
+                    }
+                } else {
+                    null
+                }
+            }
+
+            val service = RefreshTokensService(fakeRepository, fakeProvider)
+            service.refreshOne(RefreshableToken(testId, refreshToken))
+
+            assertEquals(true, updateAccessCalled, "updateAccess should be called for Google provider resolved via google.com host")
+            assertEquals(testId, updateAccessId, "updateAccess should receive original token id")
+        }
 }

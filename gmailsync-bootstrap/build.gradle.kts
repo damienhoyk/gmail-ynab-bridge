@@ -29,7 +29,6 @@ dependencies {
     implementation(project(":gmailsync-api"))
     implementation(project(":gmailsync-persistence"))
     implementation(project(":gmail-api"))
-    implementation(project(":google-auth-api"))
     implementation(project(":ktor"))
     implementation(libs.bundles.aws.lambda)
     implementation(libs.bundles.ktor.client)

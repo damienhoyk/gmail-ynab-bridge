@@ -5,12 +5,12 @@ import noodle.ynabsync.core.domain.MailMessageRequest.Format
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.port.BankAccountRepository
 import noodle.ynabsync.core.port.GmailClientFactory
+import noodle.ynabsync.core.port.LoginRepository
 import noodle.ynabsync.core.port.MatcherRepository
 import noodle.ynabsync.core.port.OutboxRepository
 import noodle.ynabsync.core.port.YnabClientFactory
 import org.slf4j.LoggerFactory
 import java.net.URI
-import java.net.URISyntaxException
 import kotlin.time.Duration.Companion.hours
 
 public class YnabEmailService(
@@ -19,6 +19,7 @@ public class YnabEmailService(
     public val accountRepository: suspend () -> BankAccountRepository,
     public val matcherRepository: suspend () -> MatcherRepository,
     public val outboxRepository: suspend () -> OutboxRepository,
+    public val loginRepository: suspend () -> LoginRepository,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -36,11 +37,18 @@ public class YnabEmailService(
         val ynabClientFactory = ynabClientFactory()
         val outboxRepository = outboxRepository()
 
+        val domain = mailAddress.substringAfter('@')
         val message =
-            when {
-                mailAddress.endsWith("@gmail.com", ignoreCase = true) -> {
+            when (domain) {
+                "gmail.com" -> {
                     val gmailClientFactory = gmailClientFactory()
-                    val client = gmailClientFactory.create(mailAddress)
+                    val loginRepository = loginRepository()
+                    val loginId =
+                        loginRepository.resolve(mailAddress) ?: run {
+                            log.error("No Google login for [{}]", mailAddress)
+                            return
+                        }
+                    val client = gmailClientFactory.create(loginId)
                     val request = MailMessageRequest(mailId, Format.FULL)
                     client.getMessage(request)
                 }
@@ -70,23 +78,22 @@ public class YnabEmailService(
                 return
             }
 
-        val userId =
-            try {
-                val uri = URI(destination)
-                if (uri.scheme?.equals("noodle.ynabsync", ignoreCase = true) != true || uri.host?.equals("app.ynab.com", ignoreCase = true) != true) {
-                    log.error("Invalid destination URI scheme/host [{}]", destination)
-                    return
-                }
-                uri.userInfo
-                    ?: run {
-                        log.error("No userInfo in destination URI [{}]", destination)
-                        return
-                    }
-            } catch (e: URISyntaxException) {
-                log.error("Failed to parse destination URI [{}]", destination, e)
+        val uri =
+            runCatching {
+                URI(destination)
+            }.getOrElse {
+                log.error("Failed to parse destination URI [{}]", destination, it)
                 return
             }
-        val client = ynabClientFactory.create("$userId@app.ynab.com")
+
+        val userId =
+            uri.userInfo ?: run {
+                log.error("No userInfo in destination URI [{}]", destination)
+                return
+            }
+
+        val loginId = "noodle.oauth://$userId@${uri.host}"
+        val client = ynabClientFactory.create(loginId)
 
         log.info("Getting matchers for [{}] ...", senderEmail)
 
@@ -116,6 +123,11 @@ public class YnabEmailService(
         val accountRepository = accountRepository()
         val ynabAccounts = accountRepository.getAccounts(mailAddress, bankAccountNumber)
         if (ynabAccounts.isEmpty()) {
+            runCatching {
+                accountRepository.putDiscoveredAccount(mailAddress, bankAccountNumber, userId)
+            }.onFailure { e ->
+                log.warn("Failed to store discovered account [{}|{}]", bankAccountNumber, userId, e)
+            }
             log.error("No account mapping for [{}]", bankAccountNumber)
             return
         }

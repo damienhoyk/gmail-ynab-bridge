@@ -211,6 +211,47 @@ class DynamoDbBankAccountRepositoryTests {
             repository.delete(goodPartition, uppercaseSort)
         }
 
+    @Test
+    fun putDiscoveredAccountSeeds(): Unit =
+        runBlocking {
+            val discoveredEmail = "discovered@gmail.com"
+            val discoveredNumber = "5000"
+            val discoveredUserId = "discovered-user-${UUID.randomUUID()}"
+            val discoveredPartition = "noodle.ynabsync://$discoveredEmail/account/$discoveredNumber"
+            val discoveredSort = "noodle.ynabsync://$discoveredUserId@app.ynab.com"
+
+            // Put a discovered account (incomplete sort key with no path)
+            repository.putDiscoveredAccount(discoveredEmail, discoveredNumber, discoveredUserId)
+
+            // Verify the row was written with the incomplete sort key
+            val items = repository.query(discoveredPartition).items()
+            assertEquals(1, items.size)
+            assertEquals(discoveredSort, items[0]["sort"]?.s())
+
+            // Verify that getAccounts skips the incomplete discovered sort key
+            val result = repository.getAccounts(discoveredEmail, discoveredNumber)
+            assertEquals(0, result.size)
+
+            // Complete the sort key by appending the path
+            val completedBudgetId = "budget-${UUID.randomUUID()}"
+            val completedAccountId = "account-${UUID.randomUUID()}"
+            val completedSort = "noodle.ynabsync://$discoveredUserId@app.ynab.com/budget/$completedBudgetId/account/$completedAccountId"
+            repository.delete(discoveredPartition, discoveredSort)
+            repository.put(discoveredPartition, completedSort)
+
+            // Verify that getAccounts now returns the completed row
+            val completedResult = repository.getAccounts(discoveredEmail, discoveredNumber)
+            assertEquals(1, completedResult.size)
+            val account = completedResult[0]
+            assertEquals(discoveredEmail, account.email)
+            assertEquals(discoveredNumber, account.number)
+            assertEquals(discoveredUserId, account.userId)
+            assertEquals(completedBudgetId, account.budgetId)
+            assertEquals(completedAccountId, account.accountId)
+
+            repository.delete(discoveredPartition, completedSort)
+        }
+
     @AfterAll
     fun tearDown(): Unit =
         runBlocking {

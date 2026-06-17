@@ -80,7 +80,7 @@ public class TokenRefreshHandler : RequestStreamHandler {
         initScope.async {
             RefreshTokensService(tokenRepositoryAsync.await()) {
                 when (it) {
-                    "gmail.com" -> googleTokenRefresherAsync.await()
+                    "google.com" -> googleTokenRefresherAsync.await()
                     "app.ynab.com" -> ynabTokenRefresherAsync.await()
                     else -> null
                 }

@@ -7,7 +7,7 @@ import noodle.gmailsync.core.domain.Outbox
 import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.port.BridgeRepository
 import noodle.gmailsync.core.port.GmailClientFactory
-import noodle.gmailsync.core.port.LoginIdProvider
+import noodle.gmailsync.core.port.LoginRepository
 import noodle.gmailsync.core.port.MailboxRepository
 import noodle.gmailsync.core.port.OutboxRepository
 import org.slf4j.LoggerFactory
@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.days
 
 public class GmailPubsubService(
     private val gmailClientFactory: suspend () -> GmailClientFactory,
-    private val loginIdProvider: suspend () -> LoginIdProvider,
+    private val loginRepository: suspend () -> LoginRepository,
     private val bridgeRepository: suspend () -> BridgeRepository,
     private val mailboxRepository: suspend () -> MailboxRepository,
     private val outboxRepository: suspend () -> OutboxRepository,
@@ -32,8 +32,8 @@ public class GmailPubsubService(
             if (command.authorization.isNullOrEmpty()) return@coroutineScope 403
             if (command.bearerToken.isEmpty()) return@coroutineScope 400
 
-            val googleTokenClient = loginIdProvider()
-            val tokenInfoAsync = async { googleTokenClient.getTokenInfo(command.bearerToken) }
+            val loginRepository = loginRepository()
+            val loginId = loginRepository.resolve(command.email) ?: return@coroutineScope 403
 
             val mailboxRepository = mailboxRepository()
             val mailboxAsync = async { mailboxRepository.getMailbox(command.email) }
@@ -42,7 +42,7 @@ public class GmailPubsubService(
             val destinationsAsync = async { bridgeRepository.queryBridge(command.email).map { it.destination }.distinct() }
 
             val gmailClientFactory = gmailClientFactory()
-            val googleGmailClient = gmailClientFactory.create(command.email)
+            val googleGmailClient = gmailClientFactory.create(loginId)
 
             val mailbox = mailboxAsync.await()
             val mailboxState = mailbox.state
@@ -53,9 +53,6 @@ public class GmailPubsubService(
             }
 
             val messageIdsAsync = async { googleGmailClient.getAddedMessageIds(mailboxState) }
-
-            val tokenEmail = tokenInfoAsync.await()
-            if (tokenEmail.isNullOrEmpty()) return@coroutineScope 403
 
             val messageIds = messageIdsAsync.await()
 

@@ -64,4 +64,22 @@ public class DynamoDbBankAccountRepository(
             BankAccount(email, number, uri.userInfo, budgetId, accountId)
         }
     }
+
+    /**
+     * Seeds a discovered bank account into the `bank-account` table with an incomplete
+     * sort key that lacks the budget and account path segments.
+     *
+     * Builds the partition URI `noodle.ynabsync://<email>/account/<number>` and writes
+     * an incomplete sort key `noodle.ynabsync://<userId>@app.ynab.com` (no path).
+     * Discovery rows persist until manually completed by appending the path.
+     */
+    override suspend fun putDiscoveredAccount(
+        email: String,
+        number: String,
+        userId: String,
+    ) {
+        val partition = "noodle.ynabsync://$email/account/$number"
+        val sort = "noodle.ynabsync://$userId@app.ynab.com"
+        put(partition, sort)
+    }
 }

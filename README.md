@@ -37,7 +37,7 @@ Each application (`oauth`, `gmailsync`, `ynabsync`, `telegramchat`, `tokenrefres
 
 | Identifier | Form | Example | Uses |
 |---|---|---|---|
-| Bank account | `noodle.ynabsync://<email>/account/<number>` | `noodle.ynabsync://user@gmail.com/account/9062` | `bank-account.partition` (partition key) |
+| Bank account | `noodle.ynabsync://<sub>@gmail.com/account/<number>` | `noodle.ynabsync://abc-123@gmail.com/account/9062` | `bank-account.partition` (partition key) |
 | YNAB account | `noodle.ynabsync://<userId>@app.ynab.com/budget/<budgetId>/account/<accountId>` | `noodle.ynabsync://abc-123@app.ynab.com/budget/def-456/account/ghi-789` | `bank-account.sort` (sort key; parsed in `DynamoDbAccountRepository`) |
 | User | `noodle.ynabsync://<userId>@app.ynab.com` | `noodle.ynabsync://abc-123@app.ynab.com` | `bridge.destination` (outbox routing) |
 

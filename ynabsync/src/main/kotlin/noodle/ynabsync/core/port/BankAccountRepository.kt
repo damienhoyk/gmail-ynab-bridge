@@ -7,4 +7,10 @@ public interface BankAccountRepository {
         email: String,
         number: String,
     ): List<BankAccount>
+
+    public suspend fun putDiscoveredAccount(
+        email: String,
+        number: String,
+        userId: String,
+    )
 }

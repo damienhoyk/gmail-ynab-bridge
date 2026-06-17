@@ -17,14 +17,13 @@ import noodle.ynabsync.infrastructure.api.KtorGmailClientFactory
 import noodle.ynabsync.infrastructure.api.KtorYnabClientFactory
 import noodle.ynabsync.infrastructure.persistence.DynamoDbAccessTokenRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbBankAccountRepository
+import noodle.ynabsync.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbMatcherRepository
 import noodle.ynabsync.infrastructure.persistence.DynamoDbOutboxRepository
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import java.net.URI
-import java.net.URISyntaxException
 
 public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -80,6 +79,7 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val outboxRepositoryAsync = initScope.async { DynamoDbOutboxRepository(client = dynamoDbClientAsync.await()) }
     private val accessTokenRepositoryAsync =
         initScope.async { DynamoDbAccessTokenRepository(client = dynamoDbClientAsync.await()) }
+    private val loginRepositoryAsync = initScope.async { DynamoDbLoginRepository(client = dynamoDbClientAsync.await()) }
 
     private val service =
         YnabEmailService(
@@ -88,6 +88,7 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
             accountRepository = { accountRepositoryAsync.await() },
             matcherRepository = { matcherRepositoryAsync.await() },
             outboxRepository = { outboxRepositoryAsync.await() },
+            loginRepository = { loginRepositoryAsync.await() },
         )
 
     public override fun handleRequest(
@@ -114,17 +115,6 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
 
         if (source.isNullOrEmpty()) {
             log.error("Outbox record has empty source [{}]", source)
-            return
-        }
-
-        try {
-            val uri = URI(destination)
-            if (uri.scheme?.equals("noodle.ynabsync", ignoreCase = true) != true || uri.host?.equals("app.ynab.com", ignoreCase = true) != true) {
-                log.debug("Filter destination [{}]", destination)
-                return
-            }
-        } catch (e: URISyntaxException) {
-            log.debug("Filter destination [{}]", destination)
             return
         }
 

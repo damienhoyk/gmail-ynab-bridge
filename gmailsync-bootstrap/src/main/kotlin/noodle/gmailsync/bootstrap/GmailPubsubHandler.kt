@@ -3,7 +3,6 @@ package noodle.gmailsync.bootstrap
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
-import io.ktor.client.HttpClient
 import io.ktor.client.engine.java.Java
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,12 +16,11 @@ import noodle.gmail.infrastructure.api.model.pubsub.PubsubNotification
 import noodle.gmailsync.core.domain.SyncMailboxCommand
 import noodle.gmailsync.core.service.GmailPubsubService
 import noodle.gmailsync.infrastructure.api.KtorGmailClientFactory
-import noodle.gmailsync.infrastructure.api.KtorGoogleLoginIdProvider
 import noodle.gmailsync.infrastructure.persistence.DynamoDbAccessTokenRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbBridgeRepository
+import noodle.gmailsync.infrastructure.persistence.DynamoDbLoginRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbMailboxRepository
 import noodle.gmailsync.infrastructure.persistence.DynamoDbOutboxRepository
-import noodle.google.auth.infrastructure.api.GoogleOAuth2Api
 import noodle.ktor.bearer
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
@@ -50,7 +48,16 @@ public class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
 
     private val engineAsync = initScope.async { Java.create() }
 
-    private val googleLoginProviderAsync = initScope.async { KtorGoogleLoginIdProvider(GoogleOAuth2Api(HttpClient(engineAsync.await()))) }
+    private val bridgeRepositoryAsync =
+        initScope.async { DynamoDbBridgeRepository(client = dynamoDbClientAsync.await()) }
+    private val mailboxRepositoryAsync =
+        initScope.async { DynamoDbMailboxRepository(client = dynamoDbClientAsync.await()) }
+    private val outboxRepositoryAsync =
+        initScope.async { DynamoDbOutboxRepository(client = dynamoDbClientAsync.await()) }
+    private val accessTokenRepositoryAsync =
+        initScope.async { DynamoDbAccessTokenRepository(client = dynamoDbClientAsync.await()) }
+    private val loginRepositoryAsync =
+        initScope.async { DynamoDbLoginRepository(client = dynamoDbClientAsync.await()) }
 
     private val gmailClientFactory =
         initScope.async {
@@ -68,19 +75,10 @@ public class GmailPubsubHandler : RequestHandler<APIGatewayV2HTTPEvent, String> 
             )
         }
 
-    private val bridgeRepositoryAsync =
-        initScope.async { DynamoDbBridgeRepository(client = dynamoDbClientAsync.await()) }
-    private val mailboxRepositoryAsync =
-        initScope.async { DynamoDbMailboxRepository(client = dynamoDbClientAsync.await()) }
-    private val outboxRepositoryAsync =
-        initScope.async { DynamoDbOutboxRepository(client = dynamoDbClientAsync.await()) }
-    private val accessTokenRepositoryAsync =
-        initScope.async { DynamoDbAccessTokenRepository(client = dynamoDbClientAsync.await()) }
-
     private val service =
         GmailPubsubService(
             gmailClientFactory = { gmailClientFactory.await() },
-            loginIdProvider = { googleLoginProviderAsync.await() },
+            loginRepository = { loginRepositoryAsync.await() },
             mailboxRepository = { mailboxRepositoryAsync.await() },
             bridgeRepository = { bridgeRepositoryAsync.await() },
             outboxRepository = { outboxRepositoryAsync.await() },
