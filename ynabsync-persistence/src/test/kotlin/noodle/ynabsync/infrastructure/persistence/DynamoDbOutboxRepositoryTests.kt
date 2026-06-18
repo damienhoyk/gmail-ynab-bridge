@@ -20,7 +20,7 @@ class DynamoDbOutboxRepositoryTests {
     private val destination = "${UUID.randomUUID()}@app.ynab.com"
     private val mailId = UUID.randomUUID().toString()
     private val address = "test-${UUID.randomUUID()}@gmail.com"
-    private val source = "$mailId:$address"
+    private val source = "noodle.gmailsync://$address/messageId/$mailId"
 
     @Order(1)
     @Test

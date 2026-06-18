@@ -163,7 +163,7 @@ class GmailPubsubServiceTest {
             assertEquals(nextState, savedMailboxes.firstOrNull()?.state)
             assertEquals(1, savedOutboxes.size)
             assertEquals("noodle.ynabsync://user-123@app.ynab.com", savedOutboxes[0].destination)
-            assertEquals("msg1:$email", savedOutboxes[0].source)
+            assertEquals("noodle.gmailsync://$email/messageId/msg1", savedOutboxes[0].source)
             assertEquals(subHandle, capturedGmailLoginId)
         }
 }

@@ -27,6 +27,7 @@ dependencies {
     implementation(platform(libs.ktor.dependencies))
     implementation(project(":dynamodb"))
     implementation(project(":ktor"))
+    implementation(project(":uri"))
     implementation(project(":ynabsync"))
     implementation(project(":ynabsync-persistence"))
     implementation(project(":ynabsync-api"))

@@ -163,27 +163,40 @@ class DynamoDbBankAccountRepositoryTests {
         }
 
     @Test
-    fun skipsExtraTrailingPathSegments(): Unit =
+    fun acceptsExtraTrailingPathSegments(): Unit =
         runBlocking {
-            val badEmail = "extra-segments@gmail.com"
-            val badNumber = "3333"
-            val badPartition = "noodle.ynabsync://$badEmail/account/$badNumber"
+            val goodEmail = "extra-segments@gmail.com"
+            val goodNumber = "3333"
+            val goodPartition = "noodle.ynabsync://$goodEmail/account/$goodNumber"
+            val userId = "extra-user-${UUID.randomUUID()}"
 
-            // Extra path segment
-            val extraSegmentSort = "noodle.ynabsync://user@app.ynab.com/budget/my-budget/account/acc-123/extra"
-            repository.put(badPartition, extraSegmentSort)
+            // Extra path segment — namedSegment correctly extracts the values regardless
+            val extraSegmentSort = "noodle.ynabsync://$userId@app.ynab.com/budget/my-budget/account/acc-123/extra"
+            repository.put(goodPartition, extraSegmentSort)
 
-            var result = repository.getAccounts(badEmail, badNumber)
-            assertEquals(0, result.size)
-            repository.delete(badPartition, extraSegmentSort)
+            var result = repository.getAccounts(goodEmail, goodNumber)
+            assertEquals(1, result.size)
+            var account = result[0]
+            assertEquals(goodEmail, account.email)
+            assertEquals(goodNumber, account.number)
+            assertEquals(userId, account.userId)
+            assertEquals("my-budget", account.budgetId)
+            assertEquals("acc-123", account.accountId)
+            repository.delete(goodPartition, extraSegmentSort)
 
-            // Trailing slash
-            val trailingSlashSort = "noodle.ynabsync://user@app.ynab.com/budget/my-budget/account/acc-123/"
-            repository.put(badPartition, trailingSlashSort)
+            // Trailing slash — same extraction, trailing slash is a no-op
+            val trailingSlashSort = "noodle.ynabsync://$userId@app.ynab.com/budget/my-budget/account/acc-123/"
+            repository.put(goodPartition, trailingSlashSort)
 
-            result = repository.getAccounts(badEmail, badNumber)
-            assertEquals(0, result.size)
-            repository.delete(badPartition, trailingSlashSort)
+            result = repository.getAccounts(goodEmail, goodNumber)
+            assertEquals(1, result.size)
+            account = result[0]
+            assertEquals(goodEmail, account.email)
+            assertEquals(goodNumber, account.number)
+            assertEquals(userId, account.userId)
+            assertEquals("my-budget", account.budgetId)
+            assertEquals("acc-123", account.accountId)
+            repository.delete(goodPartition, trailingSlashSort)
         }
 
     @Test

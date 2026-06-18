@@ -9,6 +9,7 @@ dependencies {
     implementation(platform(libs.aws.sdk.dependencies))
     implementation(project(":ynabsync"))
     implementation(project(":dynamodb"))
+    implementation(project(":uri"))
     implementation("software.amazon.awssdk:dynamodb")
     implementation(libs.kotlinx.coroutines)
     runtimeOnly(libs.logback)

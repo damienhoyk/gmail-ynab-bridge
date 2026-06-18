@@ -10,12 +10,6 @@ public data class Outbox(
         messageId: String?,
     ) : this(
         destination,
-        "$messageId:$sourceAddress",
+        "noodle.gmailsync://$sourceAddress/messageId/$messageId",
     )
-
-    public val messageId: String
-        get() = destination.substringBefore(":")
-
-    public val sourceAddress: String
-        get() = source.substringAfter(":")
 }

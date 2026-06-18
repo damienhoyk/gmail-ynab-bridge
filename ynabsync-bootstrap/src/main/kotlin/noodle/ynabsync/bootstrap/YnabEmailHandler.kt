@@ -11,6 +11,7 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import noodle.ktor.bearer
+import noodle.uri.namedSegment
 import noodle.ynabsync.core.domain.SyncYnabCommand
 import noodle.ynabsync.core.service.YnabEmailService
 import noodle.ynabsync.infrastructure.api.KtorGmailClientFactory
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import java.net.URI
 
 public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
     private val log = LoggerFactory.getLogger(javaClass)
@@ -118,8 +120,9 @@ public class YnabEmailHandler : RequestHandler<DynamodbEvent, String> {
             return
         }
 
-        val mailId = source.substringBefore(":")
-        val mailAddress = source.substringAfter(":")
+        val uri = URI(source)
+        val mailAddress = uri.authority
+        val mailId = uri.namedSegment("messageId").orEmpty()
 
         if (mailId.isEmpty() || mailAddress.isEmpty()) {
             log.error("Invalid source format [{}]", source)
