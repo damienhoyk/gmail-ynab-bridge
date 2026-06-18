@@ -4,6 +4,7 @@ import noodle.dynamodb.DynamoDbSortRepository
 import noodle.telegramchat.core.domain.User
 import noodle.telegramchat.core.port.UserRepository
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import java.net.URI
 
 public class DynamoDbUserRepository(
     override val client: DynamoDbClient = DynamoDbClient.create(),
@@ -19,10 +20,10 @@ public class DynamoDbUserRepository(
         put(user.id, user.loginId)
     }
 
-    override suspend fun queryUser(id: String): List<User> =
-        query(id).items().map {
-            val id = it["id"]?.s()!!
-            val loginId = it["loginId"]?.s()!!
-            User(id, loginId)
-        }
+    override suspend fun queryLogins(id: String): List<URI> =
+        query(id)
+            .items()
+            .mapNotNull {
+                it["loginId"]?.s()
+            }.map(::URI)
 }

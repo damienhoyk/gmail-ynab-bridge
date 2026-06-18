@@ -47,8 +47,7 @@ public class TelegramBotService(
 
                 botClient.sendChatAction(chatId, "typing")
 
-                val login = loginRepository.getLogin(authority)
-                val userId = login?.userId ?: UUID.randomUUID().toString()
+                val userId = loginRepository.getUser(authority) ?: UUID.randomUUID().toString()
 
                 loginRepository.putLogin(Login(authority, userId))
                 userRepository.putUser(User(userId, authority))
@@ -60,8 +59,7 @@ public class TelegramBotService(
                 val googleAuthorizationUrl = googleAuthorizationUrl()
 
                 botClient.sendChatAction(chatId, "typing")
-                val login = loginRepository.getLogin(authority)
-                val userId = login?.userId
+                val userId = loginRepository.getUser(authority)
                 val token = UUID.randomUUID().toString()
 
                 if (userId.isNullOrEmpty()) {
@@ -80,8 +78,7 @@ public class TelegramBotService(
                 val tokenRepository = tokenRepository()
                 val ynabAuthorizationUrl = ynabAuthorizationUrl()
 
-                val login = loginRepository.getLogin(authority)
-                val userId = login?.userId
+                val userId = loginRepository.getUser(authority)
                 val token = UUID.randomUUID().toString()
 
                 tokenRepository.putToken(StateToken(token, userId, 30.minutes))
@@ -96,11 +93,10 @@ public class TelegramBotService(
                 val userRepository = userRepository()
                 val gmailClientFactory = gmailClientFactory()
 
-                val login = loginRepository.getLogin(authority)
-                val userId = login?.userId ?: return@coroutineScope 400
-                val user = userRepository.queryUser(userId)
+                val userId = loginRepository.getUser(authority) ?: return@coroutineScope 400
+                val logins = userRepository.queryLogins(userId)
 
-                val googleLogins = user.map { it.loginId }.filter { it.endsWith("@google.com") }
+                val googleLogins = logins.filter { "google.com" == it.host }
 
                 log.info("found [{}] Google logins for user", googleLogins.count())
 
@@ -110,7 +106,7 @@ public class TelegramBotService(
                     googleLogins
                         .map {
                             async {
-                                val gmailClient = gmailClientFactory.create(it)
+                                val gmailClient = gmailClientFactory.create(it.toString())
                                 val profile = gmailClient.getProfile() ?: error("no gmail profile for [$it]")
                                 val labelId = gmailClient.getLabelId(labelName)
                                 val labelIds = listOfNotNull(labelId)

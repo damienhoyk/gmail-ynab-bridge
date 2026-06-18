@@ -3,13 +3,14 @@ package noodle.telegramchat.infrastructure.persistence
 import kotlinx.coroutines.runBlocking
 import noodle.telegramchat.core.domain.User
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.TestMethodOrder
+import java.net.URI
 import java.util.UUID
 
 @TestMethodOrder(OrderAnnotation::class)
@@ -27,12 +28,10 @@ class DynamoDbUserRepositoryTests {
         }
 
     @Test
-    fun queryUser(): Unit =
+    fun queryLogins(): Unit =
         runBlocking {
-            val users = repository.queryUser(id)
-            val user = users.find { it.id == id }
-            assertEquals(id, user?.id)
-            assertEquals(loginId, user?.loginId)
+            val logins = repository.queryLogins(id)
+            assertTrue(logins.contains(URI(loginId)))
         }
 
     @AfterAll

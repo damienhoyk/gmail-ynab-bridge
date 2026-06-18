@@ -27,11 +27,9 @@ class DynamoDbLoginRepositoryTests {
         }
 
     @Test
-    fun getLogin(): Unit =
+    fun getUser(): Unit =
         runBlocking {
-            val login = repository.getLogin(id)
-            assertEquals(id, login?.id)
-            assertEquals(userId, login?.userId)
+            assertEquals(userId, repository.getUser(id))
         }
 
     @AfterAll

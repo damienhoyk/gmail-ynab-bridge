@@ -19,11 +19,5 @@ public class DynamoDbLoginRepository(
         put(login.id) { put("userId", fromS(login.userId)) }
     }
 
-    override suspend fun getLogin(id: String): Login? =
-        get(id)?.let {
-            val item = it.item()
-            val id = item["id"]?.s()!!
-            val userId = item["userId"]?.s()
-            Login(id, userId)
-        }
+    override suspend fun getUser(id: String): String? = get(id).item()["userId"]?.s()
 }

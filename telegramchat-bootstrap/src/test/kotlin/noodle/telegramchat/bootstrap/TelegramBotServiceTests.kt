@@ -17,6 +17,7 @@ import noodle.telegramchat.core.port.TokenRepository
 import noodle.telegramchat.core.port.UserRepository
 import noodle.telegramchat.core.service.TelegramBotService
 import org.junit.jupiter.api.Test
+import java.net.URI
 import kotlin.test.assertEquals
 
 class TelegramBotServiceTests {
@@ -151,7 +152,7 @@ class TelegramBotServiceTests {
     private class FakeLoginRepository(
         private val login: Login,
     ) : LoginRepository {
-        override suspend fun getLogin(id: String): Login? = login
+        override suspend fun getUser(id: String): String? = login.userId
 
         override suspend fun putLogin(login: Login) {}
     }
@@ -159,7 +160,7 @@ class TelegramBotServiceTests {
     private class FakeUserRepository(
         private val users: List<User>,
     ) : UserRepository {
-        override suspend fun queryUser(id: String): List<User> = users
+        override suspend fun queryLogins(id: String): List<URI> = users.map { URI(it.loginId) }
 
         override suspend fun putUser(user: User) {}
     }
