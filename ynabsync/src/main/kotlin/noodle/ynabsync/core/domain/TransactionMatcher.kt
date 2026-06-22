@@ -57,27 +57,35 @@ public class TransactionMatcher(
 
             val parsedDate = inputDateFormatter.parse(dateMatch)
 
-            // Defer evaluating LocalDate.now() to avoid unnecessary system clock reads and object allocations
-            val systemDate by lazy { LocalDate.now() }
-
             val resolvedDate =
-                LocalDate.of(
-                    if (parsedDate.isSupported(YEAR)) {
-                        parsedDate.get(YEAR)
-                    } else {
-                        systemDate.get(YEAR)
-                    },
-                    if (parsedDate.isSupported(MONTH_OF_YEAR)) {
-                        parsedDate.get(MONTH_OF_YEAR)
-                    } else {
-                        systemDate.get(MONTH_OF_YEAR)
-                    },
-                    if (parsedDate.isSupported(DAY_OF_MONTH)) {
-                        parsedDate.get(DAY_OF_MONTH)
-                    } else {
-                        systemDate.get(DAY_OF_MONTH)
-                    },
-                )
+                if (parsedDate.isSupported(YEAR) && parsedDate.isSupported(MONTH_OF_YEAR) && parsedDate.isSupported(DAY_OF_MONTH)) {
+                    LocalDate.of(
+                        parsedDate.get(YEAR),
+                        parsedDate.get(MONTH_OF_YEAR),
+                        parsedDate.get(DAY_OF_MONTH),
+                    )
+                } else {
+                    // Defer evaluating LocalDate.now() to avoid unnecessary system clock reads and object allocations
+                    val systemDate by lazy { LocalDate.now() }
+                    LocalDate.of(
+                        if (parsedDate.isSupported(YEAR)) {
+                            parsedDate.get(YEAR)
+                        } else {
+                            systemDate.get(YEAR)
+                        },
+                        if (parsedDate.isSupported(MONTH_OF_YEAR)) {
+                            parsedDate.get(MONTH_OF_YEAR)
+                        } else {
+                            systemDate.get(MONTH_OF_YEAR)
+                        },
+                        if (parsedDate.isSupported(DAY_OF_MONTH)) {
+                            parsedDate.get(DAY_OF_MONTH)
+                        } else {
+                            systemDate.get(DAY_OF_MONTH)
+                        },
+                    )
+                }
+
             val date = resolvedDate.toString()
 
             YnabTransaction(
