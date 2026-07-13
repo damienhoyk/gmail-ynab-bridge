@@ -83,6 +83,7 @@ class TelegramBotServiceTests {
             // Mailbox is written with the real email address from the Gmail profile
             assertEquals(1, capturedMailboxes.size)
             assertEquals(testRealGmailEmail, capturedMailboxes[0].address)
+            assertEquals(1234L, capturedMailboxes[0].expiration)
         }
 
     @Test
@@ -180,7 +181,7 @@ class TelegramBotServiceTests {
 
         override suspend fun getLabelId(labelName: String): String? = "label-id-xyz"
 
-        override suspend fun postWatch(request: WatchMailboxRequest): GmailWatch = GmailWatch(historyId = 456L, expiration = null, error = null)
+        override suspend fun postWatch(request: WatchMailboxRequest): GmailWatch = GmailWatch(historyId = 456L, expiration = 1234L, error = null)
     }
 
     private class FakeGmailClientNullProfile : GmailClient {

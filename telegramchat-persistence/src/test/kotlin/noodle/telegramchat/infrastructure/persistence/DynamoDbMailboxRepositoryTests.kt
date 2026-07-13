@@ -18,12 +18,13 @@ class DynamoDbMailboxRepositoryTests {
     private val repository = DynamoDbMailboxRepository(environment = "test")
     private val address = "test-${UUID.randomUUID()}@gmail.com"
     private val state = (100000..199999).random().toLong()
+    private val expiration = (100000..199999).random().toLong()
 
     @Order(1)
     @Test
     fun updateMailbox(): Unit =
         runBlocking {
-            repository.updateMailbox(Mailbox(address, state))
+            repository.updateMailbox(Mailbox(address, state, expiration))
         }
 
     @Test
@@ -33,6 +34,8 @@ class DynamoDbMailboxRepositoryTests {
             val item = result.item()
             val stateValue = item["state"]?.n()?.toLong()
             assertEquals(state, stateValue)
+            val expirationValue = item["expiration"]?.n()?.toLong()
+            assertEquals(expiration, expirationValue)
         }
 
     @AfterAll

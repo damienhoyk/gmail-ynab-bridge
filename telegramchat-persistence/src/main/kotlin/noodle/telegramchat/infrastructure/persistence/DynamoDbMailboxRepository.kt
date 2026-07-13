@@ -18,6 +18,7 @@ public class DynamoDbMailboxRepository(
     override suspend fun updateMailbox(mailbox: Mailbox) {
         update(mailbox.address) {
             put("state", fromN(mailbox.state?.toString()))
+            put("expiration", fromN(mailbox.expiration?.toString()))
         }
     }
 }

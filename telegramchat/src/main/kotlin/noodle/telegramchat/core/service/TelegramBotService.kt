@@ -111,8 +111,8 @@ public class TelegramBotService(
                                 val labelId = gmailClient.getLabelId(labelName)
                                 val labelIds = listOfNotNull(labelId)
 
-                                mailboxRepository.updateMailbox(Mailbox(profile.emailAddress, profile.historyId))
-                                gmailClient.postWatch(WatchMailboxRequest(topicName, labelIds))
+                                val watch = gmailClient.postWatch(WatchMailboxRequest(topicName, labelIds))
+                                mailboxRepository.updateMailbox(Mailbox(profile.emailAddress, profile.historyId, watch.expiration))
                                 profile.emailAddress
                             }.runCatching { await() }
                         }.map { result ->
