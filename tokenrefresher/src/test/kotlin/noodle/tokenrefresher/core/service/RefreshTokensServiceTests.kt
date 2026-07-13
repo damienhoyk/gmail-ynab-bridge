@@ -252,7 +252,7 @@ class RefreshTokensServiceTests {
     @Test
     fun `refreshOne resolves Google provider from noodle oauth URI with google_com host`(): Unit =
         runBlocking {
-            val testId = "noodle.oauth://sub123@google.com"
+            val testId = "//sub123@google.com"
             val refreshToken = "refresh-token-123"
             val newAccessToken = "new-access-token"
             val expiresIn = 3600L

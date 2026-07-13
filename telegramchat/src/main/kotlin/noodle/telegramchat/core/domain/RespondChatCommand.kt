@@ -5,5 +5,5 @@ public data class RespondChatCommand(
     val text: String?,
     val chatId: String?,
 ) {
-    val authority: String? get() = telegramUserId?.let { "$it@web.telegram.org" }
+    val authority: String? get() = telegramUserId?.let { "//$it@web.telegram.org" }
 }

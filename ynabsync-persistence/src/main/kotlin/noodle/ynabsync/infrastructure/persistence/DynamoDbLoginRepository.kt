@@ -14,7 +14,7 @@ public class DynamoDbLoginRepository(
     override val partitionKey: String = "id"
 
     override suspend fun resolve(email: String): String? {
-        val handle = "noodle.oauth://$email"
+        val handle = "//$email"
         return get(handle).let {
             val item = it.item()
             item["userId"]?.s()

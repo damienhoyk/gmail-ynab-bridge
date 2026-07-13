@@ -25,8 +25,8 @@ class TelegramBotServiceTests {
     private val testChatId = "chat-123"
     private val testUserId = "user-id-789"
     private val testGoogleSub = "sub-google-abc"
-    private val testGoogleSubHandle = "noodle.oauth://$testGoogleSub@google.com"
-    private val testYnabHandle = "noodle.oauth://$testUserId@app.ynab.com"
+    private val testGoogleSubHandle = "//$testGoogleSub@google.com"
+    private val testYnabHandle = "//$testUserId@app.ynab.com"
     private val testRealGmailEmail = "real-user@gmail.com"
     private val testMailboxAddress = testRealGmailEmail
     private val testTopicName = "projects/test-project/topics/gmail-watch"
@@ -37,7 +37,7 @@ class TelegramBotServiceTests {
         runBlocking {
             // Arrange
             val fakeBotClient = FakeTelegramBotClient()
-            val fakeLoginRepository = FakeLoginRepository(Login("$testTelegramUserId@web.telegram.org", testUserId))
+            val fakeLoginRepository = FakeLoginRepository(Login("//$testTelegramUserId@web.telegram.org", testUserId))
             val fakeUserRepository =
                 FakeUserRepository(
                     listOf(
@@ -91,7 +91,7 @@ class TelegramBotServiceTests {
         runBlocking {
             // Arrange
             val fakeBotClient = FakeTelegramBotClient()
-            val fakeLoginRepository = FakeLoginRepository(Login("$testTelegramUserId@web.telegram.org", testUserId))
+            val fakeLoginRepository = FakeLoginRepository(Login("//$testTelegramUserId@web.telegram.org", testUserId))
             val fakeUserRepository =
                 FakeUserRepository(
                     listOf(

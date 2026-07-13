@@ -20,8 +20,8 @@ class DynamoDbBankAccountRepositoryTests {
     private val testUserId = "test-user-${UUID.randomUUID()}"
     private val testBudgetId = "test-budget"
     private val testAccountId = "test-account"
-    private val testPartition = "noodle.ynabsync://$testEmail/account/$testNumber"
-    private val testSort = "noodle.ynabsync://$testUserId@app.ynab.com/budget/$testBudgetId/account/$testAccountId"
+    private val testPartition = "//$testEmail/account/$testNumber"
+    private val testSort = "//$testUserId@app.ynab.com/budget/$testBudgetId/account/$testAccountId"
 
     @Order(1)
     @Test
@@ -48,9 +48,9 @@ class DynamoDbBankAccountRepositoryTests {
         runBlocking {
             val badEmail = "malformed@gmail.com"
             val badNumber = "9999"
-            val badPartition = "noodle.ynabsync://$badEmail/account/$badNumber"
+            val badPartition = "//$badEmail/account/$badNumber"
 
-            val goodSort = "noodle.ynabsync://good-user-${UUID.randomUUID()}@app.ynab.com/budget/good-budget/account/good-account"
+            val goodSort = "//good-user-${UUID.randomUUID()}@app.ynab.com/budget/good-budget/account/good-account"
             val malformedSort = "not-a-valid-uri"
 
             // Put one good and one malformed sort key
@@ -71,7 +71,7 @@ class DynamoDbBankAccountRepositoryTests {
         runBlocking {
             val badEmail = "wrong-scheme@gmail.com"
             val badNumber = "8888"
-            val badPartition = "noodle.ynabsync://$badEmail/account/$badNumber"
+            val badPartition = "//$badEmail/account/$badNumber"
 
             val wrongSchemeSort = "http://user@app.ynab.com/budget/my-budget/account/acc-123"
 
@@ -89,9 +89,9 @@ class DynamoDbBankAccountRepositoryTests {
         runBlocking {
             val badEmail = "wrong-host@gmail.com"
             val badNumber = "7777"
-            val badPartition = "noodle.ynabsync://$badEmail/account/$badNumber"
+            val badPartition = "//$badEmail/account/$badNumber"
 
-            val wrongHostSort = "noodle.ynabsync://user@example.com/budget/my-budget/account/acc-123"
+            val wrongHostSort = "//user@example.com/budget/my-budget/account/acc-123"
 
             repository.put(badPartition, wrongHostSort)
 
@@ -107,9 +107,9 @@ class DynamoDbBankAccountRepositoryTests {
         runBlocking {
             val badEmail = "missing-user@gmail.com"
             val badNumber = "6666"
-            val badPartition = "noodle.ynabsync://$badEmail/account/$badNumber"
+            val badPartition = "//$badEmail/account/$badNumber"
 
-            val missingUserSort = "noodle.ynabsync://app.ynab.com/budget/my-budget/account/acc-123"
+            val missingUserSort = "//app.ynab.com/budget/my-budget/account/acc-123"
 
             repository.put(badPartition, missingUserSort)
 
@@ -125,9 +125,9 @@ class DynamoDbBankAccountRepositoryTests {
         runBlocking {
             val badEmail = "bad-path@gmail.com"
             val badNumber = "5555"
-            val badPartition = "noodle.ynabsync://$badEmail/account/$badNumber"
+            val badPartition = "//$badEmail/account/$badNumber"
 
-            val badPathSort = "noodle.ynabsync://user@app.ynab.com/notbudget/my-budget/notaccount/acc-123"
+            val badPathSort = "//user@app.ynab.com/notbudget/my-budget/notaccount/acc-123"
 
             repository.put(badPartition, badPathSort)
 
@@ -143,10 +143,10 @@ class DynamoDbBankAccountRepositoryTests {
         runBlocking {
             val badEmail = "blank-segments@gmail.com"
             val badNumber = "4444"
-            val badPartition = "noodle.ynabsync://$badEmail/account/$badNumber"
+            val badPartition = "//$badEmail/account/$badNumber"
 
             // Blank budget segment
-            val blankBudgetSort = "noodle.ynabsync://user@app.ynab.com/budget//account/acc-123"
+            val blankBudgetSort = "//user@app.ynab.com/budget//account/acc-123"
             repository.put(badPartition, blankBudgetSort)
 
             var result = repository.getAccounts(badEmail, badNumber)
@@ -154,7 +154,7 @@ class DynamoDbBankAccountRepositoryTests {
             repository.delete(badPartition, blankBudgetSort)
 
             // Blank account segment
-            val blankAccountSort = "noodle.ynabsync://user@app.ynab.com/budget/my-budget/account/"
+            val blankAccountSort = "//user@app.ynab.com/budget/my-budget/account/"
             repository.put(badPartition, blankAccountSort)
 
             result = repository.getAccounts(badEmail, badNumber)
@@ -167,11 +167,11 @@ class DynamoDbBankAccountRepositoryTests {
         runBlocking {
             val goodEmail = "extra-segments@gmail.com"
             val goodNumber = "3333"
-            val goodPartition = "noodle.ynabsync://$goodEmail/account/$goodNumber"
+            val goodPartition = "//$goodEmail/account/$goodNumber"
             val userId = "extra-user-${UUID.randomUUID()}"
 
             // Extra path segment — namedSegment correctly extracts the values regardless
-            val extraSegmentSort = "noodle.ynabsync://$userId@app.ynab.com/budget/my-budget/account/acc-123/extra"
+            val extraSegmentSort = "//$userId@app.ynab.com/budget/my-budget/account/acc-123/extra"
             repository.put(goodPartition, extraSegmentSort)
 
             var result = repository.getAccounts(goodEmail, goodNumber)
@@ -185,7 +185,7 @@ class DynamoDbBankAccountRepositoryTests {
             repository.delete(goodPartition, extraSegmentSort)
 
             // Trailing slash — same extraction, trailing slash is a no-op
-            val trailingSlashSort = "noodle.ynabsync://$userId@app.ynab.com/budget/my-budget/account/acc-123/"
+            val trailingSlashSort = "//$userId@app.ynab.com/budget/my-budget/account/acc-123/"
             repository.put(goodPartition, trailingSlashSort)
 
             result = repository.getAccounts(goodEmail, goodNumber)
@@ -200,19 +200,19 @@ class DynamoDbBankAccountRepositoryTests {
         }
 
     @Test
-    fun acceptsCaseInsensitiveSchemeAndHost(): Unit =
+    fun acceptsCaseInsensitiveHost(): Unit =
         runBlocking {
             val goodEmail = "case-insensitive@gmail.com"
             val goodNumber = "2222"
-            val goodPartition = "noodle.ynabsync://$goodEmail/account/$goodNumber"
+            val goodPartition = "//$goodEmail/account/$goodNumber"
             val userId = "case-user-${UUID.randomUUID()}"
 
-            // UPPERCASE scheme and host
-            val uppercaseSort = "NOODLE.YNABSYNC://$userId@APP.YNAB.COM/budget/case-budget/account/case-account"
+            // UPPERCASE host
+            val uppercaseSort = "//$userId@APP.YNAB.COM/budget/case-budget/account/case-account"
             repository.put(goodPartition, uppercaseSort)
 
             val result = repository.getAccounts(goodEmail, goodNumber)
-            // Should accept case-insensitive scheme and host
+            // Should accept case-insensitive host
             assertEquals(1, result.size)
             val account = result[0]
             assertEquals(goodEmail, account.email)
@@ -230,8 +230,8 @@ class DynamoDbBankAccountRepositoryTests {
             val discoveredEmail = "discovered@gmail.com"
             val discoveredNumber = "5000"
             val discoveredUserId = "discovered-user-${UUID.randomUUID()}"
-            val discoveredPartition = "noodle.ynabsync://$discoveredEmail/account/$discoveredNumber"
-            val discoveredSort = "noodle.ynabsync://$discoveredUserId@app.ynab.com"
+            val discoveredPartition = "//$discoveredEmail/account/$discoveredNumber"
+            val discoveredSort = "//$discoveredUserId@app.ynab.com"
 
             // Put a discovered account (incomplete sort key with no path)
             repository.putDiscoveredAccount(discoveredEmail, discoveredNumber, discoveredUserId)
@@ -248,7 +248,7 @@ class DynamoDbBankAccountRepositoryTests {
             // Complete the sort key by appending the path
             val completedBudgetId = "budget-${UUID.randomUUID()}"
             val completedAccountId = "account-${UUID.randomUUID()}"
-            val completedSort = "noodle.ynabsync://$discoveredUserId@app.ynab.com/budget/$completedBudgetId/account/$completedAccountId"
+            val completedSort = "//$discoveredUserId@app.ynab.com/budget/$completedBudgetId/account/$completedAccountId"
             repository.delete(discoveredPartition, discoveredSort)
             repository.put(discoveredPartition, completedSort)
 

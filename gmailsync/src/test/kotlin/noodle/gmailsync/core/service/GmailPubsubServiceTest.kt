@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class GmailPubsubServiceTest {
     private val email = "test@example.com"
     private val sub = "user-12345"
-    private val subHandle = "noodle.oauth://$sub@google.com"
+    private val subHandle = "//$sub@google.com"
     private val state = 12345L
     private val nextState = 67890L
 
@@ -25,7 +25,7 @@ class GmailPubsubServiceTest {
             override suspend fun resolve(email: String): String? =
                 when (email) {
                     "test@example.com" -> subHandle
-                    "invalid@example.com" -> "noodle.oauth://invalid-user@google.com"
+                    "invalid@example.com" -> "//invalid-user@google.com"
                     else -> null
                 }
         }
@@ -66,8 +66,8 @@ class GmailPubsubServiceTest {
                 when (source) {
                     email ->
                         listOf(
-                            Bridge(source, "noodle.ynabsync://user-123@app.ynab.com"),
-                            Bridge(source, "noodle.ynabsync://user-123@app.ynab.com"),
+                            Bridge(source, "//user-123@app.ynab.com"),
+                            Bridge(source, "//user-123@app.ynab.com"),
                         )
                     else -> emptyList()
                 }
@@ -162,8 +162,8 @@ class GmailPubsubServiceTest {
             assertEquals(201, result)
             assertEquals(nextState, savedMailboxes.firstOrNull()?.state)
             assertEquals(1, savedOutboxes.size)
-            assertEquals("noodle.ynabsync://user-123@app.ynab.com", savedOutboxes[0].destination)
-            assertEquals("noodle.gmailsync://$email/messageId/msg1", savedOutboxes[0].source)
+            assertEquals("//user-123@app.ynab.com", savedOutboxes[0].destination)
+            assertEquals("//$email/messageId/msg1", savedOutboxes[0].source)
             assertEquals(subHandle, capturedGmailLoginId)
         }
 }

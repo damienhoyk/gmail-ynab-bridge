@@ -53,8 +53,8 @@ class KtorGoogleLoginIdProviderTests {
             val response = TokenResponse(idToken = "fake-id-token")
             val identity = provider.getLoginId(response)
 
-            assertEquals("noodle.oauth://user123@google.com", identity?.id)
-            assertEquals(listOf("noodle.oauth://user@example.com"), identity?.aliases)
+            assertEquals("//user123@google.com", identity?.id)
+            assertEquals(listOf("//user@example.com"), identity?.aliases)
         }
 
     @Test
@@ -108,7 +108,7 @@ class KtorGoogleLoginIdProviderTests {
             val response = TokenResponse(idToken = "fake-id-token")
             val identity = provider.getLoginId(response)
 
-            assertEquals("noodle.oauth://user123@google.com", identity?.id)
+            assertEquals("//user123@google.com", identity?.id)
             assertEquals(emptyList<String>(), identity?.aliases)
         }
 }

@@ -18,8 +18,8 @@ public class KtorGoogleLoginIdProvider(
                     .body<TokenInfoResponse>()
             tokenInfo.sub?.let { sub ->
                 LoginIdentity(
-                    id = "noodle.oauth://$sub@google.com",
-                    aliases = listOfNotNull(tokenInfo.email?.let { "noodle.oauth://$it" }),
+                    id = "//$sub@google.com",
+                    aliases = listOfNotNull(tokenInfo.email?.let { "//$it" }),
                 )
             }
         }

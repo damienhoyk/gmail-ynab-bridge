@@ -24,13 +24,13 @@ import kotlin.time.Duration.Companion.hours
 class YnabEmailServiceTests {
     private val testMailAddress = "test@gmail.com"
     private val testUserId = "test-user-123"
-    private val testDestination = "noodle.ynabsync://$testUserId@app.ynab.com"
+    private val testDestination = "//$testUserId@app.ynab.com"
     private val testMailId = "mail-id-456"
     private val testSource = "source-789"
     private val testBankAccount = "1995"
     private val testBudgetId = "my-budget"
     private val testYnabAccountId = "ynab-acc-999"
-    private val testSubHandle = "noodle.oauth://sub-1@google.com"
+    private val testSubHandle = "//sub-1@google.com"
     private val testBankAccountData =
         BankAccount(
             email = testMailAddress,
@@ -86,7 +86,7 @@ class YnabEmailServiceTests {
             assertEquals(testYnabAccountId, txns[0].accountId)
 
             assertEquals(testSubHandle, capturedGmailLoginIds.single())
-            assertEquals("noodle.oauth://$testUserId@app.ynab.com", capturedYnabLoginIds.single())
+            assertEquals("//$testUserId@app.ynab.com", capturedYnabLoginIds.single())
 
             assertEquals(testDestination, fakeOutboxRepository.lastUpdateTtlDestination)
             assertEquals(testSource, fakeOutboxRepository.lastUpdateTtlSource)

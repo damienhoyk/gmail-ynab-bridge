@@ -92,7 +92,7 @@ public class YnabEmailService(
                 return
             }
 
-        val loginId = "noodle.oauth://$userId@${uri.host}"
+        val loginId = "//$userId@${uri.host}"
         val client = ynabClientFactory.create(loginId)
 
         log.info("Getting matchers for [{}] ...", senderEmail)

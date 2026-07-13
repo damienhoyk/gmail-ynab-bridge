@@ -33,13 +33,13 @@ Each application (`oauth`, `gmailsync`, `ynabsync`, `telegramchat`, `tokenrefres
 
 ### Resource identifiers (ynabsync)
 
-`ynabsync` locates YNAB resources via URI-based identifiers. The persistence adapter (`DynamoDbAccountRepository`) parses and validates URIs using `java.net.URI`, matching scheme (`noodle.ynabsync`) and host (`app.ynab.com`) case-insensitively (RFC 3986); malformed sort keys are logged and skipped without throwing.
+`ynabsync` locates YNAB resources via scheme-relative URI identifiers of the form `//authority/path`. The persistence adapter (`DynamoDbAccountRepository`) validates each sort key with `java.net.URI`: it must have no scheme, host `app.ynab.com` (matched case-insensitively, RFC 3986), non-blank userInfo, and a `/budget/<id>/account/<id>` path; malformed sort keys are logged and skipped without throwing.
 
 | Identifier | Form | Example | Uses |
 |---|---|---|---|
-| Bank account | `noodle.ynabsync://<sub>@gmail.com/account/<number>` | `noodle.ynabsync://abc-123@gmail.com/account/9062` | `bank-account.partition` (partition key) |
-| YNAB account | `noodle.ynabsync://<userId>@app.ynab.com/budget/<budgetId>/account/<accountId>` | `noodle.ynabsync://abc-123@app.ynab.com/budget/def-456/account/ghi-789` | `bank-account.sort` (sort key; parsed in `DynamoDbAccountRepository`) |
-| User | `noodle.ynabsync://<userId>@app.ynab.com` | `noodle.ynabsync://abc-123@app.ynab.com` | `bridge.destination` (outbox routing) |
+| Bank account | `//<sub>@gmail.com/account/<number>` | `//abc-123@gmail.com/account/9062` | `bank-account.partition` (partition key) |
+| YNAB account | `//<userId>@app.ynab.com/budget/<budgetId>/account/<accountId>` | `//abc-123@app.ynab.com/budget/def-456/account/ghi-789` | `bank-account.sort` (sort key; parsed in `DynamoDbAccountRepository`) |
+| User | `//<userId>@app.ynab.com` | `//abc-123@app.ynab.com` | `bridge.destination` (outbox routing) |
 
 ### Integration clients
 

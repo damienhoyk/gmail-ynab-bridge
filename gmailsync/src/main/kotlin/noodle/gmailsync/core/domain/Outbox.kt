@@ -10,6 +10,6 @@ public data class Outbox(
         messageId: String?,
     ) : this(
         destination,
-        "noodle.gmailsync://$sourceAddress/messageId/$messageId",
+        "//$sourceAddress/messageId/$messageId",
     )
 }

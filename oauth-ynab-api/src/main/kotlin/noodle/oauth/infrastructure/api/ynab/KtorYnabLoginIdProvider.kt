@@ -17,6 +17,6 @@ public class KtorYnabLoginIdProvider(
                 .getUser { bearerAuth(accessToken) }
                 .body<YnabUser.Data>()
                 .data.user.id
-                .let { userId -> LoginIdentity(id = "noodle.oauth://$userId@app.ynab.com") }
+                .let { userId -> LoginIdentity(id = "//$userId@app.ynab.com") }
         }
 }

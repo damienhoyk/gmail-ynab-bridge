@@ -53,8 +53,8 @@ class AuthorizeServiceTests {
         object : LoginIdProvider {
             override suspend fun getLoginId(tokenResponse: TokenResponse): LoginIdentity? =
                 LoginIdentity(
-                    id = "noodle.oauth://user123@google.com",
-                    aliases = listOf("noodle.oauth://user@example.com"),
+                    id = "//user123@google.com",
+                    aliases = listOf("//user@example.com"),
                 )
         }
 
@@ -188,11 +188,11 @@ class AuthorizeServiceTests {
 
             assertEquals(200, statusCode)
 
-            val mainLogin = recordedLogins.find { it.id == "noodle.oauth://user123@google.com" }
-            assertEquals(1, recordedLogins.count { it.id == "noodle.oauth://user123@google.com" })
+            val mainLogin = recordedLogins.find { it.id == "//user123@google.com" }
+            assertEquals(1, recordedLogins.count { it.id == "//user123@google.com" })
 
-            val aliasLogin = recordedLogins.find { it.id == "noodle.oauth://user@example.com" }
-            assertEquals("noodle.oauth://user123@google.com", aliasLogin?.userId, "Alias login should point back to main login")
+            val aliasLogin = recordedLogins.find { it.id == "//user@example.com" }
+            assertEquals("//user123@google.com", aliasLogin?.userId, "Alias login should point back to main login")
         }
     }
 
