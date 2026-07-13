@@ -15,8 +15,8 @@ public class DynamoDbMailboxRepository(
 
     override val partitionKey: String = "address"
 
-    override suspend fun putMailbox(mailbox: Mailbox) {
-        put(mailbox.address) {
+    override suspend fun updateMailbox(mailbox: Mailbox) {
+        update(mailbox.address) {
             put("state", fromN(mailbox.state?.toString()))
         }
     }

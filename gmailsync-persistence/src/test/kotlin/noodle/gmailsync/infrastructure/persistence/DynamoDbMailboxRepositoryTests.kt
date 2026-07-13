@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import org.junit.jupiter.api.TestMethodOrder
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue.fromN
 import java.util.UUID
 
 @TestMethodOrder(OrderAnnotation::class)
@@ -21,9 +22,9 @@ class DynamoDbMailboxRepositoryTests {
 
     @Order(1)
     @Test
-    fun putMailbox(): Unit =
+    fun updateMailbox(): Unit =
         runBlocking {
-            repository.putMailbox(Mailbox(address, state))
+            repository.updateMailbox(Mailbox(address, state))
         }
 
     @Test
@@ -32,6 +33,31 @@ class DynamoDbMailboxRepositoryTests {
             val result = repository.getMailbox(address)
             assertEquals(address, result.address)
             assertEquals(state, result.state)
+        }
+
+    @Test
+    fun `updateMailbox preserves expiration attribute`(): Unit =
+        runBlocking {
+            val expirationAddress = "test-preserve-${UUID.randomUUID()}@gmail.com"
+            val initialState = (100000..199999).random().toLong()
+            val seededExpiration = "12345"
+            val newState = (200000..299999).random().toLong()
+
+            // Seed row with expiration using raw write
+            repository.update(expirationAddress) {
+                put("expiration", fromN(seededExpiration))
+            }
+
+            // Call updateMailbox to update state via port
+            repository.updateMailbox(Mailbox(expirationAddress, newState))
+
+            // Read raw row and assert both state is updated AND expiration is preserved
+            val item = repository.get(expirationAddress).item()
+            assertEquals(newState.toString(), item["state"]?.n())
+            assertEquals(seededExpiration, item["expiration"]?.n())
+
+            // Cleanup
+            repository.delete(expirationAddress)
         }
 
     @AfterAll

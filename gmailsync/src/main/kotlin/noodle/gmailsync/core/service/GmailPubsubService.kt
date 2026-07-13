@@ -59,7 +59,7 @@ public class GmailPubsubService(
             val outboxRepository = outboxRepository()
             val destinations = destinationsAsync.await()
 
-            launch { mailboxRepository.putMailbox(mailbox.copy(state = command.state)) }
+            launch { mailboxRepository.updateMailbox(mailbox.copy(state = command.state)) }
             messageIds.forEach { messageId ->
                 destinations.forEach { destination ->
                     launch { outboxRepository.putOutbox(Outbox(destination = destination, sourceAddress = command.email, messageId = messageId), 30.days) }

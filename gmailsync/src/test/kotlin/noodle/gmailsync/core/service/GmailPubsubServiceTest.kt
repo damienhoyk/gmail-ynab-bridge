@@ -38,7 +38,7 @@ class GmailPubsubServiceTest {
                     else -> Mailbox(address, null)
                 }
 
-            override suspend fun putMailbox(mailbox: Mailbox) {
+            override suspend fun updateMailbox(mailbox: Mailbox) {
                 savedMailboxes.add(mailbox)
             }
         }
